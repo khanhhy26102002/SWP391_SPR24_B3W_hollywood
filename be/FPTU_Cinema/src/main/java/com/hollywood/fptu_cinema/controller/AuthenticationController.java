@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController()
-@RequestMapping(path = "/auth")
+@RequestMapping(path = "api/auth")
 public class AuthenticationController {
     private static final Logger logger = LogManager.getLogger(AuthenticationController.class);
     private final UserService userService;
@@ -24,7 +24,7 @@ public class AuthenticationController {
 
     @Operation(summary = "logout")
     @GetMapping("/logout")
-    @Secured({"ROLE_ADMIN"})
+    @Secured({"ROLE_ADMIN", "ROLE_MEMBER", "ROLE_STAFF"})
     public ResponseEntity<?> logout(HttpServletRequest request) {
         try {
             String username = Util.currentUser();
