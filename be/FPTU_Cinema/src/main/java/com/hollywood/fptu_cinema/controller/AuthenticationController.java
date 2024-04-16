@@ -40,19 +40,18 @@ public class AuthenticationController {
         }
     }
     //logout
-    @Operation(summary = "logout")
+    @Operation(summary = "Logout")
     @GetMapping("/logout")
-    @Secured({"ROLE_ADMIN", "ROLE_MEMBER", "ROLE_STAFF"}) //phan quyen
-
+    @Secured({"ADMIN", "MEMBER", "STAFF"})
     public ResponseEntity<?> logout(HttpServletRequest request) {
         try {
             String username = Util.currentUser();
             userService.logout(request);
             logger.info("{} logged out successfully!", username);
-            return ResponseEntity.ok("Logout successful");
+            return Response.success("Logout successful");
         } catch (Exception e) {
             logger.error("Logout attempt failed: {}", e.getMessage());
-            return ResponseEntity.badRequest().body("Logout failed: " + e.getMessage());
+            return Response.error(e);
         }
     }
 }
