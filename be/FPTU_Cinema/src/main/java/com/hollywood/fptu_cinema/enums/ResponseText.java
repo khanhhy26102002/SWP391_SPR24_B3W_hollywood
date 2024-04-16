@@ -7,9 +7,11 @@ public enum ResponseText {
     INTERNAL_ERROR("Internal server error: ");
 
     private final String message;
+
     ResponseText(String message) {
         this.message = message;
     }
+
     @Override
     public String toString() {
         return message;

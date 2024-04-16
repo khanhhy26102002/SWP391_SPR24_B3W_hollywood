@@ -1,6 +1,7 @@
 package com.hollywood.fptu_cinema.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,17 +21,21 @@ public class Seat {
     private Room room;
 
     @Size(max = 10)
-    @Column(name = "seat_number", length = 10)
+    @NotNull
+    @Column(name = "seat_number", nullable = false, length = 10)
     private String seatNumber;
 
     @Size(max = 50)
-    @Column(name = "seat_type", length = 50)
+    @NotNull
+    @Column(name = "seat_type", nullable = false, length = 50)
     private String seatType;
 
-    @Column(name = "seat_price", precision = 10, scale = 2)
+    @NotNull
+    @Column(name = "seat_price", nullable = false, precision = 10, scale = 2)
     private BigDecimal seatPrice;
 
-    @Column(name = "status")
+    @NotNull
+    @Column(name = "status", nullable = false)
     private Integer status;
 
 }

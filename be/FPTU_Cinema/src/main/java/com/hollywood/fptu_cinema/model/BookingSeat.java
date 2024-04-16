@@ -1,6 +1,7 @@
 package com.hollywood.fptu_cinema.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,10 +28,12 @@ public class BookingSeat {
     @JoinColumn(name = "screening_id")
     private Screening screening;
 
-    @Column(name = "quantity")
+    @NotNull
+    @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
-    @Column(name = "total", precision = 10, scale = 2)
+    @NotNull
+    @Column(name = "total", nullable = false, precision = 10, scale = 2)
     private BigDecimal total;
 
 }
