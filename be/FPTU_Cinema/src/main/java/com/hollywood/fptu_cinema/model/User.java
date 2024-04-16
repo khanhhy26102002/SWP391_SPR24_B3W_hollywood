@@ -1,47 +1,56 @@
 package com.hollywood.fptu_cinema.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDate;
 
-@Data
+@Getter
+@Setter
 @Entity
-@Table(name = "User")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "user_id", nullable = false)
+    private Integer id;
 
+    @Size(max = 255)
     @Column(name = "user_name")
-    private String user_name;
+    private String userName;
 
+    @Size(max = 255)
     @Column(name = "avatar")
     private String avatar;
 
+    @Size(max = 255)
     @Column(name = "email")
     private String email;
 
+    @Size(max = 255)
     @Column(name = "password")
     private String password;
 
+    @Size(max = 255)
     @Column(name = "address")
     private String address;
 
+    @Size(max = 255)
     @Column(name = "gender")
     private String gender;
 
     @Column(name = "birthdate")
-    @Temporal(TemporalType.DATE)
-    private Date birthdate;
+    private LocalDate birthdate;
 
+    @Size(max = 255)
     @Column(name = "phone")
     private String phone;
 
     @Column(name = "status")
-    private int status;
+    private Integer status;
 
-    @ManyToOne
-    @JoinColumn(name = "role_id", referencedColumnName = "role_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_id")
     private Role role;
+
 }

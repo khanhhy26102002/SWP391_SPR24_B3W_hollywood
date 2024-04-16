@@ -10,13 +10,17 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class Role {
+public class Image {
     @Id
-    @Column(name = "role_id", nullable = false)
+    @Column(name = "image_id", nullable = false)
     private Integer id;
 
     @Size(max = 255)
-    @Column(name = "role_name")
-    private String roleName;
+    @Column(name = "image_name")
+    private String imageName;
+
+    @Size(max = 255)
+    @Column(name = "path")
+    private String path;
 
 }
