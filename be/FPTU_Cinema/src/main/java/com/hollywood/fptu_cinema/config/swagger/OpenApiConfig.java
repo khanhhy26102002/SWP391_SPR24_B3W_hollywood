@@ -33,7 +33,7 @@ public class OpenApiConfig {
     private Info info() {
         Info info = new Info();
         info.setTitle("The Movie Booking Ticket System API");
-        info.setVersion("1.0.2");
+        info.setVersion("3.1.0");
 
         License license = new License();
         license.setName("Apache 2.0");
