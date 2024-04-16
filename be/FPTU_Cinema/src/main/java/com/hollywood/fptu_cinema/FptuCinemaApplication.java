@@ -16,6 +16,7 @@ public class FptuCinemaApplication {
     public static void main(String[] args) {
         SpringApplication.run(FptuCinemaApplication.class, args);
     }
+
     @EventListener(ApplicationReadyEvent.class)
     public void openBrowserAfterStartup() {
         String url = "http://localhost:8080/swagger-ui/index.html";

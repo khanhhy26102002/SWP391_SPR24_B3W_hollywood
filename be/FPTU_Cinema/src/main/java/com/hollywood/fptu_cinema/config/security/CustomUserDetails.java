@@ -1,25 +1,18 @@
 package com.hollywood.fptu_cinema.config.security;
 
-import com.hollywood.fptu_cinema.model.Role;
+import com.hollywood.fptu_cinema.enums.RoleEnum;
 import com.hollywood.fptu_cinema.model.User;
-import com.hollywood.fptu_cinema.repository.RoleRepository;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
 
 public class CustomUserDetails implements UserDetails {
 
-
-    private final RoleRepository roleRepository;
-
     private final User user;
 
-    public CustomUserDetails(RoleRepository roleRepository, User user) {
-        this.roleRepository = roleRepository;
+    public CustomUserDetails(User user) {
         this.user = user;
     }
 
@@ -55,12 +48,8 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Optional<Role> role = roleRepository.findById(user.getRoleId());
-        if (role.isPresent()) {
-            GrantedAuthority authority = new SimpleGrantedAuthority(role.get().getRoleName());
-            return Collections.singletonList(authority);
-        } else {
-            return Collections.emptyList();
-        }
+        RoleEnum roleEnum = RoleEnum.valueOf(user.getRole().getRoleName().toUpperCase());
+        GrantedAuthority authority = roleEnum.asGrantedAuthority();
+        return Collections.singletonList(authority);
     }
 }
