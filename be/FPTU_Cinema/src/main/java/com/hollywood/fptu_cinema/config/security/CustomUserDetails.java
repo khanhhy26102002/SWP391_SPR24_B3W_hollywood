@@ -1,19 +1,25 @@
 package com.hollywood.fptu_cinema.config.security;
 
+import com.hollywood.fptu_cinema.model.Role;
 import com.hollywood.fptu_cinema.model.User;
+import com.hollywood.fptu_cinema.repository.RoleRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
+import java.util.Optional;
 
 public class CustomUserDetails implements UserDetails {
 
+
+    private final RoleRepository roleRepository;
+
     private final User user;
 
-    public CustomUserDetails(User user) {
+    public CustomUserDetails(RoleRepository roleRepository, User user) {
+        this.roleRepository = roleRepository;
         this.user = user;
     }
 
@@ -24,17 +30,17 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
@@ -49,8 +55,12 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(user.getRole().getRoleName()));
-        return authorities;
+        Optional<Role> role = roleRepository.findById(user.getRoleId());
+        if (role.isPresent()) {
+            GrantedAuthority authority = new SimpleGrantedAuthority(role.get().getRoleName());
+            return Collections.singletonList(authority);
+        } else {
+            return Collections.emptyList();
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.hollywood.fptu_cinema.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,16 +28,20 @@ public class Screening {
     @JoinColumn(name = "room_id")
     private Room room;
 
-    @Column(name = "start_time")
+    @NotNull
+    @Column(name = "start_time", nullable = false)
     private Instant startTime;
 
-    @Column(name = "end_time")
+    @NotNull
+    @Column(name = "end_time", nullable = false)
     private Instant endTime;
 
-    @Column(name = "date")
+    @NotNull
+    @Column(name = "date", nullable = false)
     private LocalDate date;
 
-    @Column(name = "status")
+    @NotNull
+    @Column(name = "status", nullable = false)
     private Integer status;
 
 }

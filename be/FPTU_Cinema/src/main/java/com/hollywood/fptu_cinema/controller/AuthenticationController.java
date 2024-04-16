@@ -1,8 +1,7 @@
 package com.hollywood.fptu_cinema.controller;
 
-import com.hollywood.fptu_cinema.enums.Role;
+import com.hollywood.fptu_cinema.service.UserService;
 import com.hollywood.fptu_cinema.util.Util;
-import com.hollywood.fptu_cinema.viewModel.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
@@ -17,19 +16,24 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = "/auth")
 public class AuthenticationController {
     private static final Logger logger = LogManager.getLogger(AuthenticationController.class);
+    private final UserService userService;
+
+    public AuthenticationController(UserService userService) {
+        this.userService = userService;
+    }
 
     @Operation(summary = "logout")
     @GetMapping("/logout")
     @Secured({"ROLE_ADMIN"})
     public ResponseEntity<?> logout(HttpServletRequest request) {
         try {
-            logger.info("{} try to logout!", Util.currentUser());
+            String username = Util.currentUser();
             userService.logout(request);
-            logger.info("logout success!");
-            return Response.success(null);
+            logger.info("{} logged out successfully!", username);
+            return ResponseEntity.ok("Logout successful");
         } catch (Exception e) {
-            logger.warn(e.getMessage());
-            return Response.error(e);
+            logger.error("Logout attempt failed: {}", e.getMessage());
+            return ResponseEntity.badRequest().body("Logout failed: " + e.getMessage());
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.hollywood.fptu_cinema.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,14 +21,16 @@ public class Combo {
     private User user;
 
     @Size(max = 255)
-    @Column(name = "combo_name")
+    @NotNull
+    @Column(name = "combo_name", nullable = false)
     private String comboName;
 
     @Lob
     @Column(name = "description")
     private String description;
 
-    @Column(name = "combo_price", precision = 10, scale = 2)
+    @NotNull
+    @Column(name = "combo_price", nullable = false, precision = 10, scale = 2)
     private BigDecimal comboPrice;
 
 }

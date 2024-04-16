@@ -1,6 +1,7 @@
 package com.hollywood.fptu_cinema.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,7 +17,8 @@ public class User {
     private Integer id;
 
     @Size(max = 255)
-    @Column(name = "user_name")
+    @NotNull
+    @Column(name = "user_name", nullable = false)
     private String userName;
 
     @Size(max = 255)
@@ -24,11 +26,13 @@ public class User {
     private String avatar;
 
     @Size(max = 255)
-    @Column(name = "email")
+    @NotNull
+    @Column(name = "email", nullable = false)
     private String email;
 
     @Size(max = 255)
-    @Column(name = "password")
+    @NotNull
+    @Column(name = "password", nullable = false)
     private String password;
 
     @Size(max = 255)
@@ -46,11 +50,19 @@ public class User {
     @Column(name = "phone")
     private String phone;
 
-    @Column(name = "status")
+    @NotNull
+    @Column(name = "status", nullable = false)
     private Integer status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id")
     private Role role;
 
+    @Size(max = 255)
+    @Column(name = "token")
+    private String token;
+
+    public Integer getRoleId() {
+        return role != null ? role.getId() : null;
+    }
 }

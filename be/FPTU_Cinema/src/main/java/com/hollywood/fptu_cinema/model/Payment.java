@@ -1,6 +1,7 @@
 package com.hollywood.fptu_cinema.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,16 +22,20 @@ public class Payment {
     private Ticket ticket;
 
     @Size(max = 50)
-    @Column(name = "payment_method", length = 50)
+    @NotNull
+    @Column(name = "payment_method", nullable = false, length = 50)
     private String paymentMethod;
 
-    @Column(name = "payment_date")
+    @NotNull
+    @Column(name = "payment_date", nullable = false)
     private Instant paymentDate;
 
-    @Column(name = "amount", precision = 10, scale = 2)
+    @NotNull
+    @Column(name = "amount", nullable = false, precision = 10, scale = 2)
     private BigDecimal amount;
 
-    @Column(name = "status")
+    @NotNull
+    @Column(name = "status", nullable = false)
     private Integer status;
 
 }

@@ -1,6 +1,7 @@
 package com.hollywood.fptu_cinema.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,33 +23,41 @@ public class Movie {
     private Image image;
 
     @Size(max = 255)
-    @Column(name = "name")
+    @NotNull
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Size(max = 255)
-    @Column(name = "description")
+    @NotNull
+    @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(name = "duration")
+    @NotNull
+    @Column(name = "duration", nullable = false)
     private LocalTime duration;
 
     @Size(max = 255)
-    @Column(name = "director")
+    @NotNull
+    @Column(name = "director", nullable = false)
     private String director;
 
     @Size(max = 255)
-    @Column(name = "actor")
+    @NotNull
+    @Column(name = "actor", nullable = false)
     private String actor;
 
     @Size(max = 50)
-    @Column(name = "genre", length = 50)
+    @NotNull
+    @Column(name = "genre", nullable = false, length = 50)
     private String genre;
 
-    @Column(name = "premiere")
+    @NotNull
+    @Column(name = "premiere", nullable = false)
     private LocalDate premiere;
 
     @Size(max = 50)
-    @Column(name = "language", length = 50)
+    @NotNull
+    @Column(name = "language", nullable = false, length = 50)
     private String language;
 
     @Size(max = 10)
@@ -63,13 +72,15 @@ public class Movie {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "created_date")
+    @NotNull
+    @Column(name = "created_date", nullable = false)
     private Instant createdDate;
 
     @Column(name = "updated_date")
     private Instant updatedDate;
 
-    @Column(name = "status")
+    @NotNull
+    @Column(name = "status", nullable = false)
     private Integer status;
 
 }

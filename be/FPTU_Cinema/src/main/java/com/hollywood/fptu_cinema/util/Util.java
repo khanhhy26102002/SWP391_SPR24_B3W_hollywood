@@ -21,7 +21,8 @@ public class Util {
         }
         return null;
     }
+
     public static Date expipyDate(int expiryTimeInMinute) {
-        return new Date(System.currentTimeMillis() + (1000L *60*expiryTimeInMinute));
+        return new Date(System.currentTimeMillis() + (1000L * 60 * expiryTimeInMinute));
     }
 }

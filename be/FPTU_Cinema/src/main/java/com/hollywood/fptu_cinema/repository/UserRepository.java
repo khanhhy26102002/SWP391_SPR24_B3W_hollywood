@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserRepository extends JpaRepository<User,Long> {
-    User findByUsernameOrEmail(String usernameOrEmail);//Dòng này có nghĩa là tìm kiếm người dùng bằng email
+public interface UserRepository extends JpaRepository<User, Integer> {
+    User findByUserNameOrEmail(String userName, String email);
+
+    User findByUserName(String username);
 }

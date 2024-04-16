@@ -1,6 +1,7 @@
 package com.hollywood.fptu_cinema.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,23 +25,27 @@ public class Ticket {
     @JoinColumn(name = "screening_id")
     private Screening screening;
 
-    @Column(name = "total_price", precision = 10, scale = 2)
+    @NotNull
+    @Column(name = "total_price", nullable = false, precision = 10, scale = 2)
     private BigDecimal totalPrice;
 
-    @Column(name = "created_date")
+    @NotNull
+    @Column(name = "created_date", nullable = false)
     private Instant createdDate;
 
     @Column(name = "updated_date")
     private Instant updatedDate;
 
-    @Column(name = "expiration_time")
+    @NotNull
+    @Column(name = "expiration_time", nullable = false)
     private Instant expirationTime;
 
     @Size(max = 255)
     @Column(name = "qr_code")
     private String qrCode;
 
-    @Column(name = "status")
+    @NotNull
+    @Column(name = "status", nullable = false)
     private Integer status;
 
 }

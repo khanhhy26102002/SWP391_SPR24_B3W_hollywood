@@ -6,7 +6,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.hibernate.annotations.Comment;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,7 +19,6 @@ import java.io.IOException;
 @Component
 public class JwtFilter extends OncePerRequestFilter {
     private final CustomUserDetailsService userDetailsService;
-
     private final JwtTokenProvider jwtTokenProvider;
 
     public JwtFilter(CustomUserDetailsService userDetailsService, JwtTokenProvider jwtTokenProvider) {
@@ -39,15 +37,14 @@ public class JwtFilter extends OncePerRequestFilter {
             username = jwtTokenProvider.extractUsername(token);
         }
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (username != null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            if (jwtTokenProvider.validateToken(token, userDetails)) {
+            if (jwtTokenProvider.validateToken(token, userDetails) && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
-
         }
         filterChain.doFilter(request, response);
     }
