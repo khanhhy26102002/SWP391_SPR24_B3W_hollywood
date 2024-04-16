@@ -54,15 +54,11 @@ public class User {
     @Column(name = "status", nullable = false)
     private Integer status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id")
     private Role role;
 
     @Size(max = 255)
     @Column(name = "token")
     private String token;
-
-    public Integer getRoleId() {
-        return role != null ? role.getId() : null;
-    }
 }
