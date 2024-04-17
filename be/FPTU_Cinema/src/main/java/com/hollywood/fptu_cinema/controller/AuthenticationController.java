@@ -1,10 +1,8 @@
 package com.hollywood.fptu_cinema.controller;
 
-import com.hollywood.fptu_cinema.model.User;
 import com.hollywood.fptu_cinema.service.UserService;
 import com.hollywood.fptu_cinema.util.Util;
 import com.hollywood.fptu_cinema.viewModel.JwtAuthenticationResponse;
-import com.hollywood.fptu_cinema.viewModel.LoginRequest;
 import com.hollywood.fptu_cinema.viewModel.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
