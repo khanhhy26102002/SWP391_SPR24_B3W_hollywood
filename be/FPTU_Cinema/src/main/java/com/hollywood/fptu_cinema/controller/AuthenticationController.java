@@ -21,6 +21,7 @@ public class AuthenticationController {
     public AuthenticationController(UserService userService) {
         this.userService = userService;
     }
+
     //login
     @Operation(summary = "Login")
     @PostMapping("/login")
@@ -32,11 +33,12 @@ public class AuthenticationController {
             } else {
                 return Response.error(new Exception("Invalid login credentials"));
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             logger.error("Login attempt failed for user: {}", loginValue);
             return Response.error(e);
         }
     }
+
     //logout
     @Operation(summary = "Logout")
     @GetMapping("/logout")

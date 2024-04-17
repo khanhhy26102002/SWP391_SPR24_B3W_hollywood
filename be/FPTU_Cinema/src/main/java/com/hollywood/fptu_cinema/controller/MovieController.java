@@ -1,13 +1,11 @@
 package com.hollywood.fptu_cinema.controller;
 
-import com.hollywood.fptu_cinema.model.Movie;
 import com.hollywood.fptu_cinema.service.MovieService;
 import com.hollywood.fptu_cinema.viewModel.MovieDTO;
 import com.hollywood.fptu_cinema.viewModel.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,10 +20,12 @@ public class MovieController {
     private static final Logger logger = LogManager.getLogger(MovieController.class);
     //Lay Service ben class movie service len
     private final MovieService movieService;
+
     //Tao constructor
-    public MovieController(MovieService movieService){
+    public MovieController(MovieService movieService) {
         this.movieService = movieService;
     }
+
     //Goi tat ca cac danh sach phim ra
     @Operation(summary = "ListMovie")
     @GetMapping("/listMovie")

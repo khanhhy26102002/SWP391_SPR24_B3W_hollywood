@@ -24,8 +24,9 @@ public class MovieDTO {
     private String rated;
     private Instant createdDate;
     private Instant updatedDate;
+
     //Tao constructer
-    public MovieDTO(Movie movie){
+    public MovieDTO(Movie movie) {
         this.id = movie.getId();
         this.imageUrl = movie.getImage().getPath();
         this.name = movie.getName();
