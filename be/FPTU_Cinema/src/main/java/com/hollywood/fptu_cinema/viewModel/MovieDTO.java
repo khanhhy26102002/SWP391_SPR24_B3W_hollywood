@@ -1,16 +1,21 @@
 package com.hollywood.fptu_cinema.viewModel;
 
+import com.hollywood.fptu_cinema.model.Image;
 import com.hollywood.fptu_cinema.model.Movie;
 import lombok.Data;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Data
 public class MovieDTO {
     private Integer id;
-    private String imageUrl;
+    private List<String> imageUrls;
     private String name;
     private String description;
     private LocalTime duration;
@@ -28,7 +33,10 @@ public class MovieDTO {
     //Tao constructer
     public MovieDTO(Movie movie) {
         this.id = movie.getId();
-        this.imageUrl = movie.getImage().getPath();
+        this.imageUrls = Optional.ofNullable(movie.getImages())
+                .orElse(Collections.emptyList()).stream()
+                .map(Image::getPath)
+                .collect(Collectors.toList());
         this.name = movie.getName();
         this.description = movie.getDescription();
         this.duration = movie.getDuration();

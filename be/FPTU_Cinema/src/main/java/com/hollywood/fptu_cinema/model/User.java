@@ -11,6 +11,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Entity
+@Table(name = "User", schema = "Movie_Booking_Ticket")
 public class User {
     @Id
     @Column(name = "user_id", nullable = false)
@@ -61,4 +62,5 @@ public class User {
     @Size(max = 255)
     @Column(name = "token")
     private String token;
+
 }

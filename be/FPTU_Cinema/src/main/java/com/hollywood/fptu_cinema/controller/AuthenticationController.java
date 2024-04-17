@@ -3,6 +3,7 @@ package com.hollywood.fptu_cinema.controller;
 import com.hollywood.fptu_cinema.service.UserService;
 import com.hollywood.fptu_cinema.util.Util;
 import com.hollywood.fptu_cinema.viewModel.JwtAuthenticationResponse;
+import com.hollywood.fptu_cinema.viewModel.PasswordChangeRequest;
 import com.hollywood.fptu_cinema.viewModel.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
@@ -52,6 +53,27 @@ public class AuthenticationController {
         } catch (Exception e) {
             logger.error("Logout attempt failed: {}", e.getMessage());
             return Response.error(e);
+        }
+    }
+
+    @Operation(summary = "Change password")
+    @PostMapping("/changePassword")
+    @Secured({"ADMIN", "MEMBER", "STAFF"})
+    public ResponseEntity<?> changePassword(@RequestBody PasswordChangeRequest passwordChangeRequest) {
+        String username = null;
+        try {
+            username = Util.currentUser();
+            if (username == null) {
+                return Response.error(new Exception("User not authenticated"));
+            }
+            userService.changePassword(username, passwordChangeRequest.getOldPassword(), passwordChangeRequest.getNewPassword());
+            return Response.success("Password changed successfully");
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid old password provided for user: {}", username);
+            return Response.error(new Exception("Invalid old password"));
+        } catch (Exception e) {
+            logger.error("Password change failed: {}", e.getMessage());
+            return Response.error(new Exception("Password change failed"));
         }
     }
 }

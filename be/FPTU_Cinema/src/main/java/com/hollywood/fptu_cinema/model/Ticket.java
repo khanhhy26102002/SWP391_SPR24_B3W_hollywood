@@ -12,6 +12,7 @@ import java.time.Instant;
 @Getter
 @Setter
 @Entity
+@Table(name = "Ticket", schema = "Movie_Booking_Ticket")
 public class Ticket {
     @Id
     @Column(name = "ticket_id", nullable = false)

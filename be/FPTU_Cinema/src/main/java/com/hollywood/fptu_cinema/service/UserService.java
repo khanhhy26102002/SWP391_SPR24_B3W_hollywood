@@ -7,6 +7,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class UserService {
     private final UserRepository userRepository;
@@ -22,13 +24,13 @@ public class UserService {
     }
 
 
-    public String login(String userName, String email, String password) {
-        User user = userRepository.findByUserNameOrEmail(userName, email);
+    public String login(String phone, String email, String password) {
+        Optional<User> user = userRepository.findByPhoneOrEmail(phone, email);
 
-        if (user != null && passwordEncoder.matches(password, user.getPassword())) {
-            return jwtTokenProvider.generateToken(user.getUserName());
+        if (user.isPresent() && passwordEncoder.matches(password, user.get().getPassword())) {
+            return jwtTokenProvider.generateToken(user.get().getUserName());
         }
-        return null;
+        return "";
     }
 
     public void logout(HttpServletRequest request) {
@@ -44,5 +46,19 @@ public class UserService {
             return authHeader.substring(7);
         }
         return null;
+    }
+
+    public void changePassword(String username, String oldPassword, String newPassword) {
+        User user = userRepository.findByUserName(username);
+        if (user != null && passwordEncoder.matches(oldPassword, user.getPassword())) {
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(user);
+        } else {
+            throw new IllegalArgumentException("The old password is incorrect.");
+        }
+    }
+
+    public User findByUserName(String username) {
+        return userRepository.findByUserName(username);
     }
 }
