@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zxx">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Anime Template">
+    <meta name="keywords" content="Anime, unica, creative, html">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Anime | Template</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+
+    <!-- Css Styles -->
+    <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="css/font-awesome.min.css" type="text/css">
+    <link rel="stylesheet" href="css/elegant-icons.css" type="text/css">
+    <link rel="stylesheet" href="css/plyr.css" type="text/css">
+    <link rel="stylesheet" href="css/nice-select.css" type="text/css">
+    <link rel="stylesheet" href="css/owl.carousel.min.css" type="text/css">
+    <link rel="stylesheet" href="css/slicknav.min.css" type="text/css">
+    <link rel="stylesheet" href="css/style.css" type="text/css">
+</head>
+
+<body>
+    <!-- Page Preloder -->
+    <div id="preloder">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Header Section Begin -->
+    <header class="header">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-2">
+                    <div class="header__logo">
+                        <a href="./index.html">
+                            <img src="img/logo.png" alt="">
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="header__nav">
+                        <nav class="header__menu mobile-menu">
+                            <ul>
+                                <li class="active"><a href="./index.html">Homepage</a></li>
+                                <li><a href="./categories.html">Categories <span class="arrow_carrot-down"></span></a>
+                                    <ul class="dropdown">
+                                        <li><a href="./categories.html">Categories</a></li>
+                                        <li><a href="./anime-details.html">Anime Details</a></li>
+                                        <li><a href="./anime-watching.html">Anime Watching</a></li>
+                                        <li><a href="./blog-details.html">Blog Details</a></li>
+                                        <li><a href="./signup.html">Sign Up</a></li>
+                                        <li><a href="./login.html">Login</a></li>
+                                    </ul>
+                                </li>
+                                <li><a href="./blog.html">Our Blog</a></li>
+                                <li><a href="#">Contacts</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="header__right">
+                        <a href="#" class="search-switch"><span class="icon_search"></span></a>
+                        <a href="./login.html"><span class="icon_profile"></span></a>
+                    </div>
+                </div>
+            </div>
+            <div id="mobile-menu-wrap"></div>
+        </div>
+    </header>
+    <!-- Header End -->
+
+    <div class="main-content">
+        <div class="container">
+            <form action="post" class="form-ticket">
+                <div class="row ticket_field">
+                    <div class="col-lg-6 selection">
+                        <p>Suất chiếu: </p>
+                        <select class="choice">
+                            <option value="">15:00</option>
+                            <option value="">17:00</option>
+                            <option value="">20:00</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-6 selection">
+                        <p>Phòng chiếu: </p>
+                        <select class="choice">
+                            <option value="">Phòng 01</option>
+                            <option value="">Phòng 02</option>
+                            <option value="">Phòng 03</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row ticket_field">
+                    <div class="col-lg-8">
+                        <div class="seat-selection">
+                            <div class="legend">
+                                <div  >
+                                    <span class="unavailable"></span> 
+                                    <p  >Đã bán</p>
+                                </div> 
+                                <div  >
+                                    <span class="available"></span> 
+                                    <p  >Ghế trống</p>
+                                </div> 
+                            </div> 
+                            <span class="front">Màn hình</span>
+                            <div class="seats-wrapper-parent">
+                                    <div class="seats-wrapper-row">
+                                        <!--<div class="seats seats-row">
+                                            <div class="row-wrapper">
+                                                <ul class="seat-row">
+                                                    <li class="rowname wide">A</li>
+                                                </ul>
+                                                </div>
+                                            </div> -->
+                                            <div class="seats seats-map">
+                                                <div class="row-wrapper">
+                                                    <ul class="seat-row">
+                                                        <li class="available seat-area-1 seat-size-1 seat-odd">
+                                                            A18
+                                                        </li><li class="available seat-area-1 seat-size-1 seat-even">
+                                                          A17
+                                                        </li><li class="available seat-area-1 seat-size-1 seat-odd">
+                                                          A16
+                                                        </li><li class="available seat-area-1 seat-size-1 seat-even">
+                                                          A15
+                                                        </li><li class="available seat-area-1 seat-size-1 seat-odd">
+                                                          A14
+                                                        </li><li class="available seat-area-1 seat-size-1 seat-even">
+                                                          A13
+                                                        </li><li class="unavailable seat-area-1 seat-size-1 seat-odd">
+                                                          A12
+                                                        </li><li class="available seat-area-1 seat-size-1 seat-even">
+                                                          A11
+                                                        </li><li class="available seat-area-1 seat-size-1 seat-odd">
+                                                          A10
+                                                        </li><li class="available seat-area-1 seat-size-1 seat-even">
+                                                          A09
+                                                        </li><li class="available seat-area-1 seat-size-1 seat-odd">
+                                                          A08
+                                                        </li><li class="unavailable seat-area-1 seat-size-1 seat-even">
+                                                          A07
+                                                        </li><li class="available seat-area-1 seat-size-1 seat-odd">
+                                                          A06
+                                                        </li><li class="available seat-area-1 seat-size-1 seat-even">
+                                                          A05
+                                                        </li><li class="available seat-area-1 seat-size-1 seat-odd">
+                                                          A04
+                                                        </li><li class="available seat-area-1 seat-size-1 seat-even">
+                                                          A03
+                                                        </li><li class="available seat-area-1 seat-size-1 seat-odd">
+                                                          A02
+                                                        </li><li class="unavailable seat-area-1 seat-size-1 seat-even">
+                                                            A01
+                                                          </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    
+                                </div>
+                            </div>
+                    </div>
+                    <div class="col-lg-4 selection">
+                        <p> Ghế:</p>
+                        <select class="choice">
+                            <option value="">A01</option>
+                            <option value="">A02</option>
+                            <option value="">A03</option>
+                            <option value="">A04</option>
+                            <option value="">A05</option>
+                            <option value="">A06</option>
+                            <option value="">A07</option>
+                            <option value="">A08</option>
+                            <option value="">A09</option>
+                            <option value="">A10</option>
+                            <option value="">A11</option>
+                            <option value="">A12</option>
+                            <option value="">A13</option>
+                            <option value="">A14</option>
+                            <option value="">A15</option>
+                            <option value="">A16</option>
+                            <option value="">A17</option>
+                            <option value="">A18</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row ticket_field">
+                    <table  class="table table-nowrap card-table">
+                        <thead  >
+                            <tr  >
+                                <th  >Combo</th> 
+                                <th  class="text-right d-none d-sm-block">Giá tiền</th> 
+                                <th  class="text-right">Số lượng</th>
+                            </tr>
+                        </thead> 
+                        <tbody  >
+                            <tr  class="ticketing-concession-type">
+                                <td  class="concession-name">
+                                    Combo 1
+                                    <span  class="d-none d-md-block text-muted">1 Bắp Ngọt 60oz + 1 Coke 32oz - V </span> 
+                                    <span  class="d-block d-sm-none text-muted">84.000&nbsp;₫</span>
+                                </td> 
+                                <td  class="concession-price text-right">84.000&nbsp;₫</td> 
+                                <td  class="ticketing-select text-right">
+                                    <div  class="quantity-toggle">
+                                        <input  type="number" min="0" max="10" step="1" value="0" class="quantity">
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr  class="ticketing-concession-type">
+                                <td  class="concession-name">
+                                    Combo 2
+                                    <span  class="d-none d-md-block text-muted">1 Bắp Ngọt 60oz + 2 Coke 32oz - V</span> 
+                                    <span  class="d-block d-sm-none text-muted">109.000&nbsp;₫</span>
+                                </td> 
+                                <td  class="concession-price text-right">109.000&nbsp;₫</td> 
+                                <td  class="ticketing-select text-right">
+                                    <div  class="quantity-toggle">
+                                        <input  type="number" min="0" max="10" step="1" value="0" class="quantity">
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="footer-contact">
+                    <button id="review_submit" type="submit" class="message_submit_btn buy-ticket" value="Submit">Booking</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+        <!-- Footer Section Begin -->
+        <footer class="footer">
+            <div class="page-up">
+                <a href="#" id="scrollToTopButton"><span class="arrow_carrot-up"></span></a>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div class="footer__logo">
+                            <a href="./index.html"><img src="img/logo.png" alt=""></a>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="footer__nav">
+                            <ul>
+                                <li class="active"><a href="./index.html">Homepage</a></li>
+                                <li><a href="./categories.html">Categories</a></li>
+                                <li><a href="#">Contacts</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                  </div>
+                  <div class="row footer-contact">
+                    <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                      Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Nhom1</a>
+                      <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>
+
+                  </div>
+              </div>
+          </footer>
+          <!-- Footer Section End -->
+
+          <!-- Search model Begin -->
+          <div class="search-model">
+            <div class="h-100 d-flex align-items-center justify-content-center">
+                <div class="search-close-switch"><i class="icon_close"></i></div>
+                <form class="search-model-form">
+                    <input type="text" id="search-input" placeholder="Search here.....">
+                </form>
+            </div>
+        </div>
+        <!-- Search model end -->
+
+        <!-- Js Plugins -->
+        <script src="js/jquery-3.3.1.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/player.js"></script>
+        <script src="js/jquery.nice-select.min.js"></script>
+        <script src="js/mixitup.min.js"></script>
+        <script src="js/jquery.slicknav.js"></script>
+        <script src="js/owl.carousel.min.js"></script>
+        <script src="js/main.js"></script>
+
+    </body>
+
+    </html>

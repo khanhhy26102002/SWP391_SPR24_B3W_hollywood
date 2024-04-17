@@ -718,6 +718,49 @@ ol {
 	line-height: 26px;
 }
 
+.product__item__text h6{
+	color: #ffffff;
+	font-weight: 700;
+	line-height: 26px;
+}
+
+.product__item__text h6 span{
+	color: #ffffff;
+	font-weight: 100;
+	line-height: 15px;
+} 
+
+.btn-buy-ticket{
+	display: flex;
+	justify-content: center;
+}
+
+.buy-ticket{
+	background: #e53637;
+	color: #FFFFFF;
+	width: 100px;
+	border: none;
+	border-radius: 15px;
+	height: 30px;
+	cursor: pointer;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.buy-ticket span{
+	color: #ffffff;
+	font-weight: 700;
+}
+
+.film{
+	height: 480px;
+}
+
+.movie{
+	margin-bottom: 50px;
+}
+
 .product__sidebar .section-title h5 {
 	color: #ffffff;
 	font-weight: 600;
@@ -1176,6 +1219,193 @@ ol {
 	border: none;
 	padding: 10px 15px;
 	border-radius: 2px;
+}
+
+/*********************************
+Contact 
+*********************************/
+.contact_contents
+{
+	padding-right: 30px;
+}
+.contact_contents p,
+.get_in_touch_contents p
+{
+	font-size: 16px;
+	font-weight: 400;
+	color: #ffffff;
+	margin-bottom: 0px;
+}
+.contact_contents div
+{
+	margin-top: 22px;
+}
+.contact_contents div:first-of-type
+{
+	margin-top: 39px;
+}
+
+/*********************************
+Follow Us
+*********************************/
+
+.follow_us_contents
+{
+	margin-top: 32px;
+}
+.social
+{
+	margin-top: 20px;
+}
+.social li
+{
+	margin-right: 12px;
+}
+.social li:last-child
+{
+	margin-right: 0px;
+}
+.social li a
+{
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	-webkit-transition: all 300ms ease;
+	-moz-transition: all 300ms ease;
+	-ms-transition: all 300ms ease;
+	-o-transition: all 300ms ease;
+	transition: all 300ms ease;
+}
+.social li a i
+{
+	color: #FFFFFF;
+}
+.social li:hover a
+{
+	transform: translateY(-5px);
+	box-shadow: 0px 10px 20px rgba(0,0,0,0.3);
+}
+
+/*********************************
+Contact Form
+*********************************/
+.contact p{
+	font-size: 16px;
+	font-weight: 400;
+	color: #ffffff;
+	margin-bottom: 0px;
+}
+
+.form_input
+{
+	display: block;
+	width: 100%;
+	height: 50px;
+	border: solid 1px #e5e5e5;
+	padding-left: 20px;
+	font-size: 16px;
+	margin-bottom: 20px;
+}
+.input_message
+{
+	width: 100%;
+	margin-bottom: 15px;
+	font-size: 16px;
+	padding-bottom: 15px;
+}
+.form_input:focus,
+#newsletter_email:focus
+{
+	border: solid 1px #7f7f7f !important;
+	box-shadow: none !important;
+}
+.message_submit_btn
+{
+	background: #e53637;
+	color: #FFFFFF;
+	text-transform: uppercase;
+	width: 165px;
+	border: none;
+	border-radius: 15px;
+	height: 46px;
+	cursor: pointer;
+}
+.message_submit_btn
+:focus
+{
+	outline: none !important;
+}
+.input_ph::-webkit-input-placeholder
+{
+	font-size: 16px !important;
+	font-weight: 400;
+	color: #b9b4c7 !important;
+}
+.input_ph:-moz-placeholder /* older Firefox*/
+{
+	font-size: 16px !important;
+	font-weight: 400;
+	color: #b9b4c7 !important;
+}
+.input_ph::-moz-placeholder /* Firefox 19+ */
+{
+	font-size: 16px !important;
+	font-weight: 400;
+	color: #b9b4c7 !important;
+}
+.input_ph:-ms-input-placeholder
+{
+	font-size: 16px !important;
+	font-weight: 400;
+	color: #b9b4c7 !important;
+}
+.input_ph::input-placeholder
+{
+	font-size: 16px !important;
+	font-weight: 400;
+	color: #b9b4c7 !important;
+}
+textarea
+{
+	border: solid 1px #e5e5e5;
+	padding-left: 20px;
+	padding-top: 15px;
+}
+textarea:hover
+{
+	border-color: #7f7f7f !important;
+}
+.input_name
+{
+	margin-bottom: 19px;
+	margin-top: 31px;
+}
+.input_review
+{
+	display: block;
+	width: 100%;
+	border: solid 1px #e5e5e5;
+	margin-top: 23px;
+	padding-left: 20px;
+	padding-top: 13px;
+}
+.review_submit_btn
+{
+	width: 170px;
+	border: none;
+	color: #FFFFFF;
+	text-transform: uppercase;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
 }
 
 /*---------------------
@@ -1994,6 +2224,219 @@ ol {
 .footer__copyright__text a {
 	color: #e53637;
 }
+
+.footer-contact{
+	display: flex;
+	justify-content: center;
+}
+
+.footer-contact p{
+	font-size: 16px;
+	font-weight: 400;
+	color: #ffffff;
+	margin-bottom: 0px;
+}
+
+/*----------------buy ticket---------------------------------*/
+
+.main-content{
+	margin: 50px 0;
+}
+.bg-white{
+	background-color: #fff !important;
+}
+
+.border-bottom{
+	border-bottom: 1px solid #e3ebf6 !important;
+}
+
+.ticketing-steps .ticketing-step {
+    color: #95aac9;
+    padding: 10px 0 5px;
+    text-align: center;
+}
+
+.seat-selection {
+    margin: 20px 0;
+}
+
+.seat-selection .legend {
+    text-align: center;
+}
+
+.seat-selection .legend div{
+	display: flex;
+	justify-content: center;
+}
+
+.seat-selection>* {
+    box-sizing: border-box;
+    line-height: normal;
+}
+
+.seat-selection .legend div span.unavailable {
+    background-color: #00b300;
+    box-shadow: 0 0 11px #00b300;
+    color: #fff;
+}
+
+.seat-selection .legend div span.available {
+    background-image: url(/build/images/seat-unavailable.6c1ab33c.png);
+    background-position: 50%;
+    background-repeat: no-repeat;
+}
+
+.seat-selection .legend div span.taken {
+    background: repeating-linear-gradient(45deg, hsla(0, 0%, 60%, .4), hsla(0, 0%, 60%, .4) 10px, hsla(0, 0%, 60%, .6) 0, hsla(0, 0%, 60%, .6) 20px);
+}
+
+.seat-selection .legend div span {
+    background-color: #dfdfdf;
+    border-radius: 2px;
+    position: relative;
+}
+.seat-selection .legend span {
+    display: block;
+    float: left;
+    height: 20px;
+    width: 20px;
+}
+
+.seat-selection .legend p {
+	font-size: 16px;
+	font-weight: 400;
+	color: #ffffff;
+	margin-bottom: 0px;
+	width: 50%;;
+}
+
+.seat-selection .front {
+    background: #dfdfdf;
+    color: #000;
+    display: block;
+    font-weight: 700;
+    margin-bottom: 10px;
+    margin-left: 38px;
+    padding: 5px;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.seat-selection .seats-wrapper-parent {
+    overflow: auto;
+    width: 100%;
+	display: flex;
+	justify-content: center;
+}
+
+.seat-selection .seats-wrapper {
+    box-sizing: border-box;
+    display: table;
+}
+
+.seat-selection .seats-wrapper .seats-wrapper-row {
+    display: table-row;
+}
+
+.seat-selection .seats {
+    display: table-cell;
+    position: relative;
+    text-align: center;
+    vertical-align: top;
+}
+
+.seat-selection .seats .row-wrapper {
+    display: inline-block;
+    text-align: left;
+}
+
+.seat-selection .seats ul.seat-row {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    white-space: nowrap;
+}
+
+.seat-selection .seats.seats-map {
+    width: 100%;
+}
+
+.seat-selection .seats .row-wrapper {
+    display: inline-block;
+    text-align: left;
+}
+
+.seat-selection .seats ul.seat-row {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    white-space: nowrap;
+}
+
+.seat-selection .seats ul.seat-row li {
+    background: #dfdfdf;
+    border-radius: 2px;
+    box-sizing: border-box;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    height: 25px;
+    margin: 3px;
+    padding: 7px 0;
+    position: relative;
+    text-align: center;
+    vertical-align: middle;
+    width: 25px;
+}
+
+.seat-selection .seats ul.seat-row li.unavailable {
+    background-color: #00b300 !important;
+    box-shadow: 0 0 11px #00b300;
+    color: #fff;
+}
+
+.selection p {
+	font-size: 16px;
+	font-weight: 400;
+	color: #ffffff;
+	margin-bottom: 0px;
+}
+
+.choice{
+	width: 90%;
+}
+
+.table{
+	background-color: #ffffff;
+}
+
+.quantity{
+	width: 50px;
+}
+
+.ticket_field{
+	margin: 50px 10px;
+}
+
+.form-ticket{
+	border: 2px solid white;
+	border-radius: 15px;
+	padding: 10px;
+}
+
 
 /*--------------------------------- Responsive Media Quaries -----------------------------*/
 
