@@ -83,4 +83,14 @@ public class Movie {
     @Column(name = "status", nullable = false)
     private Integer status;
 
+    @PrePersist
+    protected void onCreate() {
+        createdDate = Instant.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedDate = Instant.now();
+    }
+
 }

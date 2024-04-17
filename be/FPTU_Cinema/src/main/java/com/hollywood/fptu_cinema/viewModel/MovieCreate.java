@@ -1,9 +1,14 @@
 package com.hollywood.fptu_cinema.viewModel;
 
+import lombok.Data;
+
+import java.time.LocalDate;
 import java.time.LocalTime;
 
+@Data
 public class MovieCreate {
-    private String image;
+    private Integer id;
+    private String imageUrl;
     private String name;
     private String description;
     private LocalTime duration;
@@ -12,4 +17,6 @@ public class MovieCreate {
     private String genre;
     private String language;
     private String trailer;
+    private LocalDate premiere;
+    private String rated;
 }
