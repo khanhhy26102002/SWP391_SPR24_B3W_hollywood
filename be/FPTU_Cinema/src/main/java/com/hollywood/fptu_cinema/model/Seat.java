@@ -39,4 +39,9 @@ public class Seat {
     @Column(name = "status", nullable = false)
     private Integer status;
 
+    @Size(max = 10)
+    @NotNull
+    @Column(name = "seat_row", nullable = false, length = 10)
+    private String seatRow;
+
 }
