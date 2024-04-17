@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @Entity
+@Table(name = "Combo", schema = "Movie_Booking_Ticket")
 public class Combo {
     @Id
     @Column(name = "combo_id", nullable = false)

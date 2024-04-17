@@ -11,6 +11,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Entity
+@Table(name = "Screening", schema = "Movie_Booking_Ticket")
 public class Screening {
     @Id
     @Column(name = "screening_id", nullable = false)

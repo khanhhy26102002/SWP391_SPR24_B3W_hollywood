@@ -9,18 +9,16 @@ import lombok.Setter;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Getter
 @Setter
 @Entity
+@Table(name = "Movie", schema = "Movie_Booking_Ticket")
 public class Movie {
     @Id
     @Column(name = "movie_id", nullable = false)
     private Integer id;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "image_id")
-    private Image image;
 
     @Size(max = 255)
     @NotNull
@@ -83,14 +81,6 @@ public class Movie {
     @Column(name = "status", nullable = false)
     private Integer status;
 
-    @PrePersist
-    protected void onCreate() {
-        createdDate = Instant.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedDate = Instant.now();
-    }
-
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Image> images;
 }
