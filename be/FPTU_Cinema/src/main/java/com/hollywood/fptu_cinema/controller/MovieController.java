@@ -36,7 +36,7 @@ public class MovieController {
     //do phan hoi tu may chu tra ve nen xai response
     public ResponseEntity<?> listMovie() {
         try {
-            List<MovieDTO> movies = movieService.ListMovie().stream()
+            List<MovieDTO> movies = movieService.listMovie().stream()
                     .map(MovieDTO::new) // Thay thế constructor reference bằng lambda expression
                     .collect(Collectors.toList());
             if (movies.isEmpty()) {
@@ -58,7 +58,7 @@ public class MovieController {
             if (username == null) {
                 throw new Exception("User not authenticated");
             }
-            MovieDTO movie = new MovieDTO(movieService.CreateMovie(movieCreate, userService.findByUserName(username)));
+            MovieDTO movie = new MovieDTO(movieService.createMovie(movieCreate, userService.findByUserName(username)));
             return Response.success(movie);
         } catch (Exception e) {
             logger.error("An error occurred while creating the movie: {}", e.getMessage());

@@ -58,6 +58,24 @@ public class JwtTokenProvider {
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
+    public Boolean validateResetToken(String token) {
+        try {
+            if (isTokenBlacklisted(token) || isTokenExpired(token)) {
+                return false;
+            }
+            Claims claims = extractAllClaims(token);
+            return claims.containsKey("resetPassword");
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public String generateResetToken(String userName) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("resetPassword", true); // Thêm claim để xác định token này là để đặt lại mật khẩu
+        return createToken(claims, userName);
+    }
+
     public String generateToken(String userName) {
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, userName);

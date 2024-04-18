@@ -40,7 +40,6 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable).cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(au -> au
-                        .requestMatchers("/api/movie/listMovie").permitAll()
                         .anyRequest().permitAll())
                 .addFilterBefore(requestFilter, UsernamePasswordAuthenticationFilter.class); // Add JWT Filter
         return http.build();
