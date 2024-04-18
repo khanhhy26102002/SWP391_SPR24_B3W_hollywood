@@ -1,0 +1,88 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.blue1{
+   color: white;
+   text-align: left;
+   margin-left: 340px;
+}
+.blue2{
+   text-align: left;
+}
+.blue4{
+   color: white;
+}
+.blue5{
+   color:white;
+}
+.birthdate-container{
+   display: flex;
+   align-items: center;
+   background-color: white;
+}
+.white-container{
+   display: flex;
+   text-align: left;
+   background-color: white;
+}
+.gender-container{
+  display: flex;
+  align-items: center;
+  background-color: white;
+}
+.black-container{
+  display: flex;
+  align-items: center;
+  background-color: white;
+}
+.purpose-container{
+   color: white;
+   text-align: left;
+}
+.white4{
+   color: white;
+}
+.container1{
+   background-color: white;
+   text-align: left;
+}
+
+.container5{
+   background-color: white;
+}
+

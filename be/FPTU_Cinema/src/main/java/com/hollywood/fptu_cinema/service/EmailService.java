@@ -4,7 +4,9 @@ import com.hollywood.fptu_cinema.util.EmailTemplate;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Service;
 
+@Service
 public class EmailService {
     private final JavaMailSender mailSender;
     private final EmailTemplate emailTemplate;
