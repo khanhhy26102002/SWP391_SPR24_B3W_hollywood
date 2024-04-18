@@ -25,7 +25,7 @@ public class Payment {
     @Size(max = 50)
     @NotNull
     @Column(name = "payment_method", nullable = false, length = 50)
-    private String paymentMethod;
+    private String paymentMethod = "e-wallet";
 
     @NotNull
     @Column(name = "payment_date", nullable = false)
