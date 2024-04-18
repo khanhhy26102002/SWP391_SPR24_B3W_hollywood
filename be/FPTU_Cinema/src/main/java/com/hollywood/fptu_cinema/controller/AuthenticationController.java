@@ -9,6 +9,7 @@ import com.hollywood.fptu_cinema.viewModel.PasswordResetRequest;
 import com.hollywood.fptu_cinema.viewModel.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.Email;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
@@ -80,9 +81,8 @@ public class AuthenticationController {
     }
 
     @Operation(summary = "Forgot Password")
-    @Secured({"MEMBER"})
     @PostMapping("/forgotPassword")
-    public ResponseEntity<?> forgotPassword(@RequestParam("email") String email) {
+    public ResponseEntity<?> forgotPassword(@RequestParam("email") @Email(message = "Invalid email format") String email) {
         try {
             userService.initiateResetPassword(email);
             logger.info("Forgot password email sent to: {}", email);
