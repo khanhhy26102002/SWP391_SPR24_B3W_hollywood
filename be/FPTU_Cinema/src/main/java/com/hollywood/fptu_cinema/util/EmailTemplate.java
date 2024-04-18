@@ -1,5 +1,8 @@
 package com.hollywood.fptu_cinema.util;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class EmailTemplate {
     public String getResetPasswordEmail(String resetPasswordLink) {
         return "FPTU_Cinema đã nhận được yêu cầu thay đổi mật khẩu của quý khách.\n\n"
