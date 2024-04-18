@@ -14,18 +14,19 @@ import java.time.LocalDate;
 @Table(name = "Screening", schema = "Movie_Booking_Ticket")
 public class Screening {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "screening_id", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "movie_id")
     private Movie movie;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "room_id")
     private Room room;
 

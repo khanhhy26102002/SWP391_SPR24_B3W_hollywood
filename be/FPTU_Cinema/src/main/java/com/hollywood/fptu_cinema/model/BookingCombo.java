@@ -13,14 +13,15 @@ import java.math.BigDecimal;
 @Table(name = "Booking_combo", schema = "Movie_Booking_Ticket")
 public class BookingCombo {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "booking_combo_id", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "combo_id")
     private Combo combo;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ticket_id")
     private Ticket ticket;
 

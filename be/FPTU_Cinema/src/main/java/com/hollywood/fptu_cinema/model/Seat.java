@@ -14,10 +14,11 @@ import java.math.BigDecimal;
 @Table(name = "Seat", schema = "Movie_Booking_Ticket")
 public class Seat {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "seat_id", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "room_id")
     private Room room;
 

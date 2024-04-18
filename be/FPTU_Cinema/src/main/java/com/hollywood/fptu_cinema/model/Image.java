@@ -12,6 +12,7 @@ import lombok.Setter;
 @Table(name = "Image", schema = "Movie_Booking_Ticket")
 public class Image {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "image_id", nullable = false)
     private Integer id;
 

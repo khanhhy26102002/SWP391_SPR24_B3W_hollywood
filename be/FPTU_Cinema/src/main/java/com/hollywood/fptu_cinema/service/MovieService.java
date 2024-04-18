@@ -4,7 +4,6 @@ import com.hollywood.fptu_cinema.model.Movie;
 import com.hollywood.fptu_cinema.model.User;
 import com.hollywood.fptu_cinema.repository.MovieRepository;
 import com.hollywood.fptu_cinema.repository.UserRepository;
-import com.hollywood.fptu_cinema.util.Util;
 import com.hollywood.fptu_cinema.validator.MovieValidator;
 import com.hollywood.fptu_cinema.viewModel.MovieRequest;
 import org.springframework.stereotype.Service;
@@ -27,9 +26,10 @@ public class MovieService {
     //O day ko xai long ma xai integer
     public Movie findById(int movieId) {
 
-       return movieRepository.findById(movieId);
+        return movieRepository.findById(movieId);
     }
-//create movie
+
+    //create movie
     public Movie createMovie(MovieRequest movieRequest, User currentUser) {
         Movie movie = new Movie();
         movieValidator.validate(movieRequest);
@@ -48,24 +48,24 @@ public class MovieService {
     }
 
 
- //update movie
- public void updateMovie(MovieRequest movieRequest, Movie movie) {
-     movieValidator.validate(movieRequest);
-     movie.setName(movieRequest.getName());
-     movie.setDescription(movieRequest.getDescription());
-     movie.setActor(movieRequest.getActor());
-     movie.setGenre(movieRequest.getGenre());
-     movie.setDirector(movieRequest.getDirector());
-     movie.setPremiere(movieRequest.getPremiere());
-     movie.setTrailer(movieRequest.getTrailer());
-     movie.setLanguage(movieRequest.getLanguage());
-     movie.setRated(movieRequest.getRated());
-     movie.setDuration(parseDuration(movieRequest.getDuration()));
-     User user = userRepository.findByUserName(Util.currentUser());
-     movie.setUser(user);
-     movieRepository.save(movie);
- }
- //list movie
+    //update movie
+    public void updateMovie(MovieRequest movieRequest, Movie movie, User currentUser) {
+        movieValidator.validate(movieRequest);
+        movie.setName(movieRequest.getName());
+        movie.setDescription(movieRequest.getDescription());
+        movie.setActor(movieRequest.getActor());
+        movie.setGenre(movieRequest.getGenre());
+        movie.setDirector(movieRequest.getDirector());
+        movie.setPremiere(movieRequest.getPremiere());
+        movie.setTrailer(movieRequest.getTrailer());
+        movie.setLanguage(movieRequest.getLanguage());
+        movie.setRated(movieRequest.getRated());
+        movie.setDuration(parseDuration(movieRequest.getDuration()));
+        movie.setUser(currentUser);
+        movieRepository.save(movie);
+    }
+
+    //list movie
     public List<Movie> listMovie() {
         return movieRepository.findAll();
     }
