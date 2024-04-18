@@ -1,6 +1,7 @@
 package com.hollywood.fptu_cinema.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -50,6 +51,7 @@ public class Movie {
     private String genre;
 
     @NotNull
+    @Future
     @Column(name = "premiere", nullable = false)
     private LocalDate premiere;
 
@@ -71,7 +73,7 @@ public class Movie {
     private User user;
 
     @NotNull
-    @Column(name = "created_date", nullable = false)
+    @Column(name = "created_date", nullable = false, updatable = false)
     private Instant createdDate;
 
     @Column(name = "updated_date")
@@ -83,4 +85,14 @@ public class Movie {
 
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Image> images;
+
+    @PrePersist
+    public void onCreate() {
+        createdDate = Instant.now();
+    }
+
+    @PreUpdate
+    public void onUpdate() {
+        updatedDate = Instant.now();
+    }
 }

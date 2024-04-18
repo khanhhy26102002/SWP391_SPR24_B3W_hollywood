@@ -16,11 +16,13 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final EmailService emailService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider, EmailService emailService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.emailService = emailService;
     }
 
 
@@ -60,5 +62,32 @@ public class UserService {
 
     public User findByUserName(String username) {
         return userRepository.findByUserName(username);
+    }
+
+    public void initiateResetPassword(String email) throws Exception {
+        User user = userRepository.findByEmail(email);
+
+        if (user != null) {
+            String token = jwtTokenProvider.generateResetToken(user.getUserName());
+            String resetPasswordLink = "http://localhost:8080/api/auth/resetPassword?token=" + token;
+            emailService.sendResetPasswordEmail(email, resetPasswordLink);
+        } else {
+            throw new IllegalArgumentException("Email address not found.");
+        }
+    }
+
+    public void resetPassword(String token, String newPassword) {
+        if (!jwtTokenProvider.validateResetToken(token)) {
+            throw new IllegalArgumentException("Invalid or expired reset token.");
+        }
+        String username = jwtTokenProvider.extractUsername(token);
+        User user = userRepository.findByUserName(username);
+
+        if (user != null) {
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(user);
+        } else {
+            throw new IllegalArgumentException("User not found.");
+        }
     }
 }

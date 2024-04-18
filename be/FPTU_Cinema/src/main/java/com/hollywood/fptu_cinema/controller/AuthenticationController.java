@@ -4,6 +4,7 @@ import com.hollywood.fptu_cinema.service.UserService;
 import com.hollywood.fptu_cinema.util.Util;
 import com.hollywood.fptu_cinema.viewModel.JwtAuthenticationResponse;
 import com.hollywood.fptu_cinema.viewModel.PasswordChangeRequest;
+import com.hollywood.fptu_cinema.viewModel.PasswordResetRequest;
 import com.hollywood.fptu_cinema.viewModel.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
@@ -74,6 +75,37 @@ public class AuthenticationController {
         } catch (Exception e) {
             logger.error("Password change failed: {}", e.getMessage());
             return Response.error(new Exception("Password change failed"));
+        }
+    }
+
+    @Operation(summary = "Forgot Password")
+    @Secured({"MEMBER"})
+    @PostMapping("/forgotPassword")
+    public ResponseEntity<?> forgotPassword(@RequestParam("email") String email) {
+        try {
+            userService.initiateResetPassword(email);
+            logger.info("Forgot password email sent to: {}", email);
+            return Response.success("An email to reset your password has been sent to " + email + ". Please check your inbox.");
+        } catch (Exception e) {
+            logger.error("Failed to send forgot password email to: {}", email, e);
+            return Response.error(new Exception("Failed to send forgot password email."));
+        }
+    }
+
+    @Operation(summary = "Reset Password")
+    @Secured({"MEMBER"})
+    @PostMapping("/resetPassword")
+    public ResponseEntity<?> resetPassword(@RequestBody PasswordResetRequest passwordResetRequest) {
+        try {
+            userService.resetPassword(passwordResetRequest.getToken(), passwordResetRequest.getNewPassword());
+            logger.info("Password has been reset successfully");
+            return Response.success("Password has been reset successfully.");
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid or expired reset token.");
+            return Response.error(new Exception("Invalid or expired reset token."));
+        } catch (Exception e) {
+            logger.error("Password reset failed: {}", e.getMessage());
+            return Response.error(new Exception("Password reset failed."));
         }
     }
 }
