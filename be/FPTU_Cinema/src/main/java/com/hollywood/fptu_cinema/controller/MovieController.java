@@ -5,6 +5,7 @@ import com.hollywood.fptu_cinema.service.UserService;
 import com.hollywood.fptu_cinema.util.Util;
 import com.hollywood.fptu_cinema.viewModel.MovieCreate;
 import com.hollywood.fptu_cinema.viewModel.MovieDTO;
+import com.hollywood.fptu_cinema.viewModel.MovieUpdate;
 import com.hollywood.fptu_cinema.viewModel.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import org.apache.logging.log4j.LogManager;
@@ -48,7 +49,7 @@ public class MovieController {
             return Response.error(e);
         }
     }
-
+//ham login
     @Operation(summary = "Create a new movie")
     @PostMapping("/createMovie")
     @Secured({"ADMIN", "STAFF"})
@@ -64,5 +65,16 @@ public class MovieController {
             logger.error("An error occurred while creating the movie: {}", e.getMessage());
             return Response.error(e);
         }
+    }
+    //Update
+    @Operation(summary = "Update Movie")
+    @PostMapping("/updateMovie")
+    @Secured({"ADMIN", "STAFF"})
+    public ResponseEntity<?> updateMovie(@RequestBody MovieUpdate updateMovie) {
+          try{
+
+          }catch (Exception e){
+
+          }
     }
 }
