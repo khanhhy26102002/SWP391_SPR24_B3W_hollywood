@@ -26,13 +26,14 @@ public class UserService {
     }
 
 
-    public String login(String phone, String email, String password) {
+    public String login(String phone, String email, String password) throws Exception {
         Optional<User> user = userRepository.findByPhoneOrEmail(phone, email);
 
         if (user.isPresent() && passwordEncoder.matches(password, user.get().getPassword())) {
-            return jwtTokenProvider.generateToken(user.get().getUserName());
+            return user.get().getUserName(); // Replace with appropriate username retrieval logic
+        } else {
+            throw new Exception("Invalid login credentials");
         }
-        return "";
     }
 
     public void logout(HttpServletRequest request) {

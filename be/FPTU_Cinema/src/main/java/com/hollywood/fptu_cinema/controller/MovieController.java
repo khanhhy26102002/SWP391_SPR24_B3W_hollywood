@@ -1,18 +1,13 @@
 package com.hollywood.fptu_cinema.controller;
 
 import com.hollywood.fptu_cinema.model.Movie;
-import com.hollywood.fptu_cinema.model.User;
 import com.hollywood.fptu_cinema.service.MovieService;
 import com.hollywood.fptu_cinema.service.UserService;
 import com.hollywood.fptu_cinema.util.Util;
-import com.hollywood.fptu_cinema.viewModel.MovieCreate;
-import com.hollywood.fptu_cinema.viewModel.MovieDTO;
-import com.hollywood.fptu_cinema.viewModel.MovieUpdate;
-import com.hollywood.fptu_cinema.viewModel.Response;
+import com.hollywood.fptu_cinema.viewModel.*;
 import io.swagger.v3.oas.annotations.Operation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -56,13 +51,13 @@ public class MovieController {
     @Operation(summary = "Create a new movie")
     @PostMapping("/createMovie")
     @Secured({"ADMIN", "STAFF"})
-    public ResponseEntity<?> createMovie(@RequestBody MovieCreate movieCreate) {
+    public ResponseEntity<?> createMovie(@RequestBody MovieRequest movieRequest) {
         try {
             String username = Util.currentUser();
             if (username == null) {
                 throw new Exception("User not authenticated");
             }
-            MovieDTO movie = new MovieDTO(movieService.createMovie(movieCreate, userService.findByUserName(username)));
+            MovieDTO movie = new MovieDTO(movieService.createMovie(movieRequest, userService.findByUserName(username)));
             return Response.success(movie);
         } catch (Exception e) {
             logger.error("An error occurred while creating the movie: {}", e.getMessage());
@@ -72,14 +67,15 @@ public class MovieController {
     //Update (Do update ne phai xai @puttingmapping)
     @Operation(summary = "Update movie")
     @PutMapping("/updateMovie/{movieId}") // Thêm {movieId} vào đường dẫn để nhận giá trị từ đường dẫn của yêu cầu HTTP
-    public ResponseEntity<?> updateMovie(@PathVariable Integer movieId, @RequestBody MovieUpdate movieUpdate) {
+    @Secured({"ADMIN", "STAFF"})
+    public ResponseEntity<?> updateMovie(@PathVariable int movieId, @RequestBody MovieRequest movieRequest) {
         try {
             Movie movie = movieService.findById(movieId);
             // Gọi phương thức updateMovie từ service
-            movieService.updateMovie( movieUpdate , movie);
+            movieService.updateMovie(movieRequest, movie);
 
             // Trả về phản hồi thành công với thông tin của bộ phim đã cập nhật
-            return Response.success(movieUpdate);
+            return Response.success(movieRequest);
         } catch (Exception e) {
             logger.error("An error occurred while updating movies: {}", e.getMessage());
             return Response.error(e);

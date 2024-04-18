@@ -6,16 +6,12 @@ import com.hollywood.fptu_cinema.repository.MovieRepository;
 import com.hollywood.fptu_cinema.repository.UserRepository;
 import com.hollywood.fptu_cinema.util.Util;
 import com.hollywood.fptu_cinema.validator.MovieValidator;
-import com.hollywood.fptu_cinema.viewModel.MovieCreate;
-import com.hollywood.fptu_cinema.viewModel.MovieUpdate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
+import com.hollywood.fptu_cinema.viewModel.MovieRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class MovieService {
@@ -34,37 +30,37 @@ public class MovieService {
        return movieRepository.findById(movieId);
     }
 //create movie
-    public Movie createMovie(MovieCreate movieCreate, User currentUser) {
+    public Movie createMovie(MovieRequest movieRequest, User currentUser) {
         Movie movie = new Movie();
-        movieValidator.validate(movieCreate);
-        movie.setName(movieCreate.getName());
-        movie.setDescription(movieCreate.getDescription());
-        movie.setActor(movieCreate.getActor());
-        movie.setGenre(movieCreate.getGenre());
-        movie.setDirector(movieCreate.getDirector());
-        movie.setPremiere(movieCreate.getPremiere());
-        movie.setTrailer(movieCreate.getTrailer());
-        movie.setLanguage(movieCreate.getLanguage());
-        movie.setRated(movieCreate.getRated());
-        movie.setDuration(parseDuration(movieCreate.getDuration()));
+        movieValidator.validate(movieRequest);
+        movie.setName(movieRequest.getName());
+        movie.setDescription(movieRequest.getDescription());
+        movie.setActor(movieRequest.getActor());
+        movie.setGenre(movieRequest.getGenre());
+        movie.setDirector(movieRequest.getDirector());
+        movie.setPremiere(movieRequest.getPremiere());
+        movie.setTrailer(movieRequest.getTrailer());
+        movie.setLanguage(movieRequest.getLanguage());
+        movie.setRated(movieRequest.getRated());
+        movie.setDuration(parseDuration(movieRequest.getDuration()));
         movie.setUser(currentUser);
         return movieRepository.save(movie);
     }
 
 
  //update movie
- public void updateMovie(MovieUpdate movieUpdate , Movie movie ) {
-     movieValidator.validate(movieUpdate);
-     movie.setName(movieUpdate.getName());
-     movie.setDescription(movieUpdate.getDescription());
-     movie.setActor(movieUpdate.getActor());
-     movie.setGenre(movieUpdate.getGenre());
-     movie.setDirector(movieUpdate.getDirector());
-     movie.setPremiere(movieUpdate.getPremiere());
-     movie.setTrailer(movieUpdate.getTrailer());
-     movie.setLanguage(movieUpdate.getLanguage());
-     movie.setRated(movieUpdate.getRated());
-     movie.setDuration(parseDuration(movieUpdate.getDuration()));
+ public void updateMovie(MovieRequest movieRequest, Movie movie) {
+     movieValidator.validate(movieRequest);
+     movie.setName(movieRequest.getName());
+     movie.setDescription(movieRequest.getDescription());
+     movie.setActor(movieRequest.getActor());
+     movie.setGenre(movieRequest.getGenre());
+     movie.setDirector(movieRequest.getDirector());
+     movie.setPremiere(movieRequest.getPremiere());
+     movie.setTrailer(movieRequest.getTrailer());
+     movie.setLanguage(movieRequest.getLanguage());
+     movie.setRated(movieRequest.getRated());
+     movie.setDuration(parseDuration(movieRequest.getDuration()));
      User user = userRepository.findByUserName(Util.currentUser());
      movie.setUser(user);
      movieRepository.save(movie);
