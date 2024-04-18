@@ -1,6 +1,7 @@
 package com.hollywood.fptu_cinema.validator;
 
 import com.hollywood.fptu_cinema.viewModel.MovieCreate;
+import com.hollywood.fptu_cinema.viewModel.MovieUpdate;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
@@ -8,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MovieValidator implements Validator<MovieCreate> {
+    //validate Create
     @Override
     public void validate(MovieCreate movieCreate) {
         if (!isValidName(movieCreate.getName())) {
@@ -20,6 +22,23 @@ public class MovieValidator implements Validator<MovieCreate> {
             throw new IllegalArgumentException("Rated value is invalid. It must be one of the following: K, C, T13, T16, T18, P.");
         }
         if (!isValidDuration(movieCreate.getDuration())) {
+            throw new IllegalArgumentException("Duration format is invalid. Expected format: HH:mm:ss");
+        }
+    }
+
+    //Validate update
+
+    public void validate(MovieUpdate movieUpdate) {
+        if (!isValidName(movieUpdate.getName())) {
+            throw new IllegalArgumentException("Name is invalid. It must not be empty and must be less than 255 characters.");
+        }
+        if (!isValidDescription(movieUpdate.getDescription())) {
+            throw new IllegalArgumentException("Description is invalid. It must not be empty.");
+        }
+        if (!isValidRated(movieUpdate.getRated())) {
+            throw new IllegalArgumentException("Rated value is invalid. It must be one of the following: K, C, T13, T16, T18, P.");
+        }
+        if (!isValidDuration(movieUpdate.getDuration())) {
             throw new IllegalArgumentException("Duration format is invalid. Expected format: HH:mm:ss");
         }
     }
