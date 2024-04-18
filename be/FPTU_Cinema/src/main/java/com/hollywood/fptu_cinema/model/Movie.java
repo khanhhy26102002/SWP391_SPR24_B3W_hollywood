@@ -84,7 +84,7 @@ public class Movie {
     @Column(name = "status", nullable = false)
     private Integer status;
 
-    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Image> images;
 
     @PrePersist

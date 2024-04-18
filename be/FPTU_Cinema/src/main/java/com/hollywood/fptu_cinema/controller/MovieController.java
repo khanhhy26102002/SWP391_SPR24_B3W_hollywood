@@ -1,10 +1,13 @@
 package com.hollywood.fptu_cinema.controller;
 
 import com.hollywood.fptu_cinema.model.Movie;
+import com.hollywood.fptu_cinema.model.User;
 import com.hollywood.fptu_cinema.service.MovieService;
 import com.hollywood.fptu_cinema.service.UserService;
 import com.hollywood.fptu_cinema.util.Util;
-import com.hollywood.fptu_cinema.viewModel.*;
+import com.hollywood.fptu_cinema.viewModel.MovieDTO;
+import com.hollywood.fptu_cinema.viewModel.MovieRequest;
+import com.hollywood.fptu_cinema.viewModel.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,7 +33,7 @@ public class MovieController {
     }
 
     //Goi tat ca cac danh sach phim ra
-    @Operation(summary = "ListMovie")
+    @Operation(summary = "List Movie")
     @GetMapping("/listMovie")
     //do phan hoi tu may chu tra ve nen xai response
     public ResponseEntity<?> listMovie() {
@@ -47,7 +50,8 @@ public class MovieController {
             return Response.error(e);
         }
     }
-//ham create
+
+    //ham create
     @Operation(summary = "Create a new movie")
     @PostMapping("/createMovie")
     @Secured({"ADMIN", "STAFF"})
@@ -64,6 +68,7 @@ public class MovieController {
             return Response.error(e);
         }
     }
+
     //Update (Do update ne phai xai @puttingmapping)
     @Operation(summary = "Update movie")
     @PutMapping("/updateMovie/{movieId}") // Thêm {movieId} vào đường dẫn để nhận giá trị từ đường dẫn của yêu cầu HTTP
@@ -72,7 +77,15 @@ public class MovieController {
         try {
             Movie movie = movieService.findById(movieId);
             // Gọi phương thức updateMovie từ service
-            movieService.updateMovie(movieRequest, movie);
+            if (movie == null) {
+                throw new Exception("Movie not found");
+            }
+            String username = Util.currentUser();
+            if (username == null) {
+                throw new Exception("User not authenticated"); // Ném ngoại lệ nếu không có người dùng nào được xác thực
+            }
+            User user = userService.findByUserName(username);
+            movieService.updateMovie(movieRequest, movie, user);
 
             // Trả về phản hồi thành công với thông tin của bộ phim đã cập nhật
             return Response.success(movieRequest);
@@ -81,8 +94,4 @@ public class MovieController {
             return Response.error(e);
         }
     }
-
-
-
-
 }

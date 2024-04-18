@@ -4,4 +4,5 @@ import com.hollywood.fptu_cinema.model.Ticket;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TicketRepository extends JpaRepository<Ticket, Integer> {
+    Ticket findTicketById(int ticketId);
 }
