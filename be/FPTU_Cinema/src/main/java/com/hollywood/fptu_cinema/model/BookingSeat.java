@@ -25,16 +25,7 @@ public class BookingSeat {
     @JoinColumn(name = "seat_id")
     private Seat seat;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "screening_id")
-    private Screening screening;
-
-    @NotNull
-    @Column(name = "quantity", nullable = false)
-    private Integer quantity;
-
     @NotNull
     @Column(name = "total", nullable = false, precision = 10, scale = 2)
     private BigDecimal total;
-
 }
