@@ -99,4 +99,17 @@ public class MovieController {
             return Response.error(e);
         }
     }
+    //Ham delete theo kieu status(Trang thai bang 0 la an khac khong van hien)
+    @Operation(summary = "Delete Movie")
+    @DeleteMapping("/{movieId}")
+    public ResponseEntity<?> deleteMovie(@PathVariable int movieId) {
+        try {
+            movieService.deleteMovie(movieId);
+            return Response.success("Movie deleted successfully");
+        } catch (RuntimeException e) {
+            logger.error("An error occurred while deleting movie with ID {}: {}", movieId, e.getMessage());
+            return Response.error(e);
+        }
+    }
+
 }
