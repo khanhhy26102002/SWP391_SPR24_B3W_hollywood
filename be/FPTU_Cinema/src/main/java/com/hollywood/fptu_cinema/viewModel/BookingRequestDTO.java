@@ -8,6 +8,6 @@ import java.util.Map;
 @Data
 public class BookingRequestDTO {
     private Integer screeningId;
-    private List<SeatQuantityDTO> seatsQuantities;
+    private List<SeatNumberDTO> seatNumbers;
     private Map<Integer, Integer> comboQuantities;
 }

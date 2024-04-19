@@ -1,6 +1,5 @@
 package com.hollywood.fptu_cinema.controller;
 
-import com.hollywood.fptu_cinema.model.Ticket;
 import com.hollywood.fptu_cinema.model.User;
 import com.hollywood.fptu_cinema.service.TicketService;
 import com.hollywood.fptu_cinema.service.UserService;
@@ -8,6 +7,7 @@ import com.hollywood.fptu_cinema.util.Util;
 import com.hollywood.fptu_cinema.viewModel.BookingRequestDTO;
 import com.hollywood.fptu_cinema.viewModel.BookingResponseDTO;
 import com.hollywood.fptu_cinema.viewModel.Response;
+import com.hollywood.fptu_cinema.viewModel.TicketDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -39,7 +39,7 @@ public class TicketController {
             }
             User user = userService.findByUserName(username); // Lấy đối tượng User dựa trên tên người dùng
             BookingResponseDTO response = ticketService.createBooking(bookingRequest, user);
-            ;
+
             logger.info("Ticket created successfully for user: {}", username);
             return Response.success(response);
         } catch (Exception e) {
@@ -53,7 +53,7 @@ public class TicketController {
     @GetMapping("/getTicketInformation/{ticketId}")
     public ResponseEntity<?> getTicketInformation(@PathVariable int ticketId) {
         try {
-            Ticket ticketInfo = ticketService.getTicketInformation(ticketId);
+            TicketDTO ticketInfo = ticketService.getTicketDetails(ticketId);
             logger.info("Retrieved ticket information successfully for ticket ID: {}", ticketId);
             return Response.success(ticketInfo);
         } catch (Exception e) {
