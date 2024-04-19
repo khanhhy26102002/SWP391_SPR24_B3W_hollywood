@@ -43,7 +43,19 @@ public class MovieService {
 
     //list movie
     public List<Movie> listMovie() {
-        return movieRepository.findAll();
+        return movieRepository.findByStatusNot(0);
+    }
+
+    //Delete Movie theo change status (khong phai xoa ma chi an thong tin bo phim)
+    public void deleteMovie(int movieId) {
+        Movie movie = movieRepository.findById(movieId);
+        if (movie != null) {
+            movie.setStatus(0); // Set status to indicate deleted
+            movieRepository.save(movie);
+        } else {
+            // Handle the case where movie is not found
+            throw new RuntimeException("Movie not found with ID: " + movieId);
+        }
     }
 
     private LocalTime parseDuration(String duration) {
