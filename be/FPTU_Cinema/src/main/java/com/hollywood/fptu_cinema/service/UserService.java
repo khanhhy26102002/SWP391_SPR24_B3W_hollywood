@@ -4,6 +4,7 @@ import com.hollywood.fptu_cinema.model.User;
 import com.hollywood.fptu_cinema.repository.UserRepository;
 import com.hollywood.fptu_cinema.util.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -67,7 +68,6 @@ public class UserService {
 
     public void initiateResetPassword(String email) throws Exception {
         User user = userRepository.findByEmail(email);
-
         if (user != null) {
             String token = jwtTokenProvider.generateResetToken(user.getUserName());
             String resetPasswordLink = "http://localhost:8080/api/auth/resetPassword?token=" + token;
@@ -77,18 +77,25 @@ public class UserService {
         }
     }
 
-    public void resetPassword(String token, String newPassword) {
+    public void resetPassword(String token, String newPassword, String confirmPassword) throws IllegalArgumentException, AccessDeniedException {
+        if (!newPassword.equals(confirmPassword)) {
+            throw new IllegalArgumentException("Passwords do not match.");
+        }
         if (!jwtTokenProvider.validateResetToken(token)) {
             throw new IllegalArgumentException("Invalid or expired reset token.");
         }
+
         String username = jwtTokenProvider.extractUsername(token);
         User user = userRepository.findByUserName(username);
-
-        if (user != null) {
-            user.setPassword(passwordEncoder.encode(newPassword));
-            userRepository.save(user);
-        } else {
+        if (user == null) {
             throw new IllegalArgumentException("User not found.");
         }
+
+        if (user.getRole().getId() != 2) {
+            throw new AccessDeniedException("You do not have permission to reset password.");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
     }
 }
