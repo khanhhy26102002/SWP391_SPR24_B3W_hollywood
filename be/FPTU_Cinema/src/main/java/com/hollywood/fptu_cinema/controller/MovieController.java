@@ -61,7 +61,12 @@ public class MovieController {
             if (username == null) {
                 throw new Exception("User not authenticated");
             }
-            MovieDTO movie = new MovieDTO(movieService.createMovie(movieRequest, userService.findByUserName(username)));
+            User currentUser = userService.findByUserName(username);
+            if (currentUser == null) {
+                throw new Exception("User not found");
+            }
+
+            MovieDTO movie = new MovieDTO(movieService.createMovie(movieRequest, currentUser));
             return Response.success(movie);
         } catch (Exception e) {
             logger.error("An error occurred while creating the movie: {}", e.getMessage());

@@ -3,7 +3,6 @@ package com.hollywood.fptu_cinema.service;
 import com.hollywood.fptu_cinema.model.Movie;
 import com.hollywood.fptu_cinema.model.User;
 import com.hollywood.fptu_cinema.repository.MovieRepository;
-import com.hollywood.fptu_cinema.repository.UserRepository;
 import com.hollywood.fptu_cinema.validator.MovieValidator;
 import com.hollywood.fptu_cinema.viewModel.MovieRequest;
 import org.springframework.stereotype.Service;
@@ -14,12 +13,10 @@ import java.util.List;
 
 @Service
 public class MovieService {
-    private final UserRepository userRepository;
     private final MovieRepository movieRepository;
     private final MovieValidator movieValidator = new MovieValidator();
 
-    public MovieService(UserRepository userRepository, MovieRepository movieRepository) {
-        this.userRepository = userRepository;
+    public MovieService(MovieRepository movieRepository) {
         this.movieRepository = movieRepository;
     }
 
@@ -32,36 +29,15 @@ public class MovieService {
     //create movie
     public Movie createMovie(MovieRequest movieRequest, User currentUser) {
         Movie movie = new Movie();
-        movieValidator.validate(movieRequest);
-        movie.setName(movieRequest.getName());
-        movie.setDescription(movieRequest.getDescription());
-        movie.setActor(movieRequest.getActor());
-        movie.setGenre(movieRequest.getGenre());
-        movie.setDirector(movieRequest.getDirector());
-        movie.setPremiere(movieRequest.getPremiere());
-        movie.setTrailer(movieRequest.getTrailer());
-        movie.setLanguage(movieRequest.getLanguage());
-        movie.setRated(movieRequest.getRated());
-        movie.setDuration(parseDuration(movieRequest.getDuration()));
-        movie.setUser(currentUser);
+        setMovieDetails(movie, movieRequest, currentUser);
+        movie.setStatus(1);
         return movieRepository.save(movie);
     }
 
 
     //update movie
     public void updateMovie(MovieRequest movieRequest, Movie movie, User currentUser) {
-        movieValidator.validate(movieRequest);
-        movie.setName(movieRequest.getName());
-        movie.setDescription(movieRequest.getDescription());
-        movie.setActor(movieRequest.getActor());
-        movie.setGenre(movieRequest.getGenre());
-        movie.setDirector(movieRequest.getDirector());
-        movie.setPremiere(movieRequest.getPremiere());
-        movie.setTrailer(movieRequest.getTrailer());
-        movie.setLanguage(movieRequest.getLanguage());
-        movie.setRated(movieRequest.getRated());
-        movie.setDuration(parseDuration(movieRequest.getDuration()));
-        movie.setUser(currentUser);
+        setMovieDetails(movie, movieRequest, currentUser);
         movieRepository.save(movie);
     }
 
@@ -73,4 +49,20 @@ public class MovieService {
     private LocalTime parseDuration(String duration) {
         return LocalTime.parse(duration, DateTimeFormatter.ofPattern("HH:mm:ss"));
     }
+
+    private void setMovieDetails(Movie movie, MovieRequest movieRequest, User currentUser) {
+        movieValidator.validate(movieRequest);
+        movie.setName(movieRequest.getName());
+        movie.setDescription(movieRequest.getDescription());
+        movie.setActor(movieRequest.getActor());
+        movie.setGenre(movieRequest.getGenre());
+        movie.setDirector(movieRequest.getDirector());
+        movie.setPremiere(movieRequest.getPremiere());
+        movie.setTrailer(movieRequest.getTrailer());
+        movie.setLanguage(movieRequest.getLanguage());
+        movie.setRated(movieRequest.getRated());
+        movie.setDuration(parseDuration(movieRequest.getDuration()));
+        movie.setUser(currentUser);
+    }
+
 }
