@@ -9,7 +9,7 @@ import com.hollywood.fptu_cinema.viewModel.PasswordResetRequest;
 import com.hollywood.fptu_cinema.viewModel.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.constraints.Email;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
@@ -82,7 +82,7 @@ public class AuthenticationController {
 
     @Operation(summary = "Forgot Password")
     @PostMapping("/forgotPassword")
-    public ResponseEntity<?> forgotPassword(@RequestParam("email") @Email(message = "Invalid email format") String email) {
+    public ResponseEntity<?> forgotPassword(@RequestParam("email") String email) {
         try {
             userService.initiateResetPassword(email);
             logger.info("Forgot password email sent to: {}", email);
@@ -93,17 +93,19 @@ public class AuthenticationController {
         }
     }
 
-    @Operation(summary = "Reset Password")
-    @Secured({"MEMBER"})
     @PostMapping("/resetPassword")
     public ResponseEntity<?> resetPassword(@RequestBody PasswordResetRequest passwordResetRequest) {
         try {
-            userService.resetPassword(passwordResetRequest.getToken(), passwordResetRequest.getNewPassword());
+            userService.resetPassword(
+                    passwordResetRequest.getToken(),
+                    passwordResetRequest.getNewPassword(),
+                    passwordResetRequest.getConfirmPassword()
+            );
             logger.info("Password has been reset successfully");
             return Response.success("Password has been reset successfully.");
         } catch (IllegalArgumentException e) {
-            logger.error("Invalid or expired reset token.");
-            return Response.error(new Exception("Invalid or expired reset token."));
+            logger.error(e.getMessage());
+            return Response.error(new Exception(e.getMessage()));
         } catch (Exception e) {
             logger.error("Password reset failed: {}", e.getMessage());
             return Response.error(new Exception("Password reset failed."));

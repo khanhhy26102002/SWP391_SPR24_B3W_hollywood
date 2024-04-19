@@ -1,6 +1,7 @@
 package com.hollywood.fptu_cinema.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -29,6 +30,7 @@ public class User {
 
     @Size(max = 255)
     @NotNull
+    @Email(message = "Invalid email format")
     @Column(name = "email", nullable = false)
     private String email;
 
