@@ -1,12 +1,15 @@
 package com.hollywood.fptu_cinema.validator;
 
 import com.hollywood.fptu_cinema.viewModel.MovieRequest;
+import com.hollywood.fptu_cinema.viewModel.ScreeningRequest;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.List;
-
+//validate du lieu cho movie
 public class MovieValidator implements Validator<MovieRequest> {
     //validate Create, Update
     @Override
@@ -49,5 +52,6 @@ public class MovieValidator implements Validator<MovieRequest> {
         }
     }
 
-    // Bạn có thể thêm các phương thức xác thực khác tương tự ở đây
+    //validate du lieu cho screening
+
 }
