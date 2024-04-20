@@ -3,10 +3,7 @@ package com.hollywood.fptu_cinema.controller;
 import com.hollywood.fptu_cinema.service.UserService;
 import com.hollywood.fptu_cinema.util.JwtTokenProvider;
 import com.hollywood.fptu_cinema.util.Util;
-import com.hollywood.fptu_cinema.viewModel.JwtAuthenticationResponse;
-import com.hollywood.fptu_cinema.viewModel.PasswordChangeRequest;
-import com.hollywood.fptu_cinema.viewModel.PasswordResetRequest;
-import com.hollywood.fptu_cinema.viewModel.Response;
+import com.hollywood.fptu_cinema.viewModel.*;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
@@ -33,7 +30,7 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestParam("loginValue") String loginValue, @RequestParam("password") String password) {
         try {
-            String userName = userService.login(loginValue, loginValue, password);
+            String userName = userService.login(loginValue, password);
             String token = jwtTokenProvider.generateToken(userName);
             return Response.success(new JwtAuthenticationResponse(token));
         } catch (Exception e) {
@@ -108,6 +105,40 @@ public class AuthenticationController {
         } catch (Exception e) {
             logger.error("Password reset failed: {}", e.getMessage());
             return Response.error(new Exception("Password reset failed."));
+        }
+    }
+
+    @Operation(summary = "Refresh Access Token")
+    @PostMapping("/refreshToken")
+    public ResponseEntity<?> refreshAccessToken(@RequestParam("refreshToken") String refreshToken) throws SecurityException {
+        try {
+            // Validate the refresh token
+            if (jwtTokenProvider.validateRefreshToken(refreshToken)) {// Extract the username from the refresh token
+                String userName = jwtTokenProvider.extractUsername(refreshToken);
+                // Generate a new access token
+                String newAccessToken = jwtTokenProvider.generateToken(userName);
+                return Response.success(new JwtAuthenticationResponse(newAccessToken));
+            } else {
+                throw new SecurityException("Invalid refresh token");
+            }
+        } catch (SecurityException e) {
+            logger.error("Token refresh failed: {}", e.getMessage());
+            return Response.error(new Exception("Token refresh failed"));
+        } catch (Exception e) {
+            logger.error("Unexpected error during token refresh: {}", e.getMessage());
+            return Response.error(new Exception("Unexpected error during token refresh"));
+        }
+    }
+
+    @Operation(summary = "Register new user")
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody UserRegistrationDTO registrationDTO) {
+        try {
+            userService.register(registrationDTO);
+            return Response.success("created successfully");
+        } catch (Exception e) {
+            logger.error("Registration attempt failed for user: {}", registrationDTO.getEmail(), e);
+            return Response.error(new Exception("Registration failed."));
         }
     }
 }

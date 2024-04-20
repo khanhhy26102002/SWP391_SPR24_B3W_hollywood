@@ -4,7 +4,6 @@ import com.hollywood.fptu_cinema.model.*;
 import com.hollywood.fptu_cinema.repository.*;
 import com.hollywood.fptu_cinema.viewModel.BookingRequestDTO;
 import com.hollywood.fptu_cinema.viewModel.BookingResponseDTO;
-import com.hollywood.fptu_cinema.viewModel.SeatNumberDTO;
 import com.hollywood.fptu_cinema.viewModel.TicketDTO;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +13,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
@@ -81,35 +79,25 @@ public class TicketService {
     }
 
     public BookingResponseDTO createBooking(BookingRequestDTO bookingRequest, User user) {
-        // Find the screening
         Screening screening = screeningRepository.findById(bookingRequest.getScreeningId())
                 .orElseThrow(() -> new NoSuchElementException("Screening not found with ID: " + bookingRequest.getScreeningId()));
-
-        // Ensure that seats are selected after screening is chosen and before combos
+        Instant currentTime = Instant.now();
+        Instant screeningStartTime = screening.getStartTime();
+        if (currentTime.isAfter(screeningStartTime.minus(Duration.ofHours(1)))) {
+            throw new IllegalStateException("Cannot create booking within 1 hour before screening start time.");
+        }
         if (bookingRequest.getSeatNumbers() == null || bookingRequest.getSeatNumbers().isEmpty()) {
             throw new IllegalStateException("Seats must be selected before selecting combos.");
         }
 
-        // Create a new ticket for the user and screening
         Ticket ticket = createNewTicket(user, screening);
-
-        // Calculate total price for the selected seats
         BigDecimal totalSeatsPrice = calculateTotalSeatsPrice(bookingRequest, ticket, screening);
-
-        // At this point, seat selection is mandatory and completed, now proceed to combos
-        BigDecimal totalComboPrice = BigDecimal.ZERO;
-        if (bookingRequest.getComboQuantities() != null && !bookingRequest.getComboQuantities().isEmpty()) {
-            totalComboPrice = calculateTotalComboPrice(bookingRequest);
-        }
-
-        // Save selected combos information if any combo is selected
+        BigDecimal totalComboPrice = calculateTotalComboPrice(bookingRequest);
         saveSelectedCombos(bookingRequest, ticket);
 
-        // Set total price for the ticket (seats + combos) and save the ticket
         ticket.setTotalPrice(totalSeatsPrice.add(totalComboPrice));
         ticket = ticketRepository.save(ticket);
 
-        // Create and return the booking response
         return createBookingResponse(ticket, totalSeatsPrice, totalComboPrice);
     }
 
@@ -124,50 +112,45 @@ public class TicketService {
     }
 
     private BigDecimal calculateTotalSeatsPrice(BookingRequestDTO bookingRequest, Ticket ticket, Screening screening) {
-        BigDecimal totalSeatsPrice = BigDecimal.ZERO;
-        for (SeatNumberDTO seatNumberDTO : bookingRequest.getSeatNumbers()) {
-            String seatNumber = seatNumberDTO.getSeatNumber();
-            Seat seat = seatRepository.findBySeatNumber(seatNumber)
-                    .orElseThrow(() -> new IllegalArgumentException("Seat not found with number: " + seatNumber));
-            // Check if the seat is already booked for this screening
-            if (bookingSeatRepository.isSeatBooked(seat.getId(), screening.getId())) {
-                throw new IllegalStateException("Seat with number: " + seatNumber + " is already booked for this screening.");
-            }
-            totalSeatsPrice = totalSeatsPrice.add(seat.getSeatPrice());
-            BookingSeat bookingSeat = new BookingSeat();
-            bookingSeat.setTicket(ticket);
-            bookingSeat.setSeat(seat);
-            bookingSeat.setTotal(seat.getSeatPrice());
-            bookingSeatRepository.save(bookingSeat);
-        }
-        return totalSeatsPrice;
+        return bookingRequest.getSeatNumbers().stream()
+                .map(seatNumberDTO -> seatRepository.findBySeatNumber(seatNumberDTO.getSeatNumber())
+                        .filter(seat -> !bookingSeatRepository.isSeatBooked(seat.getId(), screening.getId()))
+                        .map(seat -> {
+                            BigDecimal seatPrice = seat.getSeatPrice();
+                            BookingSeat bookingSeat = new BookingSeat();
+                            bookingSeat.setTicket(ticket);
+                            bookingSeat.setSeat(seat);
+                            bookingSeat.setTotal(seatPrice);
+                            bookingSeatRepository.save(bookingSeat);
+                            return seatPrice;
+                        })
+                        .orElseThrow(() -> new IllegalArgumentException("Seat not found or already booked with number: " + seatNumberDTO.getSeatNumber())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     private BigDecimal calculateTotalComboPrice(BookingRequestDTO bookingRequest) {
-        BigDecimal totalComboPrice = BigDecimal.ZERO;
-        for (Map.Entry<Integer, Integer> entry : bookingRequest.getComboQuantities().entrySet()) {
-            Combo combo = comboRepository.findById(entry.getKey()).orElseThrow(
-                    () -> new NoSuchElementException("Combo not found with ID: " + entry.getKey())
-            );
-            totalComboPrice = totalComboPrice.add(combo.getComboPrice().multiply(new BigDecimal(entry.getValue())));
-        }
-        return totalComboPrice;
+        return bookingRequest.getComboQuantities().entrySet().stream()
+                .filter(entry -> entry.getValue() > 0)
+                .map(entry -> comboRepository.findById(entry.getKey())
+                        .map(combo -> combo.getComboPrice().multiply(BigDecimal.valueOf(entry.getValue())))
+                        .orElse(BigDecimal.ZERO))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     private void saveSelectedCombos(BookingRequestDTO bookingRequest, Ticket ticket) {
-        for (Map.Entry<Integer, Integer> entry : bookingRequest.getComboQuantities().entrySet()) {
-            if (entry.getValue() > 0) {
-                Combo combo = comboRepository.findById(entry.getKey())
-                        .orElseThrow(() -> new NoSuchElementException("Combo not found with ID: " + entry.getKey()));
-                BigDecimal totalAmount = combo.getComboPrice().multiply(new BigDecimal(entry.getValue()));
-                BookingCombo bookingCombo = new BookingCombo();
-                bookingCombo.setTicket(ticket);
-                bookingCombo.setCombo(combo);
-                bookingCombo.setQuantity(entry.getValue());
-                bookingCombo.setTotalAmount(totalAmount);
-                bookingComboRepository.save(bookingCombo);
-            }
-        }
+        bookingRequest.getComboQuantities().entrySet().stream()
+                .filter(entry -> entry.getValue() > 0)
+                .forEach(entry -> {
+                    Combo combo = comboRepository.findById(entry.getKey())
+                            .orElseThrow(() -> new NoSuchElementException("Combo not found with ID: " + entry.getKey()));
+                    BigDecimal totalAmount = combo.getComboPrice().multiply(BigDecimal.valueOf(entry.getValue()));
+                    BookingCombo bookingCombo = new BookingCombo();
+                    bookingCombo.setTicket(ticket);
+                    bookingCombo.setCombo(combo);
+                    bookingCombo.setQuantity(entry.getValue());
+                    bookingCombo.setTotalAmount(totalAmount);
+                    bookingComboRepository.save(bookingCombo);
+                });
     }
 
     private BookingResponseDTO createBookingResponse(Ticket ticket, BigDecimal totalSeatsPrice, BigDecimal totalComboPrice) {

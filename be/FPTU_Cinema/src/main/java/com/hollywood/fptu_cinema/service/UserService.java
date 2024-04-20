@@ -1,40 +1,46 @@
 package com.hollywood.fptu_cinema.service;
 
+import com.hollywood.fptu_cinema.model.Role;
 import com.hollywood.fptu_cinema.model.User;
+import com.hollywood.fptu_cinema.repository.RoleRepository;
 import com.hollywood.fptu_cinema.repository.UserRepository;
 import com.hollywood.fptu_cinema.util.JwtTokenProvider;
+import com.hollywood.fptu_cinema.viewModel.UserDTO;
+import com.hollywood.fptu_cinema.viewModel.UserRegistrationDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
-
     private final PasswordEncoder passwordEncoder;
-
     private final JwtTokenProvider jwtTokenProvider;
     private final EmailService emailService;
+    private final RoleRepository roleRepository;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider, EmailService emailService) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider,
+                       EmailService emailService, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
         this.emailService = emailService;
+        this.roleRepository = roleRepository;
     }
 
-
-    public String login(String phone, String email, String password) throws Exception {
-        Optional<User> userOptional = userRepository.findByPhoneOrEmail(phone, email);
-
-        if (userOptional.isPresent() && passwordEncoder.matches(password, userOptional.get().getPassword())) {
-            return userOptional.get().getUserName(); // Replace with appropriate username retrieval logic
-        } else {
-            throw new AccessDeniedException("Invalid login credentials");
-        }
+    public String login(String identifier, String password) {
+        return userRepository.findByPhoneOrEmail(identifier, identifier)
+                .filter(user -> passwordEncoder.matches(password, user.getPassword()))
+                .map(User::getUserName)
+                .orElseThrow(() -> new AccessDeniedException("Invalid login credentials"));
     }
 
     public void logout(HttpServletRequest request) {
@@ -46,15 +52,11 @@ public class UserService {
 
     private String getTokenFromHeader(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            return authHeader.substring(7);
-        }
-        return null;
+        return authHeader != null && authHeader.startsWith("Bearer ") ? authHeader.substring(7) : null;
     }
 
     public void changePassword(String username, String oldPassword, String newPassword) {
-        User user = userRepository.findByUserName(username)
-                .orElseThrow(() -> new IllegalArgumentException("User not found."));
+        User user = findUserByUsername(username);
         if (passwordEncoder.matches(oldPassword, user.getPassword())) {
             user.setPassword(passwordEncoder.encode(newPassword));
             userRepository.save(user);
@@ -63,23 +65,31 @@ public class UserService {
         }
     }
 
-    public User findByUserName(String username) {
+    private User findUserByUsername(String username) {
         return userRepository.findByUserName(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found."));
     }
 
-    public void initiateResetPassword(String email) throws Exception {
-        userRepository.findByEmail(email).ifPresentOrElse(user -> {
-            String token = jwtTokenProvider.generateResetToken(user.getUserName());
-            String resetPasswordLink = "http://localhost:8080/api/auth/resetPassword?token=" + token;
-            try {
-                emailService.sendResetPasswordEmail(email, resetPasswordLink);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }, () -> {
+    public void initiateResetPassword(String email) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            sendResetPasswordLink(user, email);
+        } else {
             throw new IllegalArgumentException("Email address not found.");
-        });
+        }
+    }
+
+
+    private void sendResetPasswordLink(User user, String email) {
+        String token = jwtTokenProvider.generateResetToken(user.getUserName());
+        String resetPasswordLink = "http://localhost:8080/api/auth/resetPassword?token=" + token;
+        try {
+            emailService.sendResetPasswordEmail(email, resetPasswordLink);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void resetPassword(String token, String newPassword, String confirmPassword) {
@@ -89,17 +99,124 @@ public class UserService {
         if (!jwtTokenProvider.validateResetToken(token)) {
             throw new IllegalArgumentException("Invalid or expired reset token.");
         }
-
         String username = jwtTokenProvider.extractUsername(token);
-        User user = userRepository.findByUserName(username)
-                .orElseThrow(() -> new IllegalArgumentException("User not found."));
-
-        // Assuming role check is necessary, ensure you have the logic to get the role ID
-        if (!user.getRole().getRoleName().equals("MEMBER")) {
+        User user = findUserByUsername(username);
+        if (!isAllowedToResetPassword(user)) {
             throw new AccessDeniedException("You do not have permission to reset password.");
         }
-
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
+    }
+
+    private boolean isAllowedToResetPassword(User user) {
+        List<Integer> allowedRoleIds = List.of(1, 2);
+        return allowedRoleIds.contains(user.getRole().getId());
+    }
+
+    public UserDTO convertToDTO(User user) {
+        return new UserDTO(
+                user.getAvatar(),
+                user.getUserName(),
+                user.getEmail(),
+                user.getAddress(),
+                user.getGender(),
+                user.getBirthdate(),
+                user.getPhone(),
+                user.getRole().getRoleName()
+        );
+    }
+
+    public List<UserDTO> getAllUsersWithPermission() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+        User currentUser = findUserByUsername(currentPrincipalName);
+        boolean isAdmin = "ADMIN".equals(currentUser.getRole().getRoleName());
+        boolean isStaff = "STAFF".equals(currentUser.getRole().getRoleName());
+
+        return userRepository.findAll().stream()
+                .filter(user -> !(isAdmin && user.getRole().getId().equals(1)) && !(isStaff && (user.getRole().getId().equals(1) || user.getRole().getId().equals(3))))
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public void register(UserRegistrationDTO registrationDto) {
+        validateUniqueUserCredentials(registrationDto.getEmail(), registrationDto.getUserName());
+        int newRoleId = getNewRoleId();
+        Role role = findRoleById(newRoleId);
+        User newUser = createNewUser(registrationDto, role);
+        convertToDTO(userRepository.save(newUser));
+    }
+
+    private void validateUniqueUserCredentials(String email, String username) {
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new IllegalArgumentException("Email already in use.");
+        }
+        if (userRepository.findByUserName(username).isPresent()) {
+            throw new IllegalArgumentException("Username already taken.");
+        }
+    }
+
+    private Role findRoleById(int roleId) {
+        return roleRepository.findById(roleId)
+                .orElseThrow(() -> new IllegalStateException("Role not found."));
+    }
+
+    private User createNewUser(UserRegistrationDTO registrationDto, Role role) {
+        User newUser = new User();
+        newUser.setEmail(registrationDto.getEmail());
+        newUser.setUserName(registrationDto.getUserName());
+        newUser.setAddress(registrationDto.getAddress());
+        newUser.setGender(registrationDto.getGender());
+        newUser.setBirthdate(registrationDto.getBirthdate());
+        newUser.setPhone(registrationDto.getPhone());
+        newUser.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
+        newUser.setRole(role);
+        return newUser;
+    }
+
+    private static int getNewRoleId() {
+        final int MEMBER_ROLE_ID = 2;
+        final int STAFF_ROLE_ID = 3;
+        int newRoleId = MEMBER_ROLE_ID;
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails) {
+            String currentRoleName = ((UserDetails) principal).getAuthorities().iterator().next().getAuthority();
+            if ("ADMIN".equals(currentRoleName)) {
+                newRoleId = STAFF_ROLE_ID;
+            } else if ("STAFF".equals(currentRoleName)) {
+                throw new IllegalStateException("Staff members are not allowed to create new users.");
+            }
+        }
+        return newRoleId;
+    }
+
+    public void deleteUser(Integer userId) {
+        User user = findUserById(userId);
+        userRepository.delete(user);
+    }
+
+    private User findUserById(Integer userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
+    }
+
+    public void updateUser(Integer userId, UserDTO userDTO) {
+        User user = findUserById(userId);
+        updateUserFromDTO(user, userDTO);
+        userRepository.save(user);
+    }
+
+    private void updateUserFromDTO(User user, UserDTO userDTO) {
+        user.setAvatar(userDTO.getAvatar());
+        user.setUserName(userDTO.getUserName());
+        user.setEmail(userDTO.getEmail());
+        user.setAddress(userDTO.getAddress());
+        user.setGender(userDTO.getGender());
+        user.setBirthdate(userDTO.getBirthdate());
+        user.setPhone(userDTO.getPhone());
+    }
+
+    public Optional<User> findByUserName(String username) {
+        return userRepository.findByUserName(username);
     }
 }

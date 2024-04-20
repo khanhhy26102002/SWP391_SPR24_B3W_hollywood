@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping(path = "api/ticket")
 public class TicketController {
@@ -37,8 +39,8 @@ public class TicketController {
             if (username == null) {
                 throw new Exception("User not authenticated"); // Ném ngoại lệ nếu không có người dùng nào được xác thực
             }
-            User user = userService.findByUserName(username); // Lấy đối tượng User dựa trên tên người dùng
-            BookingResponseDTO response = ticketService.createBooking(bookingRequest, user);
+            Optional<User> user = userService.findByUserName(username); // Lấy đối tượng User dựa trên tên người dùng
+            BookingResponseDTO response = ticketService.createBooking(bookingRequest, user.orElse(null));
 
             logger.info("Ticket created successfully for user: {}", username);
             return Response.success(response);
