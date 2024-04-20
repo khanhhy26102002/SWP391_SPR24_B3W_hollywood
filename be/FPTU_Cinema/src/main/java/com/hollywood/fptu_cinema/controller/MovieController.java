@@ -101,7 +101,7 @@ public class MovieController {
     }
     //Ham delete theo kieu status(Trang thai bang 0 la an khac khong van hien)
     @Operation(summary = "Delete Movie")
-    @DeleteMapping("/{movieId}")
+    @DeleteMapping("delete/{movieId}")
     public ResponseEntity<?> deleteMovie(@PathVariable int movieId) {
         try {
             movieService.deleteMovie(movieId);
@@ -111,5 +111,16 @@ public class MovieController {
             return Response.error(e);
         }
     }
-
+    //call api chi tiet bo phim
+    @Operation(summary = "Get Movie Detail")
+    @GetMapping("detail/{movieId}")
+    public ResponseEntity<?> getMovieDetail(@PathVariable int movieId) {
+        try {
+            MovieDTO movieDetails = new MovieDTO(movieService.getMovieDetails(movieId));
+            return Response.success(movieDetails);
+        } catch (RuntimeException e) {
+            logger.error("An error occurred while getting movie detail with ID {}: {}", movieId, e.getMessage());
+            return Response.error(e);
+        }
+    }
 }

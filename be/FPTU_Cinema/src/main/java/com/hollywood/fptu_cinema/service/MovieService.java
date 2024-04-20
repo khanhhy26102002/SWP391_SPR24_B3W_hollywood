@@ -25,6 +25,10 @@ public class MovieService {
 
         return movieRepository.findById(movieId);
     }
+    // Get details of a movie by ID
+    public Movie getMovieDetails(int movieId) {
+        return movieRepository.findById(movieId);
+    }
 
     //create movie
     public Movie createMovie(MovieRequest movieRequest, User currentUser) {
