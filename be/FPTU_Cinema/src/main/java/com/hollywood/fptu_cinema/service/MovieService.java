@@ -22,12 +22,14 @@ public class MovieService {
 
     //O day ko xai long ma xai integer
     public Movie findById(int movieId) {
-
-        return movieRepository.findById(movieId);
+        return movieRepository.findById(movieId)
+                .orElseThrow(() -> new RuntimeException("Movie not found with ID: " + movieId));
     }
+
     // Get details of a movie by ID
     public Movie getMovieDetails(int movieId) {
-        return movieRepository.findById(movieId);
+        return movieRepository.findById(movieId)
+                .orElseThrow(() -> new RuntimeException("Movie not found with ID: " + movieId));
     }
 
     //create movie
@@ -52,14 +54,10 @@ public class MovieService {
 
     //Delete Movie theo change status (khong phai xoa ma chi an thong tin bo phim)
     public void deleteMovie(int movieId) {
-        Movie movie = movieRepository.findById(movieId);
-        if (movie != null) {
-            movie.setStatus(0); // Set status to indicate deleted
-            movieRepository.save(movie);
-        } else {
-            // Handle the case where movie is not found
-            throw new RuntimeException("Movie not found with ID: " + movieId);
-        }
+        Movie movie = movieRepository.findById(movieId)
+                .orElseThrow(() -> new RuntimeException("Movie not found with ID: " + movieId));
+        movie.setStatus(0); // Set status to indicate deleted
+        movieRepository.save(movie);
     }
 
     private LocalTime parseDuration(String duration) {

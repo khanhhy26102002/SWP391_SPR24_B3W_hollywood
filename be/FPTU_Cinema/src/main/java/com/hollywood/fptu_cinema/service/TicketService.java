@@ -6,7 +6,6 @@ import com.hollywood.fptu_cinema.viewModel.BookingRequestDTO;
 import com.hollywood.fptu_cinema.viewModel.BookingResponseDTO;
 import com.hollywood.fptu_cinema.viewModel.SeatNumberDTO;
 import com.hollywood.fptu_cinema.viewModel.TicketDTO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -14,7 +13,9 @@ import java.sql.Date;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -126,10 +127,8 @@ public class TicketService {
         BigDecimal totalSeatsPrice = BigDecimal.ZERO;
         for (SeatNumberDTO seatNumberDTO : bookingRequest.getSeatNumbers()) {
             String seatNumber = seatNumberDTO.getSeatNumber();
-            Seat seat = seatRepository.findBySeatNumber(seatNumber);
-            if (seat == null) {
-                throw new IllegalArgumentException("Seat not found with number: " + seatNumber);
-            }
+            Seat seat = seatRepository.findBySeatNumber(seatNumber)
+                    .orElseThrow(() -> new IllegalArgumentException("Seat not found with number: " + seatNumber));
             // Check if the seat is already booked for this screening
             if (bookingSeatRepository.isSeatBooked(seat.getId(), screening.getId())) {
                 throw new IllegalStateException("Seat with number: " + seatNumber + " is already booked for this screening.");

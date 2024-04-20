@@ -1,21 +1,29 @@
 package com.hollywood.fptu_cinema.service;
 
+import com.hollywood.fptu_cinema.model.Movie;
+import com.hollywood.fptu_cinema.model.Room;
 import com.hollywood.fptu_cinema.model.Screening;
 import com.hollywood.fptu_cinema.model.User;
+import com.hollywood.fptu_cinema.repository.MovieRepository;
+import com.hollywood.fptu_cinema.repository.RoomRepository;
 import com.hollywood.fptu_cinema.repository.ScreeningRepository;
 import com.hollywood.fptu_cinema.viewModel.ScreeningRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class ScreeningService {
     private final ScreeningRepository screeningRepository;
+    private final MovieRepository movieRepository;
 
-    public ScreeningService(ScreeningRepository screeningRepository) {
+    private final RoomRepository roomRepository;
+
+    public ScreeningService(ScreeningRepository screeningRepository, MovieRepository movieRepository, RoomRepository roomRepository) {
         this.screeningRepository = screeningRepository;
+        this.movieRepository = movieRepository;
+        this.roomRepository = roomRepository;
     }
 
     public Screening findById(int screeningId) {
@@ -46,10 +54,17 @@ public class ScreeningService {
     }
 
     private void setScreeningDetails(Screening screening, ScreeningRequest screeningRequest, User currentUser) {
+        Movie movie = movieRepository.findById(screeningRequest.getMovieId())
+                .orElseThrow(() -> new RuntimeException("Movie not found with ID: " + screeningRequest.getMovieId()));
+        Room room = roomRepository.findById(screeningRequest.getRoomId())
+                .orElseThrow(() -> new RuntimeException("Room not found with ID: " + screeningRequest.getRoomId()));
 
-        screening.setEndTime(Instant.from(screeningRequest.getEnd_time()));
+        screening.setMovie(movie);
+        screening.setRoom(room);
+        screening.setUser(currentUser);  // Assign the current user to the screening
         screening.setStartTime(Instant.from(screeningRequest.getStart_time()));
-//        screening.setStatus(Instant.from(screeningRequest.getStatus()));
-
+        screening.setEndTime(Instant.from(screeningRequest.getEnd_time()));
+        screening.setDate(screeningRequest.getDate());
+        screening.setStatus(screeningRequest.getStatus());
     }
 }

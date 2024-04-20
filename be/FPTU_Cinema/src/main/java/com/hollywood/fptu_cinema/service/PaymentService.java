@@ -1,7 +1,10 @@
 package com.hollywood.fptu_cinema.service;
 
 import com.hollywood.fptu_cinema.model.*;
-import com.hollywood.fptu_cinema.repository.*;
+import com.hollywood.fptu_cinema.repository.BookingComboRepository;
+import com.hollywood.fptu_cinema.repository.BookingSeatRepository;
+import com.hollywood.fptu_cinema.repository.ImageRepository;
+import com.hollywood.fptu_cinema.repository.TicketRepository;
 import com.hollywood.fptu_cinema.viewModel.PaymentInfoDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
