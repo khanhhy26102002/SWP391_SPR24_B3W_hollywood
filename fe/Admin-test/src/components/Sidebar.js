@@ -11,7 +11,7 @@ const Sidebar = () => {
             <span class="nav-link">Navigation</span>
           </li>
           <li class="nav-item menu-items">
-            <a class="nav-link" href="../../index.html">
+            <a class="nav-link" href="./admin">
               <span class="menu-icon">
                 <i class="mdi mdi-speedometer"></i>
               </span>
@@ -27,7 +27,7 @@ const Sidebar = () => {
             </a>
           </li>
           <li class="nav-item menu-items">
-            <a class="nav-link" href="../../index.html">
+            <a class="nav-link" href="./ManageMovie">
               <span class="menu-icon">
                 <i class="mdi mdi-speedometer"></i>
               </span>

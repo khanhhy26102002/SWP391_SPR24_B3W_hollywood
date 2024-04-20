@@ -11,8 +11,9 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import FURules from "./components/FURule";
 import Moviedetail from "./components/dateil";
-import Dashboard from "./components/AdminPage";
 import ManageUser from "./components/ManageUser";
+import ManageMovie from "./components/ManageMovie";
+import Dashboard1 from "./components/Dashboard1";
 
 function App() {
   const [isLogin, setIsLogin] = useState(false);
@@ -25,7 +26,6 @@ function App() {
   return (
     <div className="App">
       <Router>
-        
             <Routes>
               <Route path="/" element={<Category />} />
               <Route path="/contact" element={<Contact/>}/>
@@ -35,8 +35,9 @@ function App() {
               <Route path="/register" element={<Register/>}/>
               <Route path="/rule" element={<FURules/>}/>
               <Route path="/detail" element={<Moviedetail/>}/>
-              <Route path="/admin" element={<Dashboard/>}/>
               <Route path="/manageuser" element={<ManageUser/>}/>
+              <Route path="/ManageMovie" element={<ManageMovie/>}></Route>
+              <Route path="/admin" element={<Dashboard1/>}></Route>
             </Routes>
       </Router>
     </div>
