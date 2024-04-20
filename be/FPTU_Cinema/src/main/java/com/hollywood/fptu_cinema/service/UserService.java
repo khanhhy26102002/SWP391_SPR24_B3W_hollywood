@@ -28,12 +28,12 @@ public class UserService {
 
 
     public String login(String phone, String email, String password) throws Exception {
-        Optional<User> user = userRepository.findByPhoneOrEmail(phone, email);
+        Optional<User> userOptional = userRepository.findByPhoneOrEmail(phone, email);
 
-        if (user.isPresent() && passwordEncoder.matches(password, user.get().getPassword())) {
-            return user.get().getUserName(); // Replace with appropriate username retrieval logic
+        if (userOptional.isPresent() && passwordEncoder.matches(password, userOptional.get().getPassword())) {
+            return userOptional.get().getUserName(); // Replace with appropriate username retrieval logic
         } else {
-            throw new Exception("Invalid login credentials");
+            throw new AccessDeniedException("Invalid login credentials");
         }
     }
 
@@ -53,8 +53,9 @@ public class UserService {
     }
 
     public void changePassword(String username, String oldPassword, String newPassword) {
-        User user = userRepository.findByUserName(username);
-        if (user != null && passwordEncoder.matches(oldPassword, user.getPassword())) {
+        User user = userRepository.findByUserName(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found."));
+        if (passwordEncoder.matches(oldPassword, user.getPassword())) {
             user.setPassword(passwordEncoder.encode(newPassword));
             userRepository.save(user);
         } else {
@@ -63,21 +64,25 @@ public class UserService {
     }
 
     public User findByUserName(String username) {
-        return userRepository.findByUserName(username);
+        return userRepository.findByUserName(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found."));
     }
 
     public void initiateResetPassword(String email) throws Exception {
-        User user = userRepository.findByEmail(email);
-        if (user != null) {
+        userRepository.findByEmail(email).ifPresentOrElse(user -> {
             String token = jwtTokenProvider.generateResetToken(user.getUserName());
             String resetPasswordLink = "http://localhost:8080/api/auth/resetPassword?token=" + token;
-            emailService.sendResetPasswordEmail(email, resetPasswordLink);
-        } else {
+            try {
+                emailService.sendResetPasswordEmail(email, resetPasswordLink);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }, () -> {
             throw new IllegalArgumentException("Email address not found.");
-        }
+        });
     }
 
-    public void resetPassword(String token, String newPassword, String confirmPassword) throws IllegalArgumentException, AccessDeniedException {
+    public void resetPassword(String token, String newPassword, String confirmPassword) {
         if (!newPassword.equals(confirmPassword)) {
             throw new IllegalArgumentException("Passwords do not match.");
         }
@@ -86,12 +91,11 @@ public class UserService {
         }
 
         String username = jwtTokenProvider.extractUsername(token);
-        User user = userRepository.findByUserName(username);
-        if (user == null) {
-            throw new IllegalArgumentException("User not found.");
-        }
+        User user = userRepository.findByUserName(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found."));
 
-        if (user.getRole().getId() != 2) {
+        // Assuming role check is necessary, ensure you have the logic to get the role ID
+        if (!user.getRole().getRoleName().equals("MEMBER")) {
             throw new AccessDeniedException("You do not have permission to reset password.");
         }
 

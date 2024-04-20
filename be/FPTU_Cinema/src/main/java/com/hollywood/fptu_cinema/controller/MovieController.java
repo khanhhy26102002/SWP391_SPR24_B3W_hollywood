@@ -99,6 +99,7 @@ public class MovieController {
             return Response.error(e);
         }
     }
+
     //Ham delete theo kieu status(Trang thai bang 0 la an khac khong van hien)
     @Operation(summary = "Delete Movie")
     @DeleteMapping("delete/{movieId}")
@@ -111,6 +112,7 @@ public class MovieController {
             return Response.error(e);
         }
     }
+
     //call api chi tiet bo phim
     @Operation(summary = "Get Movie Detail")
     @GetMapping("detail/{movieId}")
