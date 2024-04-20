@@ -26,6 +26,14 @@ const Sidebar = () => {
               <span class="menu-title">Manage User</span>
             </a>
           </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="../../index.html">
+              <span class="menu-icon">
+                <i class="mdi mdi-speedometer"></i>
+              </span>
+              <span class="menu-title">Manage Movie</span>
+            </a>
+          </li>
         </ul>
       </nav>
     );
