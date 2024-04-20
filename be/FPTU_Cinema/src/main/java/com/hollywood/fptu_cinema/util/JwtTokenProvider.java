@@ -17,6 +17,7 @@ public class JwtTokenProvider {
     private static final String SECRET = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
     private final Key signKey;
     private final Set<String> blacklist = new HashSet<>();
+    private static final long ACCESS_TOKEN_VALIDITY_MS = 1_800_000; // 30 minutes
 
     public JwtTokenProvider() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET);
@@ -50,12 +51,10 @@ public class JwtTokenProvider {
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
-        if (isTokenBlacklisted(token)) {
-            return false;
-        }
-
         final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        return !isTokenExpired(token) &&
+                username.equals(userDetails.getUsername()) &&
+                !isTokenBlacklisted(token);
     }
 
     public Boolean validateResetToken(String token) {
@@ -68,6 +67,15 @@ public class JwtTokenProvider {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public Boolean validateRefreshToken(String token) {
+        // Kiểm tra token có trong blacklist không
+        if (isTokenBlacklisted(token)) {
+            return false;
+        }
+        // Kiểm tra token đã hết hạn chưa
+        return !isTokenExpired(token);
     }
 
     public String generateResetToken(String userName) {
@@ -86,7 +94,7 @@ public class JwtTokenProvider {
                 .setClaims(claims)
                 .setSubject(userName)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30))
+                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALIDITY_MS))
                 .signWith(signKey, SignatureAlgorithm.HS256)
                 .compact();
     }

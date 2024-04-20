@@ -6,11 +6,10 @@ import com.hollywood.fptu_cinema.repository.BookingSeatRepository;
 import com.hollywood.fptu_cinema.repository.ImageRepository;
 import com.hollywood.fptu_cinema.repository.TicketRepository;
 import com.hollywood.fptu_cinema.viewModel.PaymentInfoDTO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -24,7 +23,6 @@ public class PaymentService {
 
     private final ImageRepository imageRepository;
 
-    @Autowired
     private final BookingComboRepository bookingComboRepository;
 
     public PaymentService(ImageRepository imageRepository, TicketRepository ticketRepository, BookingSeatRepository bookingSeatRepository, BookingComboRepository bookingComboRepository) {
@@ -35,7 +33,6 @@ public class PaymentService {
     }
 
     public PaymentInfoDTO preparePaymentInfo(int ticketId) {
-        // Lấy thông tin vé từ cơ sở dữ liệu
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new NoSuchElementException("Ticket not found with ID: " + ticketId));
 
@@ -43,41 +40,45 @@ public class PaymentService {
         Movie movie = screening.getMovie();
         Room room = screening.getRoom();
 
-        // Lấy danh sách ghế từ các BookingSeat liên kết với vé
         List<BookingSeat> bookingSeats = bookingSeatRepository.findByTicketId(ticketId);
         List<String> seatNumbers = bookingSeats.stream()
                 .map(bs -> bs.getSeat().getSeatNumber())
                 .collect(Collectors.toList());
 
-        // Tính tổng giá ghế
-        BigDecimal totalSeatsPrice = bookingSeats.stream()
+        BigDecimal totalSeatsPrice = calculateTotalPrice(bookingSeats);
+
+        List<BookingCombo> bookingCombos = bookingComboRepository.findByTicketId(ticketId);
+        BigDecimal totalComboPrice = calculateTotalPrice(bookingCombos);
+
+        String imagePath = imageRepository.findByMovieId(movie.getId()).stream()
+                .findFirst()
+                .map(Image::getPath)
+                .orElse(null);
+
+        return new PaymentInfoDTO(
+                movie.getName(),
+                imagePath,
+                movie.getRated(),
+                screening.getStartTime().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+                room.getRoomNumber(),
+                seatNumbers,
+                totalSeatsPrice,
+                totalComboPrice,
+                totalSeatsPrice.add(totalComboPrice),
+                ticket.getExpirationTime().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+                "e-wallet"
+        );
+    }
+
+    private <T> BigDecimal calculateTotalPrice(List<T> items) {
+        if (items.isEmpty()) {
+            return BigDecimal.ZERO;
+        }
+
+        return items.stream()
+                .filter(item -> item instanceof BookingSeat)
+                .map(item -> (BookingSeat) item)
                 .map(BookingSeat::getTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        // Lấy danh sách combo từ các BookingCombo liên kết với vé và tính tổng giá combo
-        List<BookingCombo> bookingCombos = bookingComboRepository.findByTicketId(ticketId);
-        BigDecimal totalComboPrice = bookingCombos.stream()
-                .map(BookingCombo::getTotalAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        // Lấy hình ảnh cho phim
-        List<Image> images = imageRepository.findByMovieId(movie.getId());
-        String imagePath = (images != null && !images.isEmpty()) ? images.get(0).getPath() : null;
-
-        // Tạo PaymentInfoDTO để trả về
-        PaymentInfoDTO paymentInfo = new PaymentInfoDTO();
-        paymentInfo.setMovieName(movie.getName());
-        paymentInfo.setImagePath(imagePath);
-        paymentInfo.setRated(movie.getRated());
-        paymentInfo.setScreeningDateTime(LocalDateTime.from(screening.getStartTime()));
-        paymentInfo.setRoomNumber(room.getRoomNumber());
-        paymentInfo.setSeatNumbers(seatNumbers);
-        paymentInfo.setTotalSeatsPrice(totalSeatsPrice);
-        paymentInfo.setTotalComboPrice(totalComboPrice);
-        paymentInfo.setTotalAmount(totalSeatsPrice.add(totalComboPrice));
-        paymentInfo.setExpirationTime(LocalDateTime.from(ticket.getExpirationTime()));
-        paymentInfo.setPaymentMethod("Ví điện tử");
-
-        return paymentInfo;
     }
 }

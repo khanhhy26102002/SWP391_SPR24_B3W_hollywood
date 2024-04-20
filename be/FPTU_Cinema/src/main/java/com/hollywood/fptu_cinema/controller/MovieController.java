@@ -16,6 +16,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController()
@@ -61,12 +62,12 @@ public class MovieController {
             if (username == null) {
                 throw new Exception("User not authenticated");
             }
-            User currentUser = userService.findByUserName(username);
-            if (currentUser == null) {
+            Optional<User> currentUser = userService.findByUserName(username);
+            if (currentUser.isEmpty()) {
                 throw new Exception("User not found");
             }
 
-            MovieDTO movie = new MovieDTO(movieService.createMovie(movieRequest, currentUser));
+            MovieDTO movie = new MovieDTO(movieService.createMovie(movieRequest, currentUser.orElse(null)));
             return Response.success(movie);
         } catch (Exception e) {
             logger.error("An error occurred while creating the movie: {}", e.getMessage());
@@ -89,8 +90,8 @@ public class MovieController {
             if (username == null) {
                 throw new Exception("User not authenticated"); // Ném ngoại lệ nếu không có người dùng nào được xác thực
             }
-            User user = userService.findByUserName(username);
-            movieService.updateMovie(movieRequest, movie, user);
+            Optional<User> user = userService.findByUserName(username);
+            movieService.updateMovie(movieRequest, movie, user.orElse(null));
 
             // Trả về phản hồi thành công với thông tin của bộ phim đã cập nhật
             return Response.success(movieRequest);
