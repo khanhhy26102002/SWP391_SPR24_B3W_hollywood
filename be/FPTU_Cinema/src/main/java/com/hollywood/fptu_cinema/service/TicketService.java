@@ -5,6 +5,7 @@ import com.hollywood.fptu_cinema.model.*;
 import com.hollywood.fptu_cinema.repository.*;
 import com.hollywood.fptu_cinema.viewModel.BookingRequestDTO;
 import com.hollywood.fptu_cinema.viewModel.BookingResponseDTO;
+import com.hollywood.fptu_cinema.viewModel.SeatNumberDTO;
 import com.hollywood.fptu_cinema.viewModel.TicketDTO;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -91,15 +93,18 @@ public class TicketService {
             throw new IllegalStateException("Seats must be selected before selecting combos.");
         }
         Ticket ticket = createNewTicket(user, screening);
+        ticket = ticketRepository.save(ticket);
         if (currentTime.isAfter(ticket.getExpirationTime())) {
             throw new IllegalStateException("Booking time has expired. Please try again.");
         }
         BigDecimal totalSeatsPrice = calculateTotalSeatsPrice(bookingRequest, ticket, screening);
+        saveBookingSeats(bookingRequest.getSeatNumbers(), ticket);
         BigDecimal totalComboPrice = calculateTotalComboPrice(bookingRequest);
         saveSelectedCombos(bookingRequest, ticket);
 
-        ticket.setTotalPrice(totalSeatsPrice.add(totalComboPrice));
-        ticket = ticketRepository.save(ticket);
+        BigDecimal totalPrice = totalSeatsPrice.add(totalComboPrice);
+        ticket.setTotalPrice(totalPrice);
+        ticketRepository.save(ticket);
 
         return createBookingResponse(ticket, totalSeatsPrice, totalComboPrice);
     }
@@ -156,10 +161,41 @@ public class TicketService {
                 });
     }
 
+
     private BookingResponseDTO createBookingResponse(Ticket ticket, BigDecimal totalSeatsPrice, BigDecimal totalComboPrice) {
         BookingResponseDTO response = new BookingResponseDTO();
         response.setTicketId(ticket.getId());
         response.setTotalPrice(totalSeatsPrice.add(totalComboPrice));
         return response;
+    }
+
+    private void saveBookingSeats(List<SeatNumberDTO> seatNumbers, Ticket ticket) {
+        for (SeatNumberDTO seatNumberDTO : seatNumbers) {
+            // Tìm seat dựa trên seatNumber
+            Optional<Seat> optionalSeat = seatRepository.findBySeatNumber(seatNumberDTO.getSeatNumber());
+
+            if (optionalSeat.isPresent()) {
+                Seat seat = optionalSeat.get();
+                if (seat.getStatus() == 1) { // Kiểm tra xem ghế có đang trống không
+                    // Cập nhật trạng thái ghế thành đã được đặt
+                    seat.setStatus(0);
+                    seatRepository.save(seat);
+
+                    // Tạo BookingSeat mới với thông tin seat và ticket
+                    BookingSeat bookingSeat = new BookingSeat();
+                    bookingSeat.setSeat(seat); // Lấy đối tượng Seat từ Optional
+                    bookingSeat.setTicket(ticket);
+
+                    // Lưu BookingSeat
+                    bookingSeatRepository.save(bookingSeat);
+                } else {
+                    // Xử lý trường hợp ghế đã được đặt
+                    throw new IllegalStateException("Seat is already booked: " + seatNumberDTO.getSeatNumber());
+                }
+            } else {
+                // Xử lý trường hợp không tìm thấy Seat
+                throw new NoSuchElementException("Seat not found with number: " + seatNumberDTO.getSeatNumber());
+            }
+        }
     }
 }
