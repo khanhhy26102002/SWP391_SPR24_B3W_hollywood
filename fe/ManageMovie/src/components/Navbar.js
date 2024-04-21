@@ -12,7 +12,7 @@ const Navbar = () => {
             <ul class="navbar-nav navbar-nav-right">
             <li><a href="#">
                     <div class="navbar-profile">
-                        <img class="img-xs rounded-circle" src="../../assets/images/faces/face15.jpg" alt=""/>
+                        <img class="img-xs rounded-circle" src="./img/images.jpg" alt=""/>
                     </div>
                 </a>
                                     <ul className="dropdown">
