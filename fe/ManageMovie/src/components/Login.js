@@ -1,34 +1,45 @@
 import "../styles/style.css";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
-import avt from "../img/images.jpg";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { userLogin } from "../api/authApi";
+import axios from "axios";
 
 const Login = () => {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [err, setErr] = useState("");
+    const [email, setEmail] = useState([]);
+    const [password, setPassword] = useState([]);
     const navigate = useNavigate();
+    const handleLogin = async()=>{
+        try{
+            const response = await axios.post('http://localhost:8080/api/auth/login',{
+                email,
+                password,
+            });
+            const token = response.data.token;
+            localStorage.setItem('token',token);
+        }catch(error){
+            console.error('Error logging in',error);
+        }
+    };
     
 
     const handleSubmit = async () => {
         await userLogin(email,password)
       .then((res) => {
         navigate("/category", {state: true});
-        setErr("");
+        // setErr("");
       })
       .catch((error) => {
         console.log(error);
-        setErr("Email or password incorrect !!!!");
+        // setErr("Email or password incorrect !!!!");
       });
     }
 
     return (
         <>
         <Header/>
-            <section className="normal-breadcrumb set-bg" style={{backgroundImage:`url(${avt})`}}>
+            <section className="normal-breadcrumb set-bg" style={{backgroundImage:`url(./img/images.jpg)`}}>
         <div className="container">
             <div className="row">
                 <div className="col-lg-12 text-center">
@@ -56,9 +67,9 @@ const Login = () => {
                                 <input type="text" placeholder="Password" required value={password} onChange={(e) => setPassword(e.target.value)}/>
                                 <span className="icon_lock"></span>
                             </div>
-                            { err !== "" && (
+                            {/* { err !== "" && (
                                 <p style={{color: "white",textAlign:"left"}}>{err}</p>
-                            )}
+                            )} */}
                             <button type="submit" className="buy-ticket">Login</button>
                         </form>
                         <a href="#" className="forget_pass">Forgot Your Password?</a>
