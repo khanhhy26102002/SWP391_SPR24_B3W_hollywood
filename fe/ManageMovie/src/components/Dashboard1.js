@@ -18,16 +18,7 @@ export default function Dashboard1() {
    <>
      <Sidebar/>
      <Navbar/>
-     {/* <div>
-      <h1>Movie Count: {countMovies()}</h1>
-      <ul>
-        {movies.map(movie => (
-          <li key={movie.id}>
-            {movie.title} - {movie.genre}
-          </li>
-        ))}
-      </ul>
-    </div> */}
+     <ManageMovie/>
           {/* <li class="nav-item menu-items">
             <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
               <span class="menu-icon">
