@@ -4,7 +4,7 @@ const Sidebar = () => {
     return(
         <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
-          <a class="sidebar-brand brand-logo" href="#"><img src="../img/dhn.jpg" alt="logo" /></a>
+          <a class="sidebar-brand brand-logo" href="#"><img src="./img/logo.png" alt="logo" /></a>
         </div>
         <ul class="nav">
           <li class="nav-item nav-category">

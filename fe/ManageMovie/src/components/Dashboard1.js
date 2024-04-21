@@ -18,7 +18,7 @@ export default function Dashboard1() {
    <>
      <Sidebar/>
      <Navbar/>
-     <div>
+     {/* <div>
       <h1>Movie Count: {countMovies()}</h1>
       <ul>
         {movies.map(movie => (
@@ -27,7 +27,7 @@ export default function Dashboard1() {
           </li>
         ))}
       </ul>
-    </div>
+    </div> */}
           {/* <li class="nav-item menu-items">
             <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
               <span class="menu-icon">
