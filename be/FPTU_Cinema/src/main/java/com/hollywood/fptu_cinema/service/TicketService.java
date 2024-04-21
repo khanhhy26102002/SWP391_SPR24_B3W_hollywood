@@ -1,5 +1,6 @@
 package com.hollywood.fptu_cinema.service;
 
+import com.hollywood.fptu_cinema.enums.TicketStatus;
 import com.hollywood.fptu_cinema.model.*;
 import com.hollywood.fptu_cinema.repository.*;
 import com.hollywood.fptu_cinema.viewModel.BookingRequestDTO;
@@ -89,8 +90,10 @@ public class TicketService {
         if (bookingRequest.getSeatNumbers() == null || bookingRequest.getSeatNumbers().isEmpty()) {
             throw new IllegalStateException("Seats must be selected before selecting combos.");
         }
-
         Ticket ticket = createNewTicket(user, screening);
+        if (currentTime.isAfter(ticket.getExpirationTime())) {
+            throw new IllegalStateException("Booking time has expired. Please try again.");
+        }
         BigDecimal totalSeatsPrice = calculateTotalSeatsPrice(bookingRequest, ticket, screening);
         BigDecimal totalComboPrice = calculateTotalComboPrice(bookingRequest);
         saveSelectedCombos(bookingRequest, ticket);
@@ -107,7 +110,7 @@ public class TicketService {
         ticket.setScreening(screening);
         ticket.setCreatedDate(Instant.now());
         ticket.setExpirationTime(Instant.now().plus(Duration.ofMinutes(15)));
-        ticket.setStatus(1); // 1 = Chưa thanh toán
+        ticket.setStatus(TicketStatus.UNPAID);
         return ticket;
     }
 
