@@ -1,12 +1,33 @@
-import React from 'react'
+import React, {useState} from 'react'
 import Sidebar from './Sidebar'
 import Navbar from './Navbar'
 import ManageMovie from '../components/ManageMovie'
 export default function Dashboard1() {
+  const [movies, setMovies] = useState([
+    { id: 1, title: 'Movie 1', genre: 'Action' },
+    { id: 2, title: 'Movie 2', genre: 'Comedy' },
+    { id: 3, title: 'Movie 3', genre: 'Drama' },
+    // Thêm các phần tử phim khác tại đây
+  ]);
+
+  // Hàm để tính số lượng phim
+  const countMovies = () => {
+    return movies.length;
+  };
   return (
    <>
      <Sidebar/>
      <Navbar/>
+     <div>
+      <h1>Movie Count: {countMovies()}</h1>
+      <ul>
+        {movies.map(movie => (
+          <li key={movie.id}>
+            {movie.title} - {movie.genre}
+          </li>
+        ))}
+      </ul>
+    </div>
           {/* <li class="nav-item menu-items">
             <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
               <span class="menu-icon">
