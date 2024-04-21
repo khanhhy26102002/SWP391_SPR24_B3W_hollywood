@@ -1,7 +1,6 @@
 import "../styles/style.css";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
-import avt from "../img/images.jpg";
 import { Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -17,7 +16,7 @@ const Register = () =>{
     return(
         <>
             <Header/>
-            <section class="normal-breadcrumb set-bg" style={{backgroundImage:`url(${avt})`}}>
+            <section class="normal-breadcrumb set-bg" style={{backgroundImage:`url(./img/images.jpg)`}}>
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
