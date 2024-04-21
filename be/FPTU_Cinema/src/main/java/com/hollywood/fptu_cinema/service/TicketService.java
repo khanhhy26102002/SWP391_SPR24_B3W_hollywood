@@ -1,22 +1,19 @@
 package com.hollywood.fptu_cinema.service;
 
+import com.hollywood.fptu_cinema.enums.SeatStatus;
 import com.hollywood.fptu_cinema.enums.TicketStatus;
 import com.hollywood.fptu_cinema.model.*;
 import com.hollywood.fptu_cinema.repository.*;
 import com.hollywood.fptu_cinema.viewModel.BookingRequestDTO;
 import com.hollywood.fptu_cinema.viewModel.BookingResponseDTO;
-import com.hollywood.fptu_cinema.viewModel.SeatNumberDTO;
 import com.hollywood.fptu_cinema.viewModel.TicketDTO;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.sql.Date;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.ZoneId;
+import java.time.*;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -82,30 +79,44 @@ public class TicketService {
     }
 
     public BookingResponseDTO createBooking(BookingRequestDTO bookingRequest, User user) {
-        Screening screening = screeningRepository.findById(bookingRequest.getScreeningId())
-                .orElseThrow(() -> new NoSuchElementException("Screening not found with ID: " + bookingRequest.getScreeningId()));
+        LocalDate date = bookingRequest.getScreeningDate();
+        LocalTime time = LocalTime.parse(bookingRequest.getScreeningTime());
+        ZoneId zoneId = ZoneId.systemDefault(); // or any other specific time zone if required
+
+        // Convert LocalTime to Instant for the start of the screening on that date
+        Instant screeningStartInstant = LocalDateTime.of(date, time).atZone(zoneId).toInstant();
+
+        // Tìm kiếm suất chiếu dựa trên ngày và thời gian bắt đầu
+        Screening screening = screeningRepository.findByDateAndStartTime(date, screeningStartInstant)
+                .orElseThrow(() -> new NoSuchElementException("No screening found for the selected date and time"));
+        // Kiểm tra thời gian hiện tại không sau 1 giờ trước thời gian bắt đầu suất chiếu
         Instant currentTime = Instant.now();
         Instant screeningStartTime = screening.getStartTime();
         if (currentTime.isAfter(screeningStartTime.minus(Duration.ofHours(1)))) {
             throw new IllegalStateException("Cannot create booking within 1 hour before screening start time.");
         }
-        if (bookingRequest.getSeatNumbers() == null || bookingRequest.getSeatNumbers().isEmpty()) {
-            throw new IllegalStateException("Seats must be selected before selecting combos.");
-        }
+
+        // Tạo vé mới và kiểm tra thời gian hết hạn
         Ticket ticket = createNewTicket(user, screening);
-        ticket = ticketRepository.save(ticket);
         if (currentTime.isAfter(ticket.getExpirationTime())) {
             throw new IllegalStateException("Booking time has expired. Please try again.");
         }
-        BigDecimal totalSeatsPrice = calculateTotalSeatsPrice(bookingRequest, ticket, screening);
-        saveBookingSeats(bookingRequest.getSeatNumbers(), ticket);
-        BigDecimal totalComboPrice = calculateTotalComboPrice(bookingRequest);
-        saveSelectedCombos(bookingRequest, ticket);
 
+        // Tính toán giá ghế và lưu thông tin đặt ghế
+        BigDecimal totalSeatsPrice = calculateTotalSeatsPrice(bookingRequest, ticket, screening);
+
+        // Tính toán giá combo và lưu thông tin đặt combo
+        BigDecimal totalComboPrice = calculateTotalComboPrice(bookingRequest);
+
+        // Lưu thông tin đặt ghế và combo
+        saveBookingSeatsAndCombos(bookingRequest, ticket, screening);
+
+        // Cập nhật tổng giá vé và lưu vé
         BigDecimal totalPrice = totalSeatsPrice.add(totalComboPrice);
         ticket.setTotalPrice(totalPrice);
         ticketRepository.save(ticket);
 
+        // Tạo và trả về thông tin phản hồi đặt vé
         return createBookingResponse(ticket, totalSeatsPrice, totalComboPrice);
     }
 
@@ -113,8 +124,7 @@ public class TicketService {
         Ticket ticket = new Ticket();
         ticket.setUser(user);
         ticket.setScreening(screening);
-        ticket.setCreatedDate(Instant.now());
-        ticket.setExpirationTime(Instant.now().plus(Duration.ofMinutes(15)));
+        ticket.setExpirationTime(Instant.now().plus(Duration.ofMinutes(15))); // Đặt thời hạn hết hạn đặt vé
         ticket.setStatus(TicketStatus.UNPAID);
         return ticket;
     }
@@ -145,20 +155,43 @@ public class TicketService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    private void saveSelectedCombos(BookingRequestDTO bookingRequest, Ticket ticket) {
-        bookingRequest.getComboQuantities().entrySet().stream()
+    private void saveBookingSeatsAndCombos(BookingRequestDTO bookingRequest, Ticket ticket, Screening screening) {
+        // Lưu ghế đã đặt
+        List<BookingSeat> bookingSeats = bookingRequest.getSeatNumbers().stream()
+                .map(seatNumberDTO -> seatRepository.findBySeatNumber(seatNumberDTO.getSeatNumber())
+                        .filter(seat -> !bookingSeatRepository.isSeatBooked(seat.getId(), screening.getId()))
+                        .map(seat -> {
+                            seat.setStatus(SeatStatus.UNAVAILABLE); // Đặt ghế không còn trống
+                            seatRepository.save(seat);
+
+                            BookingSeat bookingSeat = new BookingSeat();
+                            bookingSeat.setTicket(ticket);
+                            bookingSeat.setSeat(seat);
+                            bookingSeat.setTotal(seat.getSeatPrice());
+                            return bookingSeat;
+                        })
+                        .orElseThrow(() -> new IllegalArgumentException("Seat not found or already booked with number: " + seatNumberDTO.getSeatNumber())))
+                .collect(Collectors.toList());
+
+        bookingSeatRepository.saveAll(bookingSeats); // Lưu tất cả thông tin đặt ghế một lần
+
+        // Lưu combo đã đặt
+        List<BookingCombo> bookingCombos = bookingRequest.getComboQuantities().entrySet().stream()
                 .filter(entry -> entry.getValue() > 0)
-                .forEach(entry -> {
+                .map(entry -> {
                     Combo combo = comboRepository.findById(entry.getKey())
                             .orElseThrow(() -> new NoSuchElementException("Combo not found with ID: " + entry.getKey()));
-                    BigDecimal totalAmount = combo.getComboPrice().multiply(BigDecimal.valueOf(entry.getValue()));
+
                     BookingCombo bookingCombo = new BookingCombo();
                     bookingCombo.setTicket(ticket);
                     bookingCombo.setCombo(combo);
                     bookingCombo.setQuantity(entry.getValue());
-                    bookingCombo.setTotalAmount(totalAmount);
-                    bookingComboRepository.save(bookingCombo);
-                });
+                    bookingCombo.setTotalAmount(combo.getComboPrice().multiply(BigDecimal.valueOf(entry.getValue())));
+                    return bookingCombo;
+                })
+                .collect(Collectors.toList());
+
+        bookingComboRepository.saveAll(bookingCombos); // Lưu tất cả thông tin đặt combo một lần
     }
 
 
@@ -169,33 +202,4 @@ public class TicketService {
         return response;
     }
 
-    private void saveBookingSeats(List<SeatNumberDTO> seatNumbers, Ticket ticket) {
-        for (SeatNumberDTO seatNumberDTO : seatNumbers) {
-            // Tìm seat dựa trên seatNumber
-            Optional<Seat> optionalSeat = seatRepository.findBySeatNumber(seatNumberDTO.getSeatNumber());
-
-            if (optionalSeat.isPresent()) {
-                Seat seat = optionalSeat.get();
-                if (seat.getStatus() == 1) { // Kiểm tra xem ghế có đang trống không
-                    // Cập nhật trạng thái ghế thành đã được đặt
-                    seat.setStatus(0);
-                    seatRepository.save(seat);
-
-                    // Tạo BookingSeat mới với thông tin seat và ticket
-                    BookingSeat bookingSeat = new BookingSeat();
-                    bookingSeat.setSeat(seat); // Lấy đối tượng Seat từ Optional
-                    bookingSeat.setTicket(ticket);
-
-                    // Lưu BookingSeat
-                    bookingSeatRepository.save(bookingSeat);
-                } else {
-                    // Xử lý trường hợp ghế đã được đặt
-                    throw new IllegalStateException("Seat is already booked: " + seatNumberDTO.getSeatNumber());
-                }
-            } else {
-                // Xử lý trường hợp không tìm thấy Seat
-                throw new NoSuchElementException("Seat not found with number: " + seatNumberDTO.getSeatNumber());
-            }
-        }
-    }
 }

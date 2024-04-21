@@ -1,5 +1,6 @@
 package com.hollywood.fptu_cinema.model;
 
+import com.hollywood.fptu_cinema.enums.SeatStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -37,8 +38,9 @@ public class Seat {
     private BigDecimal seatPrice;
 
     @NotNull
+    @Enumerated(EnumType.ORDINAL)
     @Column(name = "status", nullable = false)
-    private Integer status;
+    private SeatStatus status;
 
     @Size(max = 10)
     @NotNull

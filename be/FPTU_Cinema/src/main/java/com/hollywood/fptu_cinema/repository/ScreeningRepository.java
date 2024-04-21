@@ -6,9 +6,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface ScreeningRepository extends JpaRepository<Screening, Integer> {
     @Query("SELECT s FROM Screening s WHERE s.endTime < :instant")
     List<Screening> findFinishedScreenings(@Param("instant") Instant instant);
+
+    Optional<Screening> findByDateAndStartTime(LocalDate date, Instant startTime);
 }

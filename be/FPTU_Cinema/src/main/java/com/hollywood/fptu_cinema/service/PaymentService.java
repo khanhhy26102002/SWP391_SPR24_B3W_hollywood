@@ -88,5 +88,4 @@ public class PaymentService {
                 .map(BookingCombo::getTotalAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
-
 }
