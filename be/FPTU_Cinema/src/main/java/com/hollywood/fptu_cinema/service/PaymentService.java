@@ -9,6 +9,7 @@ import com.hollywood.fptu_cinema.viewModel.PaymentInfoDTO;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -45,40 +46,47 @@ public class PaymentService {
                 .map(bs -> bs.getSeat().getSeatNumber())
                 .collect(Collectors.toList());
 
-        BigDecimal totalSeatsPrice = calculateTotalPrice(bookingSeats);
+        BigDecimal totalSeatsPrice = calculateTotalPriceForSeats(bookingSeats);
 
         List<BookingCombo> bookingCombos = bookingComboRepository.findByTicketId(ticketId);
-        BigDecimal totalComboPrice = calculateTotalPrice(bookingCombos);
+        BigDecimal totalComboPrice = calculateTotalPriceForCombos(bookingCombos);
 
+        // Fetch image path unconditionally as it is needed for every payment detail view
         String imagePath = imageRepository.findByMovieId(movie.getId()).stream()
                 .findFirst()
                 .map(Image::getPath)
                 .orElse(null);
 
+        // Convert time zones only once
+        ZoneId defaultZoneId = ZoneId.systemDefault();
+        LocalDateTime startTime = screening.getStartTime().atZone(defaultZoneId).toLocalDateTime();
+        LocalDateTime expirationTime = ticket.getExpirationTime().atZone(defaultZoneId).toLocalDateTime();
+
         return new PaymentInfoDTO(
                 movie.getName(),
                 imagePath,
                 movie.getRated(),
-                screening.getStartTime().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+                startTime,
                 room.getRoomNumber(),
                 seatNumbers,
                 totalSeatsPrice,
                 totalComboPrice,
                 totalSeatsPrice.add(totalComboPrice),
-                ticket.getExpirationTime().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+                expirationTime,
                 "e-wallet"
         );
     }
 
-    private <T> BigDecimal calculateTotalPrice(List<T> items) {
-        if (items.isEmpty()) {
-            return BigDecimal.ZERO;
-        }
-
-        return items.stream()
-                .filter(item -> item instanceof BookingSeat)
-                .map(item -> (BookingSeat) item)
+    private BigDecimal calculateTotalPriceForSeats(List<BookingSeat> bookingSeats) {
+        return bookingSeats.stream()
                 .map(BookingSeat::getTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
+
+    private BigDecimal calculateTotalPriceForCombos(List<BookingCombo> bookingCombos) {
+        return bookingCombos.stream()
+                .map(BookingCombo::getTotalAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
 }

@@ -25,7 +25,6 @@ public class BookingSeat {
     @JoinColumn(name = "seat_id")
     private Seat seat;
 
-    @NotNull
-    @Column(name = "total", nullable = false, precision = 10, scale = 2)
-    private BigDecimal total;
+    @Column(name = "total", precision = 10, scale = 2)
+    private BigDecimal total = BigDecimal.ZERO;
 }

@@ -29,8 +29,7 @@ public class BookingCombo {
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
-    @NotNull
-    @Column(name = "total_amount", nullable = false, precision = 10, scale = 2)
-    private BigDecimal totalAmount;
+    @Column(name = "total_amount", precision = 10, scale = 2)
+    private BigDecimal totalAmount = BigDecimal.ZERO;
 
 }

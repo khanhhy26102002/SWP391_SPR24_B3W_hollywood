@@ -28,9 +28,8 @@ public class Ticket {
     @JoinColumn(name = "screening_id")
     private Screening screening;
 
-    @NotNull
-    @Column(name = "total_price", nullable = false, precision = 10, scale = 2)
-    private BigDecimal totalPrice;
+    @Column(name = "total_price", precision = 10, scale = 2)
+    private BigDecimal totalPrice = BigDecimal.ZERO;
 
     @NotNull
     @Column(name = "created_date", nullable = false)
@@ -51,5 +50,15 @@ public class Ticket {
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "status", nullable = false)
     private TicketStatus status;
+
+    @PrePersist
+    public void onCreate() {
+        createdDate = Instant.now();
+    }
+
+    @PreUpdate
+    public void onUpdate() {
+        updatedDate = Instant.now();
+    }
 
 }
