@@ -46,7 +46,11 @@ public class ScreeningService {
     public List<Screening> listScreenings() {
         return screeningRepository.findByStatusNot(0);
     }
-
+    // Get details of a screening by ID
+    public Screening getScreeningDetails(int screeningId) {
+        return screeningRepository.findById(screeningId)
+                .orElseThrow(() -> new RuntimeException("Screening not found with ID: " + screeningId));
+    }
     public void deleteScreening(int screeningId) {
         Screening screening = screeningRepository.findById(screeningId)
                 .orElseThrow(() -> new RuntimeException("Screening not found with ID: " + screeningId));

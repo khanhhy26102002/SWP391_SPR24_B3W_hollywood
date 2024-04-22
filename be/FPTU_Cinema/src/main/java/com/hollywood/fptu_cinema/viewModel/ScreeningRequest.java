@@ -8,6 +8,7 @@ import java.time.LocalDate;
 
 @Data
 public class ScreeningRequest {
+    private Integer screeningId;
     private String movieName;
     private String roomNumber;
     private String createdBy;
@@ -22,6 +23,7 @@ public class ScreeningRequest {
         this.start_time = screening.getStartTime();
         this.end_time = screening.getEndTime();
         this.date =screening.getDate();
+        this.screeningId = screening.getId();
 
     }
 }
