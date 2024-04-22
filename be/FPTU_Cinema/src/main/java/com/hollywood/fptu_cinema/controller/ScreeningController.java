@@ -11,28 +11,24 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
 @RestController()
 @RequestMapping(path = "api/screening")
 public class ScreeningController {
     private static final Logger logger = LogManager.getLogger(ScreeningController.class);
     private final ScreeningService screeningService;
-    private final UserService userService;
 
     public ScreeningController(ScreeningService screeningService, UserService userService) {
         this.screeningService = screeningService;
-        this.userService = userService;
     }
     //Danh sach tat ca xuat chieu
     @Operation(summary = "List Screening Movie")
     @GetMapping("/listScreeningMovie")
-    //do phan hoi tu may chu tra ve nen xai response
+    //do phan hoi tu may chu tra ve nen xai responseentity
     public ResponseEntity<?> listScreening() {
         try {
             List<ScreeningRequest> screeningRequests = screeningService.listScreenings().stream()
@@ -49,6 +45,7 @@ public class ScreeningController {
             return Response.error(e);
         }
     }
+
     //Danh sach chi tiet cua 1 xuat chieu
     @Operation(summary = "Get Screening Detail")
     @GetMapping("detail/{screeningId}")
@@ -63,5 +60,17 @@ public class ScreeningController {
         }
     }
 
+    //Ham delete theo kieu status(Trang thai bang 0 la an khac khong van hien)
+    @Operation(summary = "Delete Screening")
+    @DeleteMapping("delete/{screeningId}")
+    public ResponseEntity<?> deleteScreening(@PathVariable int screeningId) {
+        try {
+            screeningService.deleteScreening(screeningId);
+            return Response.success("Screening deleted successfully");
+        } catch (RuntimeException e) {
+            logger.error("An error occurred while deleting screening with ID {}: {}", screeningId, e.getMessage());
+            return Response.error(e);
+        }
+    }
 
 }
