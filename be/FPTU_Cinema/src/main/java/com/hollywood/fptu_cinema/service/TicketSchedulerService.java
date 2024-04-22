@@ -1,5 +1,6 @@
 package com.hollywood.fptu_cinema.service;
 
+import com.hollywood.fptu_cinema.enums.SeatStatus;
 import com.hollywood.fptu_cinema.enums.TicketStatus;
 import com.hollywood.fptu_cinema.model.BookingSeat;
 import com.hollywood.fptu_cinema.model.Screening;
@@ -49,8 +50,7 @@ public class TicketSchedulerService {
                 for (BookingSeat bookedSeat : bookedSeats) {
                     // Lấy ghế từ BookingSeat
                     Seat seat = bookedSeat.getSeat();
-                    // Đặt trạng thái ghế thành AVAILABLE (giả sử là 1)
-                    seat.setStatus(1);
+                    seat.setStatus(SeatStatus.AVAILABLE);
                     // Cập nhật ghế trong cơ sở dữ liệu
                     seatRepository.save(seat);
                     // Bạn cũng có thể cần xóa hoặc cập nhật BookingSeat tại đây
@@ -69,7 +69,7 @@ public class TicketSchedulerService {
         for (Screening screening : finishedScreenings) {
             List<Seat> seats = seatRepository.findByRoomId(screening.getRoom().getId());
             seats.forEach(seat -> {
-                seat.setStatus(1);
+                seat.setStatus(SeatStatus.AVAILABLE);
                 seatRepository.save(seat);
             });
         }
