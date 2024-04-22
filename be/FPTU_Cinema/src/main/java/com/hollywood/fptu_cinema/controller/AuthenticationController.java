@@ -39,7 +39,6 @@ public class AuthenticationController {
         }
     }
 
-    //logout
     @Operation(summary = "Logout")
     @GetMapping("/logout")
     @Secured({"ADMIN", "MEMBER", "STAFF"})
@@ -112,10 +111,8 @@ public class AuthenticationController {
     @PostMapping("/refreshToken")
     public ResponseEntity<?> refreshAccessToken(@RequestParam("refreshToken") String refreshToken) throws SecurityException {
         try {
-            // Validate the refresh token
-            if (jwtTokenProvider.validateRefreshToken(refreshToken)) {// Extract the username from the refresh token
+            if (jwtTokenProvider.validateRefreshToken(refreshToken)) {
                 String userName = jwtTokenProvider.extractUsername(refreshToken);
-                // Generate a new access token
                 String newAccessToken = jwtTokenProvider.generateToken(userName);
                 return Response.success(new JwtAuthenticationResponse(newAccessToken));
             } else {

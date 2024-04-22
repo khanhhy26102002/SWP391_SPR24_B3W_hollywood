@@ -36,34 +36,27 @@ public class TicketSchedulerService {
     }
 
     @Transactional
-    @Scheduled(fixedRate = 60000) // ví dụ: chạy mỗi phút
+    @Scheduled(fixedRate = 60000)
     public void cancelExpiredTicketsTask() {
         Instant now = Instant.now();
-        // Lấy danh sách các vé hết hạn
         List<Ticket> expiredTickets = ticketRepository.findTicketsByExpirationTimeBefore(now);
         for (Ticket ticket : expiredTickets) {
             if (ticket.getStatus() == TicketStatus.UNPAID) {
-                // Đặt trạng thái vé thành CANCELLED
                 ticket.setStatus(TicketStatus.CANCELLED);
-                // Lấy danh sách BookingSeat liên quan đến vé
                 List<BookingSeat> bookedSeats = bookingSeatRepository.findByTicketId(ticket.getId());
                 for (BookingSeat bookedSeat : bookedSeats) {
-                    // Lấy ghế từ BookingSeat
                     Seat seat = bookedSeat.getSeat();
                     seat.setStatus(SeatStatus.AVAILABLE);
-                    // Cập nhật ghế trong cơ sở dữ liệu
                     seatRepository.save(seat);
-                    // Bạn cũng có thể cần xóa hoặc cập nhật BookingSeat tại đây
                 }
             }
         }
-        // Lưu các thay đổi vào cơ sở dữ liệu
         if (!expiredTickets.isEmpty()) {
             ticketRepository.saveAll(expiredTickets);
         }
     }
 
-    @Scheduled(cron = "0 * * * * *") // Chạy vào đầu mỗi phút, hoặc bạn có thể điều chỉnh cron expression theo nhu cầu
+    @Scheduled(cron = "0 * * * * *")
     public void resetSeatsAfterScreening() {
         List<Screening> finishedScreenings = screeningRepository.findFinishedScreenings(Instant.now());
         for (Screening screening : finishedScreenings) {
