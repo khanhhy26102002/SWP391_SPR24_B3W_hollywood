@@ -8,6 +8,7 @@ import com.hollywood.fptu_cinema.viewModel.BookingRequestDTO;
 import com.hollywood.fptu_cinema.viewModel.BookingResponseDTO;
 import com.hollywood.fptu_cinema.viewModel.TicketDTO;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -26,8 +27,9 @@ public class TicketService {
     private final BookingComboRepository bookingComboRepository;
     private final ComboRepository comboRepository;
     private final ImageRepository imageRepository;
+    private final QRCodeService qrCodeService;
 
-    public TicketService(TicketRepository ticketRepository, SeatRepository seatRepository, ScreeningRepository screeningRepository, BookingSeatRepository bookingSeatRepository, BookingComboRepository bookingComboRepository, ComboRepository comboRepository, ImageRepository imageRepository) {
+    public TicketService(TicketRepository ticketRepository, SeatRepository seatRepository, ScreeningRepository screeningRepository, BookingSeatRepository bookingSeatRepository, BookingComboRepository bookingComboRepository, ComboRepository comboRepository, ImageRepository imageRepository, QRCodeService qrCodeService) {
         this.ticketRepository = ticketRepository;
         this.seatRepository = seatRepository;
         this.screeningRepository = screeningRepository;
@@ -35,6 +37,7 @@ public class TicketService {
         this.bookingComboRepository = bookingComboRepository;
         this.comboRepository = comboRepository;
         this.imageRepository = imageRepository;
+        this.qrCodeService = qrCodeService;
     }
 
     public TicketDTO getTicketDetails(int ticketId) {
@@ -62,8 +65,8 @@ public class TicketService {
         );
     }
 
-
-    public BookingResponseDTO createBooking(BookingRequestDTO bookingRequest, User user) {
+    @Transactional
+    public BookingResponseDTO createBooking(BookingRequestDTO bookingRequest, User user) throws Exception {
         LocalDate date = bookingRequest.getScreeningDate();
         LocalTime time = LocalTime.parse(bookingRequest.getScreeningTime());
 
@@ -86,12 +89,28 @@ public class TicketService {
             throw new IllegalStateException("Seats must be selected before selecting combos.");
         }
         Ticket ticket = createNewTicket(user, screening);
+        ticketRepository.save(ticket);
 
-        List<BookingSeat> bookingSeats = processBookingSeats(bookingRequest, ticket, screening);
+        List<BookingSeat> bookingSeats = processBookingSeats(bookingRequest, screening);
         BigDecimal totalSeatsPrice = calculateTotalPrice(bookingSeats, BookingSeat::getTotal);
 
-        List<BookingCombo> bookingCombos = processBookingCombos(bookingRequest, ticket);
+        List<BookingCombo> bookingCombos = processBookingCombos(bookingRequest);
         BigDecimal totalComboPrice = calculateTotalPrice(bookingCombos, BookingCombo::getTotalAmount);
+
+        bookingSeats.forEach(bookingSeat -> {
+            bookingSeat.getSeat().setStatus(SeatStatus.UNAVAILABLE);
+            bookingSeat.setTicket(ticket);
+        });
+
+        bookingCombos.forEach(bookingCombo -> bookingCombo.setTicket(ticket));
+
+        bookingSeats = bookingSeatRepository.saveAll(bookingSeats);
+        bookingCombos = bookingComboRepository.saveAll(bookingCombos);
+
+        List<Seat> updatedSeats = bookingSeats.stream()
+                .map(BookingSeat::getSeat)
+                .collect(Collectors.toList());
+        seatRepository.saveAll(updatedSeats);
 
         if (currentTime.isAfter(ticket.getExpirationTime())) {
             throw new IllegalStateException("Booking time has expired. Please try again.");
@@ -99,7 +118,14 @@ public class TicketService {
 
         BigDecimal totalPrice = totalSeatsPrice.add(totalComboPrice);
         ticket.setTotalPrice(totalPrice);
+//        String qrCodeFilePath = "path/to/qr_code.png";
+//        String ticketInfo = qrCodeService.convertTicketInfoToJSON(ticket);
+//        qrCodeService.generateQRCodeImage(ticketInfo, 200, 200, qrCodeFilePath);
+//        ticket.setQrCode(qrCodeFilePath);
         ticketRepository.save(ticket);
+
+        bookingSeatRepository.saveAll(bookingSeats);
+        bookingComboRepository.saveAll(bookingCombos);
 
         return createBookingResponse(ticket, totalSeatsPrice, totalComboPrice);
     }
@@ -115,26 +141,21 @@ public class TicketService {
         return ticket;
     }
 
-    private List<BookingSeat> processBookingSeats(BookingRequestDTO bookingRequest, Ticket ticket, Screening screening) {
+    private List<BookingSeat> processBookingSeats(BookingRequestDTO bookingRequest, Screening screening) {
         return bookingRequest.getSeatNumbers().stream()
                 .map(seatNumberDTO -> seatRepository.findBySeatNumber(seatNumberDTO.getSeatNumber())
                         .filter(seat -> !bookingSeatRepository.isSeatBooked(seat.getId(), screening.getId()))
                         .map(seat -> {
-                            seat.setStatus(SeatStatus.UNAVAILABLE);
-                            seatRepository.save(seat);
-
                             BookingSeat bookingSeat = new BookingSeat();
-                            bookingSeat.setTicket(ticket);
                             bookingSeat.setSeat(seat);
                             bookingSeat.setTotal(seat.getSeatPrice());
-                            bookingSeatRepository.save(bookingSeat);
                             return bookingSeat;
                         })
                         .orElseThrow(() -> new IllegalArgumentException("Seat not found or already booked with number: " + seatNumberDTO.getSeatNumber())))
                 .collect(Collectors.toList());
     }
 
-    private List<BookingCombo> processBookingCombos(BookingRequestDTO bookingRequest, Ticket ticket) {
+    private List<BookingCombo> processBookingCombos(BookingRequestDTO bookingRequest) {
         return bookingRequest.getComboQuantities().entrySet().stream()
                 .filter(entry -> entry.getValue() > 0)
                 .map(entry -> {
@@ -142,15 +163,14 @@ public class TicketService {
                             .orElseThrow(() -> new NoSuchElementException("Combo not found with ID: " + entry.getKey()));
 
                     BookingCombo bookingCombo = new BookingCombo();
-                    bookingCombo.setTicket(ticket);
                     bookingCombo.setCombo(combo);
                     bookingCombo.setQuantity(entry.getValue());
                     bookingCombo.setTotalAmount(combo.getComboPrice().multiply(BigDecimal.valueOf(entry.getValue())));
-                    bookingComboRepository.save(bookingCombo);
                     return bookingCombo;
                 })
                 .collect(Collectors.toList());
     }
+
 
     private Ticket findTicketById(int ticketId) {
         return ticketRepository.findById(ticketId)
