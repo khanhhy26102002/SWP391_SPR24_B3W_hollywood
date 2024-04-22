@@ -1,5 +1,4 @@
 import axios from "axios";
-import Cookies from "js-cookie";
 
 const baseUrl = "http://localhost:8080";
 
@@ -10,13 +9,6 @@ class CustomError extends Error {
     }
   }
 
-  const setJwtCookie = (jwt) => {
-    const expirationDate = new Date();
-    expirationDate.setTime(expirationDate.getTime() + 15 * 60 * 1000);
-  
-    Cookies.set("jwtToken", jwt, { expires: expirationDate });
-  };
-  
   const setJwtSession = (jwt) => {
     sessionStorage.setItem("jwt", jwt);
   };
@@ -25,18 +17,12 @@ class CustomError extends Error {
     sessionStorage.removeItem("jwt");
   };
 
-  const removeJwtCookie = () => {
-    if (Cookies.get("jwtToken")) Cookies.remove("jwtToken");
-  };
-  
   const handleLoginSuccess = (response) => {
     const jwt = response.data.token;
     setJwtSession(jwt);
-    setJwtCookie(jwt);
   };
   const clearSessionData = () => {
     removeJwtSession();
-    removeJwtCookie();
   };
 
 export const userLogin = async (email,password) => {
