@@ -64,6 +64,4 @@ public class UserController {
             return Response.error(e);
         }
     }
-
-
 }
