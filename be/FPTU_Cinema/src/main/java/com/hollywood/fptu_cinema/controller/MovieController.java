@@ -58,6 +58,7 @@ public class MovieController {
     @Secured({"ADMIN", "STAFF"})
     public ResponseEntity<?> createMovie(@RequestBody MovieRequest movieRequest) {
         try {
+            //lay cai name cua nguoi dang nhap vo , gan vao bien username
             String username = Util.currentUser();
             if (username == null) {
                 throw new Exception("User not authenticated");
@@ -86,6 +87,7 @@ public class MovieController {
             if (movie == null) {
                 throw new Exception("Movie not found");
             }
+            //current user xai token
             String username = Util.currentUser();
             if (username == null) {
                 throw new Exception("User not authenticated"); // Ném ngoại lệ nếu không có người dùng nào được xác thực
@@ -119,6 +121,7 @@ public class MovieController {
     @GetMapping("detail/{movieId}")
     public ResponseEntity<?> getMovieDetail(@PathVariable int movieId) {
         try {
+            //goi bien moi cho movie dto (tra ve dto la co the giau duoc)
             MovieDTO movieDetails = new MovieDTO(movieService.getMovieDetails(movieId));
             return Response.success(movieDetails);
         } catch (RuntimeException e) {

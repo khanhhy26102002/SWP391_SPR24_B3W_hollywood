@@ -15,8 +15,9 @@ import java.util.List;
 public class MovieService {
     private final MovieRepository movieRepository;
     private final MovieValidator movieValidator = new MovieValidator();
-
+//Khai bao constructor cua movie service va truyen movie repository vao lam tham so
     public MovieService(MovieRepository movieRepository) {
+        //Constructor gan doi tuong movieRepository
         this.movieRepository = movieRepository;
     }
 
@@ -36,6 +37,7 @@ public class MovieService {
     public Movie createMovie(MovieRequest movieRequest, User currentUser) {
         Movie movie = new Movie();
         setMovieDetails(movie, movieRequest, currentUser);
+        //mac dinh trang thai hoat dong
         movie.setStatus(1);
         return movieRepository.save(movie);
     }
@@ -63,7 +65,7 @@ public class MovieService {
     private LocalTime parseDuration(String duration) {
         return LocalTime.parse(duration, DateTimeFormatter.ofPattern("HH:mm:ss"));
     }
-
+//Goi du lieu va luu vao database(trong ngoac la nhap con set la luu)
     private void setMovieDetails(Movie movie, MovieRequest movieRequest, User currentUser) {
         movieValidator.validate(movieRequest);
         movie.setName(movieRequest.getName());
