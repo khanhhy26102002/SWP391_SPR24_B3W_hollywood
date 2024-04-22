@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,6 +29,7 @@ public class ScreeningController {
         this.screeningService = screeningService;
         this.userService = userService;
     }
+    //Danh sach tat ca xuat chieu
     @Operation(summary = "List Screening Movie")
     @GetMapping("/listScreeningMovie")
     //do phan hoi tu may chu tra ve nen xai response
@@ -47,5 +49,19 @@ public class ScreeningController {
             return Response.error(e);
         }
     }
+    //Danh sach chi tiet cua 1 xuat chieu
+    @Operation(summary = "Get Screening Detail")
+    @GetMapping("detail/{screeningId}")
+    public ResponseEntity<?> getMovieDetail(@PathVariable int screeningId) {
+        try {
+            //goi bien moi cho screening request (tra ve dto la co the giau duoc)
+            ScreeningRequest screeningDetails = new ScreeningRequest(screeningService.getScreeningDetails(screeningId));
+            return Response.success(screeningDetails);
+        } catch (RuntimeException e) {
+            logger.error("An error occurred while getting screening detail with ID {}: {}", screeningId, e.getMessage());
+            return Response.error(e);
+        }
+    }
+
 
 }

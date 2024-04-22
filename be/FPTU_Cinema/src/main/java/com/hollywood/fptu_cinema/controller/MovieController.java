@@ -116,7 +116,7 @@ public class MovieController {
         }
     }
 
-    //call api chi tiet bo phim
+    //call api chi tiet cua 1 bo phim
     @Operation(summary = "Get Movie Detail")
     @GetMapping("detail/{movieId}")
     public ResponseEntity<?> getMovieDetail(@PathVariable int movieId) {
