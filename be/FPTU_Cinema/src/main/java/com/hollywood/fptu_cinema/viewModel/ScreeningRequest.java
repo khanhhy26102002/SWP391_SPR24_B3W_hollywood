@@ -1,19 +1,27 @@
 package com.hollywood.fptu_cinema.viewModel;
 
-import com.hollywood.fptu_cinema.model.User;
+import com.hollywood.fptu_cinema.model.Screening;
 import lombok.Data;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Data
 public class ScreeningRequest {
-    private Integer movieId;
-    private Integer roomId;
-    private User user;
-    private LocalDateTime start_time;
-    private LocalDateTime end_time;
-    private int status;
+    private String movieName;
+    private String roomNumber;
+    private String createdBy;
+    private Instant start_time;
+    private Instant end_time;
     private LocalDate date;
+    //Tao constructor
+    public ScreeningRequest(Screening screening) {
+        this.movieName = screening.getMovie().getName();
+        this.roomNumber = screening.getRoom().getRoomNumber();
+        this.createdBy = screening.getUser().getUserName();
+        this.start_time = screening.getStartTime();
+        this.end_time = screening.getEndTime();
+        this.date =screening.getDate();
 
+    }
 }
