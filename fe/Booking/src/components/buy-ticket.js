@@ -17,6 +17,7 @@ const BuyTicket = () => {
     const [isSelectedDate, setIsSelectedDate] = useState(false);
 
     const location = useLocation();
+    const navigate = useNavigate();
 
     useEffect(() => {
 
@@ -45,6 +46,12 @@ const BuyTicket = () => {
         setIsSelectedDate(true);
       }
     
+      const handleClickScreen = (e) => {
+        setSelectedScreen(e.target.value);
+        if(sessionStorage.getItem("jwt") !== null) {
+            setStep("choose-seats")
+        } else { navigate("/login")}
+      }
 
     return (
         <>
@@ -99,7 +106,7 @@ const BuyTicket = () => {
                                             <Row></Row>
                                             <Row>Suất chiếu: </Row>
                                         <Row>
-                                        <select class="choice" value={selectedScreen} onChange={(e) => {setSelectedScreen(e.target.value);setStep("choose-seats")}}>
+                                        <select class="choice" value={selectedScreen} onChange={(e)=>handleClickScreen(e)}>
                                             <option value="">-----Chọn suất chiếu-----</option>
                                             <option value="1">08:00</option>
                                             <option value="2">10:00</option>
