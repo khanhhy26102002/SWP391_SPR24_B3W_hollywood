@@ -122,8 +122,7 @@ public class UserService {
                 user.getAddress(),
                 user.getGender(),
                 user.getBirthdate(),
-                user.getPhone(),
-                user.getRole().getRoleName()
+                user.getPhone()
         );
     }
 
