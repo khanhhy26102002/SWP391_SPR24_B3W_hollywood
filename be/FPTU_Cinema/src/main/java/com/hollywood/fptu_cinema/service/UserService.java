@@ -115,6 +115,7 @@ public class UserService {
 
     public UserDTO convertToDTO(User user) {
         return new UserDTO(
+                user.getId(),
                 user.getAvatar(),
                 user.getUserName(),
                 user.getEmail(),

@@ -51,13 +51,11 @@ public class PaymentService {
         List<BookingCombo> bookingCombos = bookingComboRepository.findByTicketId(ticketId);
         BigDecimal totalComboPrice = calculateTotalPriceForCombos(bookingCombos);
 
-        // Fetch image path unconditionally as it is needed for every payment detail view
         String imagePath = imageRepository.findByMovieId(movie.getId()).stream()
                 .findFirst()
                 .map(Image::getPath)
                 .orElse(null);
 
-        // Convert time zones only once
         ZoneId defaultZoneId = ZoneId.systemDefault();
         LocalDateTime startTime = screening.getStartTime().atZone(defaultZoneId).toLocalDateTime();
         LocalDateTime expirationTime = ticket.getExpirationTime().atZone(defaultZoneId).toLocalDateTime();

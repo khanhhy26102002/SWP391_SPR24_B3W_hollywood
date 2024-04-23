@@ -37,9 +37,9 @@ public class TicketController {
         try {
             String username = Util.currentUser();
             if (username == null) {
-                throw new Exception("User not authenticated"); // Ném ngoại lệ nếu không có người dùng nào được xác thực
+                throw new Exception("User not authenticated");
             }
-            Optional<User> user = userService.findByUserName(username); // Lấy đối tượng User dựa trên tên người dùng
+            Optional<User> user = userService.findByUserName(username);
             BookingResponseDTO response = ticketService.createBooking(bookingRequest, user.orElse(null));
 
             logger.info("Ticket created successfully for user: {}", username);
