@@ -53,7 +53,7 @@ public class QRCodeService {
 
         Path directory = Paths.get(directoryPath);
         if (!directory.toFile().exists() && !directory.toFile().mkdirs()) {
-            throw new IOException("Không thể tạo thư mục: " + directory.toAbsolutePath());
+            throw new IOException("Unable to create directory: " + directory.toAbsolutePath());
         }
 
         String fileName = "qr_code_" + System.currentTimeMillis() + ".png";
