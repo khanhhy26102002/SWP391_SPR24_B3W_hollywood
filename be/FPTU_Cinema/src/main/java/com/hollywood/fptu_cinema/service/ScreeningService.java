@@ -70,7 +70,7 @@ public class ScreeningService {
 
         screening.setMovie(movie);
         screening.setRoom(room);
-        screening.setUser(currentUser);  // Assign the current user to the screening
+        screening.setUser(currentUser);
         screening.setStartTime(Instant.from(screeningRequest.getStart_time()));
         screening.setEndTime(Instant.from(screeningRequest.getEnd_time()));
         screening.setDate(screeningRequest.getDate());

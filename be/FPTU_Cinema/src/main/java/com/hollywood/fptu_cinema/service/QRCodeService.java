@@ -13,8 +13,10 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.hollywood.fptu_cinema.model.Ticket;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,14 +45,20 @@ public class QRCodeService {
         return mapper.writeValueAsString(ticketInfo);
     }
 
-    public void generateQRCodeImage(String text, int width, int height, String filePath) throws Exception {
+    public void generateQRCodeImage(String text, int width, int height, String directoryPath) throws Exception {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         Map<EncodeHintType, Object> hints = new HashMap<>();
         hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
         BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height, hints);
 
-        Path path = FileSystems.getDefault().getPath(filePath);
-        MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
-    }
+        Path directory = Paths.get(directoryPath);
+        if (!directory.toFile().exists() && !directory.toFile().mkdirs()) {
+            throw new IOException("Không thể tạo thư mục: " + directory.toAbsolutePath());
+        }
 
+        String fileName = "qr_code_" + System.currentTimeMillis() + ".png";
+        Path filePath = directory.resolve(fileName);
+
+        MatrixToImageWriter.writeToPath(bitMatrix, "PNG", filePath);
+    }
 }

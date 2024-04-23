@@ -118,10 +118,10 @@ public class TicketService {
 
         BigDecimal totalPrice = totalSeatsPrice.add(totalComboPrice);
         ticket.setTotalPrice(totalPrice);
-//        String qrCodeFilePath = "path/to/qr_code.png";
-//        String ticketInfo = qrCodeService.convertTicketInfoToJSON(ticket);
-//        qrCodeService.generateQRCodeImage(ticketInfo, 200, 200, qrCodeFilePath);
-//        ticket.setQrCode(qrCodeFilePath);
+        String qrCodeFilePath = "path/to/qr_code.png";
+        String ticketInfo = qrCodeService.convertTicketInfoToJSON(ticket);
+        qrCodeService.generateQRCodeImage(ticketInfo, 200, 200, qrCodeFilePath);
+        ticket.setQrCode(qrCodeFilePath);
         ticketRepository.save(ticket);
 
         bookingSeatRepository.saveAll(bookingSeats);
