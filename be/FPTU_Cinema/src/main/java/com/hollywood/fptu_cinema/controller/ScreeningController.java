@@ -78,6 +78,7 @@ public class ScreeningController {
             return Response.error(e);
         }
     }
+    //Tao moi 1 xuat chieu phim
     @Operation(summary = "Create a new Screening")
     @PostMapping("/createScreening")
     @Secured({"ADMIN", "STAFF"})
@@ -100,7 +101,33 @@ public class ScreeningController {
             return Response.error(e);
         }
     }
+    //Update xuat chieu phim
+    @Operation(summary = "Update screening")
+    @PutMapping("/updateScreening/{screeningId}") // Thêm {movieId} vào đường dẫn để nhận giá trị từ đường dẫn của yêu cầu HTTP
+    @Secured({"ADMIN", "STAFF"})
+    public ResponseEntity<?> updateMovie(@PathVariable int screeningId, @RequestBody ScreeningRequest screeningRequest) {
+        try {
+            Screening screening = screeningService.findById(screeningId);
+            // Gọi phương thức updateMovie từ service
+            if (screening == null) {
+                throw new Exception("Screening not found");
+            }
+            //current user xai token
+            String username = Util.currentUser();
+            if (username == null) {
+                throw new Exception("User not authenticated"); // Ném ngoại lệ nếu không có người dùng nào được xác thực
+            }
+            //tim kiem ten nguoi dung va ket qua tra ve 1 optional
+            Optional<User> user = userService.findByUserName(username);
+            screeningService.updateScreening(screeningRequest, screening, user.orElse(null));
 
+            // Trả về phản hồi thành công với thông tin của bộ phim đã cập nhật
+            return Response.success(screeningRequest);
+        } catch (Exception e) {
+            logger.error("An error occurred while updating screening: {}", e.getMessage());
+            return Response.error(e);
+        }
+    }
 
 
 }
