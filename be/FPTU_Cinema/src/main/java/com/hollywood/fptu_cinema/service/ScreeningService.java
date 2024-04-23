@@ -31,6 +31,7 @@ public class ScreeningService {
                 .orElseThrow(() -> new RuntimeException("Screening not found with ID: " + screeningId));
     }
 
+
     public Screening createScreening(ScreeningRequest screeningRequest, User currentUser) {
         Screening screening = new Screening();
         setScreeningDetails(screening, screeningRequest, currentUser);
@@ -62,10 +63,10 @@ public class ScreeningService {
     }
 
     private void setScreeningDetails(Screening screening, ScreeningRequest screeningRequest, User currentUser) {
-        Movie movie = movieRepository.findById(screening.getMovie().getId())
-                .orElseThrow(() -> new RuntimeException("Movie not found with ID: " + screening.getMovie().getId()));
-        Room room = roomRepository.findById(screening.getRoom().getId())
-                .orElseThrow(() -> new RuntimeException("Room not found with ID: " + (screening.getRoom().getId())));
+        Movie movie = movieRepository.findByName(screeningRequest.getMovieName())
+                .orElseThrow(() -> new RuntimeException("Movie not found with name: " + screening.getMovie().getName()));
+        Room room = roomRepository.findByRoomNumber(screeningRequest.getRoomNumber())
+                .orElseThrow(() -> new RuntimeException("Room not found with roomNumber: " + (screening.getRoom().getRoomNumber())));
 
         screening.setMovie(movie);
         screening.setRoom(room);
