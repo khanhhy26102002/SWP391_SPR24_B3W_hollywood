@@ -1,11 +1,13 @@
 package com.hollywood.fptu_cinema.controller;
 
+import com.hollywood.fptu_cinema.model.Movie;
+import com.hollywood.fptu_cinema.model.Screening;
+import com.hollywood.fptu_cinema.model.User;
 import com.hollywood.fptu_cinema.service.MovieService;
 import com.hollywood.fptu_cinema.service.ScreeningService;
 import com.hollywood.fptu_cinema.service.UserService;
-import com.hollywood.fptu_cinema.viewModel.MovieDTO;
-import com.hollywood.fptu_cinema.viewModel.Response;
-import com.hollywood.fptu_cinema.viewModel.ScreeningRequest;
+import com.hollywood.fptu_cinema.util.Util;
+import com.hollywood.fptu_cinema.viewModel.*;
 import io.swagger.v3.oas.annotations.Operation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,7 +15,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController()
@@ -21,9 +26,10 @@ import java.util.stream.Collectors;
 public class ScreeningController {
     private static final Logger logger = LogManager.getLogger(ScreeningController.class);
     private final ScreeningService screeningService;
-
-    public ScreeningController(ScreeningService screeningService, UserService userService) {
+    private final UserService userService;
+    public ScreeningController(ScreeningService screeningService, UserService userService, UserService userService1) {
         this.screeningService = screeningService;
+        this.userService = userService1;
     }
     //Danh sach tat ca xuat chieu
     @Operation(summary = "List Screening Movie")
@@ -72,5 +78,29 @@ public class ScreeningController {
             return Response.error(e);
         }
     }
+    @Operation(summary = "Create a new Screening")
+    @PostMapping("/createScreening")
+    @Secured({"ADMIN", "STAFF"})
+    public ResponseEntity<?> createMovie(@RequestBody ScreeningRequest screeningRequest) {
+        try {
+            //lay cai name cua nguoi dang nhap vo , gan vao bien username
+            String username = Util.currentUser();
+            if (username == null) {
+                throw new Exception("User not authenticated");
+            }
+            Optional<User> currentUser = userService.findByUserName(username);
+            if (currentUser.isEmpty()) {
+                throw new Exception("User not found");
+            }
+
+            ScreeningRequest movie = new ScreeningRequest(screeningService.createScreening(screeningRequest, currentUser.orElse(null)));
+            return Response.success(movie);
+        } catch (Exception e) {
+            logger.error("An error occurred while creating the Screening: {}", e.getMessage());
+            return Response.error(e);
+        }
+    }
+
+
 
 }

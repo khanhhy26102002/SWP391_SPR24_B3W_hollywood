@@ -92,6 +92,7 @@ public class MovieController {
             if (username == null) {
                 throw new Exception("User not authenticated"); // Ném ngoại lệ nếu không có người dùng nào được xác thực
             }
+            //tim kiem ten nguoi dung va ket qua tra ve 1 optional
             Optional<User> user = userService.findByUserName(username);
             movieService.updateMovie(movieRequest, movie, user.orElse(null));
 
