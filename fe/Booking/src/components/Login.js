@@ -12,19 +12,23 @@ import EmailIcon from '@mui/icons-material/Email';
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
     const [err, setErr] = useState("");
     const navigate = useNavigate();
     
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setIsLoading(true);
         await userLogin(email,password)
       .then((res) => {
         navigate("/category");
         setErr("");
+        setIsLoading(false);
       })
       .catch((error) => {
         console.log(error);
         setErr("Email or password incorrect !!!!");
+        setIsLoading(false);
       });
     }
 
@@ -101,7 +105,7 @@ const Login = () => {
                             { err !== "" && (
                                 <p style={{color: "white",textAlign:"left"}}>{err}</p>
                             )}
-                            <button type="submit" className="buy-ticket">Login</button>
+                            {isLoading ? (<button type="submit" className="buy-ticket" disabled style={{background: "grey"}}>Login</button>):(<button type="submit" className="buy-ticket">Login</button>)}
                         </form>
                         <span className="forget_pass" style={{cursor: "pointer"}} onClick={() => setOpenDialog(true)}>Forgot Your Password?</span>
                     </div>
