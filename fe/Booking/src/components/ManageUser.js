@@ -12,6 +12,9 @@ import {
   TableCell,
   TableBody,
   FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
   IconButton,
   Dialog,
   DialogTitle,
@@ -23,21 +26,30 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from '@mui/icons-material/Edit';
 import { Button, Row, Col } from "react-bootstrap";
 import Sidebar from "./Sidebar";
-import { getListUsers } from "../api/manageUserApi";
+import { deleteUser, getListUsers, updateUser } from "../api/manageUserApi";
 
 const ManageUser = () => {
-  const [userSize, setUserSize] = useState(10);
+  const [userSize, setUserSize] = useState(0);
   const [page, setPage] = useState(1);
   const [users, setUsers] = useState([{}]);
   const [openConfirmationDialog, setOpenConfirmationDialog] = useState(false);
-  const [selectedUser, setSelectedUser] = useState({});
   const [openDialog, setOpenDialog] = useState(false);
+  const [selectedUser, setSelectedUser] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [avt, setAvt] = useState("");
+  const [address, setAddress] = useState("");
+  const [gender, setGender] = useState("");
+  const [birthdate, setBirthdate] = useState("");
+  const [phone, setPhone] = useState("");
+  const [mess, setMess] = useState("");
 
   const fetchData = async () => {
     await getListUsers(sessionStorage.getItem("jwt"))
       .then((res) => {
         console.log(res.data);
         setUsers(res.data)
+        setUserSize(users.length);
       })
       .catch((error) => {
         console.log(error);
@@ -48,27 +60,57 @@ const ManageUser = () => {
     fetchData();
   }, []);
 
-  const handlePageChange = (event, newPage) => {
-    setPage(newPage);
-  };
 
-  const handleOpenConfirmationDialog = (index) => {
+  const handleOpenConfirmationDialog = (user) => {
     setOpenConfirmationDialog(true);
-    setSelectedUser(index);
+    setSelectedUser(user.id);
   };
 
   const handleOnCloseConfirmationDialog = () => {
     setOpenConfirmationDialog(false);
-    setSelectedUser(null);
+    setOpenDialog(false);
+    setSelectedUser();
+    setAddress();
+    setAvt();
+    setBirthdate();
+    setEmail();
+    setGender();
+    setName();
+    setPhone();
+    setMess();
   };
 
-  const handleDeleteUser = () => {
-    handleOnCloseConfirmationDialog();
+  const handleDeleteUser = async () => {
+    try {
+      await deleteUser(selectedUser, sessionStorage.getItem("jwt"));
+      handleOnCloseConfirmationDialog();
+      fetchData();
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    }
   };
 
-  const handleEditUser = (user) => {
+  const handleOpenDialog = (user) => {
     setOpenDialog(true);
-    setSelectedUser(user);
+    setSelectedUser(user.id);
+    setAddress(user.address);
+    setAvt(user.avatar);
+    setBirthdate(user.birthdate);
+    setEmail(user.email);
+    setGender(user.gender);
+    setName(user.userName);
+    setPhone(user.phone);
+  }
+
+  const handleEditUser = async () => {
+    try {
+      await updateUser(selectedUser,avt,name,email,address,gender,birthdate,phone,sessionStorage.getItem("jwt"));
+      setOpenConfirmationDialog(true);
+      setMess("Update user information success !!!!");
+      fetchData();
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    }
   }
 
   return (
@@ -84,9 +126,7 @@ const ManageUser = () => {
                 <Pagination
                   count={Math.ceil(userSize / 5)}
                   page={page}
-                  onChange={(event, newPage) =>
-                    handlePageChange(event, newPage)
-                  }
+                  onChange={(e) => setPage(e.target.value)}
                 />
               </FlexContainer>
             </div>
@@ -99,7 +139,6 @@ const ManageUser = () => {
                     <StyledTableCell align="center">Name</StyledTableCell>
                     <StyledTableCell align="center">Email</StyledTableCell>
                     <StyledTableCell align="center">Phone</StyledTableCell>
-                    <StyledTableCell align="center">Address</StyledTableCell>
                     <StyledTableCell align="center">Role</StyledTableCell>
                     <StyledTableCell align="center">Action</StyledTableCell>
                   </TableRow>
@@ -122,18 +161,15 @@ const ManageUser = () => {
                         {user.phone}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {user.address}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
                         {user.roleName}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                      <IconButton aria-label="edit" onClick={() => handleEditUser(user)}>
+                      <IconButton aria-label="edit" onClick={() => handleOpenDialog(user)}>
                             <EditIcon color="warning"/>
                         </IconButton>
                         <IconButton
                           aria-label="delete"
-                          onClick={() => handleOpenConfirmationDialog()}
+                          onClick={() => handleOpenConfirmationDialog(user)}
                         >
                           <DeleteIcon color="error" />
                         </IconButton>
@@ -154,50 +190,52 @@ const ManageUser = () => {
         <DialogTextField
           label="Name"
           name="name"
-          value={selectedUser.userName}
-          onChange={""}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
         />
         <DialogTextField
           label="Email"
           name="email"
-          value={selectedUser.email}
-          onChange={""}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
         <DialogTextField
           label="Phone"
           name="phone"
-          value={selectedUser.phone}
-          onChange={""}
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
         />
         <DialogTextField
           label="Address"
           name="address"
-          value={selectedUser.address}
-          onChange={""}
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
         />
         <DialogTextField
-          label="Role"
-          name="role"
-          value={selectedUser.roleName}
-          onChange={""}
+          label="Birthdate"
+          name="birthdate"
+          type="date"
+          value={birthdate}
+          onChange={(e) => setBirthdate(e.target.value)}
         />
         <DialogTextField
           label="Gender"
           name="gender"
-          value={selectedUser.gender}
-          onChange={""}
+          value={gender}
+          onChange={(e) => setGender(e.target.value)}
         />
         <DialogTextField
           label="Avatar"
           name="avatar"
-          value={selectedUser.avatar}
-          onChange={""}
+          type="url"
+          value={avt}
+          onChange={(e) => setAvt(e.target.value)}
         />
       </DialogContent>
 
       <DialogActions>
         <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
-        <Button onClick={""} color="primary">
+        <Button onClick={handleEditUser} color="primary">
           Update
         </Button>
       </DialogActions>
@@ -209,17 +247,20 @@ const ManageUser = () => {
           open={openConfirmationDialog}
           onClose={handleOnCloseConfirmationDialog}
         >
-          <DialogTitle>Delete User</DialogTitle>
+          <DialogTitle>{mess !== "" ? "Notification": "Delete User"}</DialogTitle>
           <DialogContent>
-            Are you sure you want to delete this user?
+            {mess !== "" ? mess : "Are you sure you want to delete this user?"}
           </DialogContent>
           <DialogActions>
             <Button onClick={handleOnCloseConfirmationDialog} color="primary">
               Cancel
             </Button>
-            <Button onClick={handleDeleteUser} color="primary">
-              Delete
+            {mess === "" && (
+              <Button onClick={handleDeleteUser} color="primary">
+             Delete
             </Button>
+            )} 
+            
           </DialogActions>
         </StyledDialog>
       )}
@@ -274,12 +315,11 @@ const StyledTableCell = styled(TableCell)`
   text-align: center;
 `;
 
-const SelectOutlined = styled(FormControl)({
-  width: "30%",
-  marginBottom: "10px",
-});
-
 const StyledDialog = styled(Dialog)(({ theme }) => ({
+  "& .MuiPaper-root": {
+    width: "100%",
+    maxWidth: "1000px",
+  },
   "& .MuiDialogTitle-root": {
     fontWeight: "bold",
     fontSize: "1.5rem",
@@ -305,4 +345,9 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
 
 const DialogTextField = styled(TextField)({
   width: "100%",
+});
+
+const SelectOutlined = styled(FormControl)({
+  width: "30%",
+  marginBottom: "10px",
 });

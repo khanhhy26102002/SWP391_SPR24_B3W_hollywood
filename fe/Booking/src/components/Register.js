@@ -10,6 +10,8 @@ import PasswordIcon from '@mui/icons-material/Password';
 import EmailIcon from '@mui/icons-material/Email';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { register } from "../api/authApi";
+import { styled, DialogTitle, Dialog, DialogActions, DialogContent } from "@mui/material";
+import {Button} from "@mui/material";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -21,17 +23,22 @@ const Register = () => {
   const [phone, setPhone] = useState("");
   const [gender, setGender] = useState("Male");
   const [err, setErr] = useState("");
+  const [openConfirmationDialog, setOpenConfirmationDialog] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleRegister = async(e) => {
     e.preventDefault();
+    setIsLoading(true);
         await register(userName, email, address,gender, birthday,phone,password)
-        .then((res) => {
-          navigate("/login");
+        .then((res) =>{
           setErr("");
-          })
+          setOpenConfirmationDialog(true);
+          setIsLoading(false);
+        })
           .catch((error) => {
             console.log(error);
             setErr("Something wrong!!!!");
+            setIsLoading(false);
           });
     
   }
@@ -147,9 +154,13 @@ const Register = () => {
                   { err !== "" && (
                                 <p style={{color: "white",textAlign:"left"}}>{err}</p>
                             )}
-                  <button type="submit" class="site-btn">
+                  {isLoading ? (<button type="submit" class="site-btn" disabled style={{background: "grey"}}>
+                    Register
+                  </button>) : (
+                    <button type="submit" class="site-btn" disabled>
                     Register
                   </button>
+                  )}
                 </form>
               </div>
           </Row>
@@ -160,10 +171,51 @@ const Register = () => {
           </Row>
         </div>
       </section>
-
+      
+      {openConfirmationDialog && (
+        <StyledDialog
+          open={openConfirmationDialog}
+          onClose={() => setOpenConfirmationDialog(false)}
+        >
+          <DialogTitle>Notification</DialogTitle>
+          <DialogContent>
+            Register successfully !!!!
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => navigate("/login")} color="primary">
+              OK
+            </Button>
+            
+          </DialogActions>
+        </StyledDialog>
+      )}
       <Footer />
     </>
   );
 };
 
 export default Register;
+
+const StyledDialog = styled(Dialog)(({ theme }) => ({
+  "& .MuiDialogTitle-root": {
+    fontWeight: "bold",
+    fontSize: "1.5rem",
+    textShadow: "none",
+  },
+  "& .MuiTextField-root": {
+    marginBottom: theme.spacing(2),
+  },
+  "& .MuiDialogContent-root": {
+    paddingTop: "1rem",
+  },
+  "& .MuiFormControl-root": {
+    marginBottom: theme.spacing(2),
+  },
+  "& .MuiTypography-root": {
+    color: "black",
+    marginBottom: theme.spacing(2),
+  },
+  "& .MuiButton-root:not(:last-child)": {
+    marginRight: theme.spacing(1),
+  },
+}));
