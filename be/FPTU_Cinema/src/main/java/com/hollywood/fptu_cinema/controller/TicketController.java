@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -60,6 +61,34 @@ public class TicketController {
             return Response.success(ticketInfo);
         } catch (Exception e) {
             logger.error("Error retrieving ticket information for ticket ID: {}. Error: {}", ticketId, e.getMessage(), e);
+            return Response.error(e);
+        }
+    }
+
+    @Operation(summary = "List Ticket")
+    @Secured({"ADMIN", "STAFF", "MEMBER"})
+    @GetMapping("/listTicket")
+    public ResponseEntity<?> listTicket() {
+        try {
+            List<TicketDTO> ticket = ticketService.getAllTickets();
+            logger.info("Retrieved all tickets successfully for user: {}", Util.currentUser());
+            return Response.success(ticket);
+        } catch (Exception e) {
+            logger.error("Error retrieving all tickets. Error: {}", e.getMessage(), e);
+            return Response.error(e);
+        }
+    }
+
+    @Operation(summary = "Cancel Ticket")
+    @Secured({"ADMIN", "STAFF", "MEMBER"})
+    @PostMapping("/cancel/{ticketId}")
+    public ResponseEntity<?> cancelTicket(@PathVariable int ticketId) {
+        try {
+            ticketService.cancelTicket(ticketId);
+            logger.info("Ticket cancelled successfully for ticket ID: {}", ticketId);
+            return Response.success("Ticket cancelled successfully for ticket ID: " + ticketId);
+        } catch (Exception e) {
+            logger.error("Error cancelling ticket for ticket ID: {}. Error: {}", ticketId, e.getMessage(), e);
             return Response.error(e);
         }
     }
