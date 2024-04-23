@@ -131,7 +131,6 @@ public class TicketService {
     }
 
 
-
     private Ticket createNewTicket(User user, Screening screening) {
         Ticket ticket = new Ticket();
         ticket.setUser(user);
@@ -196,7 +195,6 @@ public class TicketService {
                 .map(totalExtractor)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
-
 
 
     private BookingResponseDTO createBookingResponse(Ticket ticket, BigDecimal totalSeatsPrice, BigDecimal totalComboPrice) {
