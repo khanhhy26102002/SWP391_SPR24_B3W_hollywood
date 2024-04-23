@@ -70,17 +70,15 @@ public class JwtTokenProvider {
     }
 
     public Boolean validateRefreshToken(String token) {
-        // Kiểm tra token có trong blacklist không
         if (isTokenBlacklisted(token)) {
             return false;
         }
-        // Kiểm tra token đã hết hạn chưa
         return !isTokenExpired(token);
     }
 
     public String generateResetToken(String userName) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("resetPassword", true); // Thêm claim để xác định token này là để đặt lại mật khẩu
+        claims.put("resetPassword", true);
         return createToken(claims, userName);
     }
 
