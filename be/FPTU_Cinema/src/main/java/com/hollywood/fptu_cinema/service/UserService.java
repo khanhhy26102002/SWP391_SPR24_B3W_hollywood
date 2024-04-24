@@ -193,10 +193,11 @@ public class UserService {
 
     public void deleteUser(Integer userId) {
         User user = findUserById(userId);
-        userRepository.delete(user);
+        user.setStatus(0);
+        userRepository.save(user);
     }
 
-    public User  findUserById(Integer userId) {
+    public User findUserById(Integer userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
     }

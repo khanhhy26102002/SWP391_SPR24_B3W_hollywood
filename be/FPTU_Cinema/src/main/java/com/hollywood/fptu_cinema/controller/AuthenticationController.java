@@ -68,7 +68,7 @@ public class AuthenticationController {
                 throw new Exception("User not authenticated");
             }
             Integer userId = Integer.parseInt(userIdString);
-            currentUser = userService.findUserById(userId); 
+            currentUser = userService.findUserById(userId);
             userService.changePassword(currentUser.getUserName(), passwordChangeRequest.getOldPassword(), passwordChangeRequest.getNewPassword());
             return Response.success("Password changed successfully");
         } catch (IllegalArgumentException e) {
