@@ -1,5 +1,7 @@
 package com.hollywood.fptu_cinema.controller;
 
+import com.hollywood.fptu_cinema.config.security.CustomUserDetails;
+import com.hollywood.fptu_cinema.model.User;
 import com.hollywood.fptu_cinema.service.UserService;
 import com.hollywood.fptu_cinema.util.JwtTokenProvider;
 import com.hollywood.fptu_cinema.util.Util;
@@ -30,8 +32,9 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestParam("loginValue") String loginValue, @RequestParam("password") String password) {
         try {
-            String userName = userService.login(loginValue, password);
-            String token = jwtTokenProvider.generateToken(userName);
+            User user = userService.login(loginValue, password);
+            CustomUserDetails userDetails = new CustomUserDetails(user);
+            String token = jwtTokenProvider.generateToken(userDetails);
             return Response.success(new JwtAuthenticationResponse(token));
         } catch (Exception e) {
             logger.error("Login attempt failed for user with phone/email: {}", loginValue);
@@ -58,16 +61,18 @@ public class AuthenticationController {
     @PostMapping("/changePassword")
     @Secured({"ADMIN", "MEMBER", "STAFF"})
     public ResponseEntity<?> changePassword(@RequestBody PasswordChangeRequest passwordChangeRequest) {
-        String username = null;
+        User currentUser = null;
         try {
-            username = Util.currentUser();
-            if (username == null) {
-                return Response.error(new Exception("User not authenticated"));
+            String userIdString = Util.currentUser();
+            if (userIdString == null) {
+                throw new Exception("User not authenticated");
             }
-            userService.changePassword(username, passwordChangeRequest.getOldPassword(), passwordChangeRequest.getNewPassword());
+            Integer userId = Integer.parseInt(userIdString);
+            currentUser = userService.findUserById(userId); 
+            userService.changePassword(currentUser.getUserName(), passwordChangeRequest.getOldPassword(), passwordChangeRequest.getNewPassword());
             return Response.success("Password changed successfully");
         } catch (IllegalArgumentException e) {
-            logger.error("Invalid old password provided for user: {}", username);
+            logger.error("Invalid old password provided for user: {}", currentUser != null ? currentUser.getUserName() : "Unknown");
             return Response.error(new Exception("Invalid old password"));
         } catch (Exception e) {
             logger.error("Password change failed: {}", e.getMessage());
@@ -104,26 +109,6 @@ public class AuthenticationController {
         } catch (Exception e) {
             logger.error("Password reset failed: {}", e.getMessage());
             return Response.error(new Exception("Password reset failed."));
-        }
-    }
-
-    @Operation(summary = "Refresh Access Token")
-    @PostMapping("/refreshToken")
-    public ResponseEntity<?> refreshAccessToken(@RequestParam("refreshToken") String refreshToken) throws SecurityException {
-        try {
-            if (jwtTokenProvider.validateRefreshToken(refreshToken)) {
-                String userName = jwtTokenProvider.extractUsername(refreshToken);
-                String newAccessToken = jwtTokenProvider.generateToken(userName);
-                return Response.success(new JwtAuthenticationResponse(newAccessToken));
-            } else {
-                throw new SecurityException("Invalid refresh token");
-            }
-        } catch (SecurityException e) {
-            logger.error("Token refresh failed: {}", e.getMessage());
-            return Response.error(new Exception("Token refresh failed"));
-        } catch (Exception e) {
-            logger.error("Unexpected error during token refresh: {}", e.getMessage());
-            return Response.error(new Exception("Unexpected error during token refresh"));
         }
     }
 

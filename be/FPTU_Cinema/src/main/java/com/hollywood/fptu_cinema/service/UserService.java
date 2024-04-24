@@ -36,10 +36,9 @@ public class UserService {
         this.roleRepository = roleRepository;
     }
 
-    public String login(String identifier, String password) {
+    public User login(String identifier, String password) {
         return userRepository.findByPhoneOrEmail(identifier, identifier)
                 .filter(user -> passwordEncoder.matches(password, user.getPassword()))
-                .map(User::getUserName)
                 .orElseThrow(() -> new AccessDeniedException("Invalid login credentials"));
     }
 
@@ -99,7 +98,7 @@ public class UserService {
         if (!jwtTokenProvider.validateResetToken(token)) {
             throw new IllegalArgumentException("Invalid or expired reset token.");
         }
-        String username = jwtTokenProvider.extractUsername(token);
+        String username = jwtTokenProvider.extractUserId(token);
         User user = findUserByUsername(username);
         if (!isAllowedToResetPassword(user)) {
             throw new AccessDeniedException("You do not have permission to reset password.");
@@ -128,26 +127,28 @@ public class UserService {
 
     public List<UserDTO> getAllUsersWithPermission() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentPrincipalName = authentication.getName();
-        User currentUser = findUserByUsername(currentPrincipalName);
+        Integer currentUserId = Integer.parseInt(authentication.getName());
+        User currentUser = findUserById(currentUserId);
         boolean isAdmin = "ADMIN".equals(currentUser.getRole().getRoleName());
         boolean isStaff = "STAFF".equals(currentUser.getRole().getRoleName());
 
         return userRepository.findAll().stream()
-                .filter(user -> !(isAdmin && user.getRole().getId().equals(1)) && !(isStaff && (user.getRole().getId().equals(1) || user.getRole().getId().equals(3))))
+                .filter(user -> !(isAdmin && user.getRole().getId().equals(1)) &&
+                        !(isStaff && (user.getRole().getId().equals(1) ||
+                                user.getRole().getId().equals(3))))
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
     public void register(UserRegistrationDTO registrationDto) {
-        validateUniqueUserCredentials(registrationDto.getEmail(), registrationDto.getUserName());
+        validateUser(registrationDto.getEmail(), registrationDto.getUserName());
         int newRoleId = getNewRoleId();
         Role role = findRoleById(newRoleId);
         User newUser = createNewUser(registrationDto, role);
         convertToDTO(userRepository.save(newUser));
     }
 
-    private void validateUniqueUserCredentials(String email, String username) {
+    private void validateUser(String email, String username) {
         if (userRepository.findByEmail(email).isPresent()) {
             throw new IllegalArgumentException("Email already in use.");
         }
@@ -195,7 +196,7 @@ public class UserService {
         userRepository.delete(user);
     }
 
-    private User findUserById(Integer userId) {
+    public User  findUserById(Integer userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
     }
@@ -218,5 +219,10 @@ public class UserService {
 
     public Optional<User> findByUserName(String username) {
         return userRepository.findByUserName(username);
+    }
+
+    public UserDTO getUserProfile(Integer userId) {
+        User user = findUserById(userId);
+        return convertToDTO(user);
     }
 }

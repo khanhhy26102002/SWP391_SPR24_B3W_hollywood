@@ -59,16 +59,14 @@ public class MovieController {
     public ResponseEntity<?> createMovie(@RequestBody MovieRequest movieRequest) {
         try {
             //lay cai name cua nguoi dang nhap vo , gan vao bien username
-            String username = Util.currentUser();
-            if (username == null) {
+            String userIdString = Util.currentUser();
+            if (userIdString == null) {
                 throw new Exception("User not authenticated");
             }
-            Optional<User> currentUser = userService.findByUserName(username);
-            if (currentUser.isEmpty()) {
-                throw new Exception("User not found");
-            }
+            Integer userId = Integer.parseInt(userIdString);
+            User currentUser = userService.findUserById(userId);
 
-            MovieDTO movie = new MovieDTO(movieService.createMovie(movieRequest, currentUser.orElse(null)));
+            MovieDTO movie = new MovieDTO(movieService.createMovie(movieRequest, currentUser));
             return Response.success(movie);
         } catch (Exception e) {
             logger.error("An error occurred while creating the movie: {}", e.getMessage());
@@ -88,13 +86,13 @@ public class MovieController {
                 throw new Exception("Movie not found");
             }
             //current user xai token
-            String username = Util.currentUser();
-            if (username == null) {
-                throw new Exception("User not authenticated"); // Ném ngoại lệ nếu không có người dùng nào được xác thực
+            String userIdString = Util.currentUser();
+            if (userIdString == null) {
+                throw new Exception("User not authenticated");
             }
-            //tim kiem ten nguoi dung va ket qua tra ve 1 optional
-            Optional<User> user = userService.findByUserName(username);
-            movieService.updateMovie(movieRequest, movie, user.orElse(null));
+            Integer userId = Integer.parseInt(userIdString);
+            User currentUser = userService.findUserById(userId);
+            movieService.updateMovie(movieRequest, movie, currentUser);
 
             // Trả về phản hồi thành công với thông tin của bộ phim đã cập nhật
             return Response.success(movieRequest);

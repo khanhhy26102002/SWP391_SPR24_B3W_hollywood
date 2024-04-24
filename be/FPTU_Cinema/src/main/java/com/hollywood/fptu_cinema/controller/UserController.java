@@ -54,13 +54,26 @@ public class UserController {
 
     @Operation(summary = "Delete User")
     @DeleteMapping("delete/{userId}")
-    @Secured("ADMIN")
+    @Secured({"ADMIN"})
     public ResponseEntity<?> deleteUser(@PathVariable("userId") Integer userId) {
         try {
             userService.deleteUser(userId);
             return Response.success("User deleted successfully");
         } catch (Exception e) {
             logger.error("An error occurred while deleting user: {}", e.getMessage());
+            return Response.error(e);
+        }
+    }
+
+    @Operation(summary = "User Profile")
+    @GetMapping("getUserProfile/{userId}")
+    @Secured({"ADMIN", "STAFF", "MEMBER"})
+    public ResponseEntity<?> getUserProfile(@PathVariable("userId") Integer userId) {
+        try {
+            userService.getUserProfile(userId);
+            return Response.success(userService.getUserProfile(userId));
+        } catch (Exception e) {
+            logger.error("An error occurred while getting user profile: {}", e.getMessage());
             return Response.error(e);
         }
     }
