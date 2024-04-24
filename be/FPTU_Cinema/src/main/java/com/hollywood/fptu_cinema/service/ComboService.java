@@ -1,11 +1,14 @@
 package com.hollywood.fptu_cinema.service;
 
 import com.hollywood.fptu_cinema.enums.RoleEnum;
-import com.hollywood.fptu_cinema.model.Combo;
+import com.hollywood.fptu_cinema.model.*;
 import com.hollywood.fptu_cinema.repository.ComboRepository;
 import com.hollywood.fptu_cinema.util.SecurityUtils;
+import com.hollywood.fptu_cinema.viewModel.ComboDTO;
+import com.hollywood.fptu_cinema.viewModel.ScreeningDTO;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -43,5 +46,28 @@ public class ComboService {
         Combo combo = findById(comboId);
         combo.setStatus(0); // Set status to indicate deleted
         comboRepository.save(combo);
+    }
+
+    //Tao ra combo
+    public Combo createCombo(ComboDTO comboDTO, User currentUser) {
+        Combo combo = new Combo();
+        setComboDetails(combo, comboDTO, currentUser);
+        combo.setStatus(1);
+        return comboRepository.save(combo);
+    }
+
+    //Update Combo
+    public void updateCombo(ComboDTO comboDTO, Combo combo, User currentUser) {
+        setComboDetails(combo, comboDTO, currentUser);
+        comboRepository.save(combo);
+    }
+
+    private void setComboDetails(Combo combo, ComboDTO comboDTO, User currentUser) {
+        combo.setComboName(comboDTO.getComboName());
+        combo.setComboPrice(comboDTO.getComboPrice());
+        combo.setDescription(comboDTO.getDescription());
+        combo.setUser(currentUser);
+        combo.setId(comboDTO.getComboId());
+
     }
 }
