@@ -29,7 +29,14 @@ public class TicketService {
     private final ImageRepository imageRepository;
     private final QRCodeService qrCodeService;
 
-    public TicketService(TicketRepository ticketRepository, SeatRepository seatRepository, ScreeningRepository screeningRepository, BookingSeatRepository bookingSeatRepository, BookingComboRepository bookingComboRepository, ComboRepository comboRepository, ImageRepository imageRepository, QRCodeService qrCodeService) {
+    public TicketService(TicketRepository ticketRepository,
+                         SeatRepository seatRepository,
+                         ScreeningRepository screeningRepository,
+                         BookingSeatRepository bookingSeatRepository,
+                         BookingComboRepository bookingComboRepository,
+                         ComboRepository comboRepository,
+                         ImageRepository imageRepository,
+                         QRCodeService qrCodeService) {
         this.ticketRepository = ticketRepository;
         this.seatRepository = seatRepository;
         this.screeningRepository = screeningRepository;
@@ -42,27 +49,12 @@ public class TicketService {
 
     public TicketDTO getTicketDetails(int ticketId) {
         Ticket ticket = findTicketById(ticketId);
-        Screening screening = ticket.getScreening();
-        Movie movie = screening.getMovie();
-        Room room = screening.getRoom();
+        return convertToTicketDTO(ticket);
+    }
 
-        String imagePath = findImagePathByMovieId(movie.getId());
-        List<String> seatNumbers = getSeatNumbersByTicketId(ticketId);
-        BigDecimal totalSeatsPrice = calculateTotalPrice(bookingSeatRepository.findByTicketId(ticketId), BookingSeat::getTotal);
-        BigDecimal totalComboPrice = calculateTotalPrice(bookingComboRepository.findByTicketId(ticketId), BookingCombo::getTotalAmount);
-
-        return new TicketDTO(
-                imagePath,
-                movie.getName(),
-                movie.getRated(),
-                screening.getStartTime().atZone(ZoneId.systemDefault()).toLocalDateTime(),
-                Date.valueOf(screening.getDate()),
-                room.getRoomNumber(),
-                seatNumbers,
-                totalSeatsPrice,
-                totalComboPrice,
-                totalSeatsPrice.add(totalComboPrice)
-        );
+    public List<TicketDTO> getAllTickets() {
+        List<Ticket> tickets = ticketRepository.findAll();
+        return tickets.stream().map(this::convertToTicketDTO).collect(Collectors.toList());
     }
 
     @Transactional
@@ -130,7 +122,6 @@ public class TicketService {
         return createBookingResponse(ticket, totalSeatsPrice, totalComboPrice);
     }
 
-
     private Ticket createNewTicket(User user, Screening screening) {
         Ticket ticket = new Ticket();
         ticket.setUser(user);
@@ -170,7 +161,6 @@ public class TicketService {
                 .collect(Collectors.toList());
     }
 
-
     private Ticket findTicketById(int ticketId) {
         return ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new IllegalArgumentException("Ticket not found with ID: " + ticketId));
@@ -196,11 +186,52 @@ public class TicketService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-
     private BookingResponseDTO createBookingResponse(Ticket ticket, BigDecimal totalSeatsPrice, BigDecimal totalComboPrice) {
         BookingResponseDTO response = new BookingResponseDTO();
         response.setTicketId(ticket.getId());
         response.setTotalPrice(totalSeatsPrice.add(totalComboPrice));
         return response;
+    }
+
+    private TicketDTO convertToTicketDTO(Ticket ticket) {
+        Screening screening = ticket.getScreening();
+        Movie movie = screening.getMovie();
+        Room room = screening.getRoom();
+
+        String imagePath = findImagePathByMovieId(movie.getId());
+        List<String> seatNumbers = getSeatNumbersByTicketId(ticket.getId());
+        BigDecimal totalSeatsPrice = calculateTotalPrice(bookingSeatRepository.findByTicketId(ticket.getId()), BookingSeat::getTotal);
+        BigDecimal totalComboPrice = calculateTotalPrice(bookingComboRepository.findByTicketId(ticket.getId()), BookingCombo::getTotalAmount);
+
+        return new TicketDTO(
+                imagePath,
+                movie.getName(),
+                movie.getRated(),
+                screening.getStartTime().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+                Date.valueOf(screening.getDate()),
+                room.getRoomNumber(),
+                seatNumbers,
+                totalSeatsPrice,
+                totalComboPrice,
+                totalSeatsPrice.add(totalComboPrice)
+        );
+    }
+
+    @Transactional
+    public void cancelTicket(int ticketId) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid ticket ID: " + ticketId));
+
+        if (ticket.getStatus() != TicketStatus.CANCELLED) {
+            ticket.setStatus(TicketStatus.CANCELLED);
+            ticketRepository.save(ticket);
+
+            List<BookingSeat> bookedSeats = bookingSeatRepository.findByTicketId(ticketId);
+            for (BookingSeat bookedSeat : bookedSeats) {
+                Seat seat = bookedSeat.getSeat();
+                seat.setStatus(SeatStatus.AVAILABLE);
+                seatRepository.save(seat);
+            }
+        }
     }
 }

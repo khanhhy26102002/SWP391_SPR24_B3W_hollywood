@@ -6,6 +6,7 @@ import { Footer } from "./Footer";
 import { Header } from "./Header";
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
+import { getAllScreen } from "../api/screenApi";
 
 const BuyTicket = () => {
     const [selectedScreen, setSelectedScreen] = useState("");
@@ -15,13 +16,25 @@ const BuyTicket = () => {
     const [movie, setMovie] = useState("");
     const [step, setStep] = useState("choose-screen");
     const [isSelectedDate, setIsSelectedDate] = useState(false);
+    const [allScreen,setAllScreen] = useState([{}]);
 
     const location = useLocation();
     const navigate = useNavigate();
 
     useEffect(() => {
-
+        fetchData();
     }, [selectedScreen, selectedDate, selectedSeats]);
+
+    const fetchData = async () => {
+        try {
+            const response = await getAllScreen();
+            setAllScreen([...response.data]);
+          } catch (error) {
+            console.error("Error fetching posts:", error);
+          }
+    }
+
+
 
     useEffect(() => {
         if (location.state !== null) {
@@ -30,15 +43,11 @@ const BuyTicket = () => {
     }, [location.state]);
 
     const handleSeatClick = (seat) => {
-        /*if (seat.isAvailable) {*/
           if (selectedSeats.includes(seat)) {
             setSelectedSeats(selectedSeats.filter((seatSelected) => seatSelected !== seat));
           } else {
             setSelectedSeats([...selectedSeats, seat]);
           }
-       /* } else {
-          alert('Seat is not available!');
-        }*/
       };
 
       const handleDateClick = (date) => {
@@ -49,7 +58,7 @@ const BuyTicket = () => {
       const handleClickScreen = (e) => {
         setSelectedScreen(e.target.value);
         if(sessionStorage.getItem("jwt") !== null) {
-            setStep("choose-seats")
+            setStep("choose-seats");
         } else { navigate("/login")}
       }
 
@@ -79,26 +88,11 @@ const BuyTicket = () => {
                                         <div className="ticket_field">
                                         <Row>Ngày chiếu:</Row>
                                         <Row >
-                                            <Col lg={2} style={{border:"1px solid white",cursor: "pointer"}} onClick={() => handleDateClick("22/04")}>
-                                                <Row style={{display: "flex", justifyContent: "center"}}>22/04</Row>
-                                                <Row style={{display: "flex", justifyContent: "center"}}>Th 2</Row>
+                                            {allScreen.filter((screen) => screen.movieName === movie).map((screen) => (
+                                                <Col lg={2} style={{border:"1px solid white",cursor: "pointer"}} onClick={() => handleDateClick(screen.date)}>
+                                                <Row style={{display: "flex", justifyContent: "center"}}>{screen.date}</Row>
                                             </Col>
-                                            <Col lg={2} style={{border:"1px solid white",cursor: "pointer"}} onClick={() => handleDateClick("23/04")}>
-                                                <Row style={{display: "flex", justifyContent: "center"}}>23/04</Row>
-                                                <Row style={{display: "flex", justifyContent: "center"}}>Th 3</Row>
-                                            </Col>
-                                            <Col lg={2} style={{border:"1px solid white",cursor: "pointer"}} onClick={() => handleDateClick("24/04")}>
-                                                <Row style={{display: "flex", justifyContent: "center"}}>24/04</Row>
-                                                <Row style={{display: "flex", justifyContent: "center"}}>Th 4</Row>
-                                            </Col>
-                                            <Col lg={2} style={{border:"1px solid white",cursor: "pointer"}} onClick={() => handleDateClick("24/04")}>
-                                                <Row style={{display: "flex", justifyContent: "center"}}>25/04</Row>
-                                                <Row style={{display: "flex", justifyContent: "center"}}>Th 5</Row>
-                                            </Col>
-                                            <Col lg={2} style={{border:"1px solid white",cursor: "pointer"}} onClick={() => handleDateClick("24/04")}>
-                                                <Row style={{display: "flex", justifyContent: "center"}}>26/04</Row>
-                                                <Row style={{display: "flex", justifyContent: "center"}}>Th 6</Row>
-                                            </Col>
+                                            ))}
                                         </Row>
                                         
                                         {isSelectedDate && (
@@ -108,12 +102,9 @@ const BuyTicket = () => {
                                         <Row>
                                         <select class="choice" value={selectedScreen} onChange={(e)=>handleClickScreen(e)}>
                                             <option value="">-----Chọn suất chiếu-----</option>
-                                            <option value="1">08:00</option>
-                                            <option value="2">10:00</option>
-                                            <option value="3">13:00</option>
-                                            <option value="4">15:00</option>
-                                            <option value="5">17:00</option>
-                                            <option value="6">20:00</option>
+                                            {allScreen.filter((screen) => screen.date === selectedDate).map((screen) => (
+                                                <option value={screen.start_time.slice(11,screen.start_time.length)}>{screen.start_time.slice(11,screen.start_time.length)}</option>
+                                            ))}
                                         </select>
                                         </Row>
                                 
@@ -247,14 +238,31 @@ const BuyTicket = () => {
                                                 <td class="concession-name">
                                                     Combo 1
                                                     <span class="d-none d-md-block text-muted">1 Bắp Ngọt 60oz + 1 Coke 32oz - V </span>
-                                                    <span class="d-block d-sm-none text-muted">84.000&nbsp;₫</span>
+                                                   
                                                 </td>
                                                 <td class="concession-price text-right">84.000&nbsp;₫</td>
                                                 <td class="ticketing-select text-right">
                                                     <div class="quantity-toggle">
-                                                        <input type="number" min="0" max="10" step="1" value={comboQuantity[0]} onChange={(e) => setComboQuantity((prevQuantity) => {
+                                                        <input type="number" min="0" max="10" step="1" value={comboQuantity[0] > 10 ? 10 : comboQuantity[0]} onChange={(e) => setComboQuantity((prevQuantity) => {
                                                             const updatedQuantity = [...prevQuantity];
-                                                            updatedQuantity[0] = e.target.value;
+                                                            updatedQuantity[0] = e.target.value > 10 ? 10 : e.target.value;
+                                                            return updatedQuantity;
+                                                        })} class="quantity" />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr class="ticketing-concession-type">
+                                                <td class="concession-name">
+                                                    Combo 3
+                                                    <span class="d-none d-md-block text-muted">Chà đá </span>
+                                                   
+                                                </td>
+                                                <td class="concession-price text-right">4.000&nbsp;₫</td>
+                                                <td class="ticketing-select text-right">
+                                                    <div class="quantity-toggle">
+                                                        <input type="number" min="0" max="10" step="1" value={comboQuantity[2]} onChange={(e) => setComboQuantity((prevQuantity) => {
+                                                            const updatedQuantity = [...prevQuantity];
+                                                            updatedQuantity[2] = e.target.value;
                                                             return updatedQuantity;
                                                         })} class="quantity" />
                                                     </div>
@@ -264,19 +272,20 @@ const BuyTicket = () => {
                                                 <td class="concession-name">
                                                     Combo 2
                                                     <span class="d-none d-md-block text-muted">1 Bắp Ngọt 60oz + 2 Coke 32oz - V</span>
-                                                    <span class="d-block d-sm-none text-muted">109.000&nbsp;₫</span>
+                                                  
                                                 </td>
                                                 <td class="concession-price text-right">109.000&nbsp;₫</td>
                                                 <td class="ticketing-select text-right">
                                                     <div class="quantity-toggle">
-                                                        <input type="number" min="0" max="10" step="1" value={comboQuantity[1]} onChange={(e) => setComboQuantity((prevQuantity) => {
+                                                        <input type="number" min="0" max="10" step="1" value={comboQuantity[1] > 10 ? 10 : comboQuantity[1]} onChange={(e) => setComboQuantity((prevQuantity) => {
                                                             const updatedQuantity = [...prevQuantity];
-                                                            updatedQuantity[1] = e.target.value;
+                                                            updatedQuantity[1] = e.target.value > 10 ? 10 : e.target.value;
                                                             return updatedQuantity;
                                                         })} class="quantity" />
                                                     </div>
                                                 </td>
                                             </tr>
+                                            
                                         </tbody>
                                     </table>
                                 </div>
