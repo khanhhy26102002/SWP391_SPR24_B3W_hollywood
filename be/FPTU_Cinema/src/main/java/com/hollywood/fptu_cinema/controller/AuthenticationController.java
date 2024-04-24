@@ -47,9 +47,12 @@ public class AuthenticationController {
     @Secured({"ADMIN", "MEMBER", "STAFF"})
     public ResponseEntity<?> logout(HttpServletRequest request) {
         try {
-            String username = Util.currentUser();
+            String userIdString = Util.currentUser();
+            if (userIdString == null) {
+                throw new Exception("User not authenticated");
+            }
             userService.logout(request);
-            logger.info("{} logged out successfully!", username);
+            logger.info("{} logged out successfully!", userIdString);
             return Response.success("Logout successful");
         } catch (Exception e) {
             logger.error("Logout attempt failed: {}", e.getMessage());

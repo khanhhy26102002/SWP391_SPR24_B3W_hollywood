@@ -29,6 +29,7 @@ public class MovieDTO {
     private String rated;
     private Instant createdDate;
     private Instant updatedDate;
+    private Integer status;
 
     //Tao constructer
     public MovieDTO(Movie movie) {
@@ -50,5 +51,6 @@ public class MovieDTO {
         this.rated = movie.getRated();
         this.updatedDate = movie.getUpdatedDate();
         this.createdDate = movie.getCreatedDate();
+        this.status = movie.getStatus();
     }
 }

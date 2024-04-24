@@ -202,7 +202,7 @@ public class TicketService {
         List<String> seatNumbers = getSeatNumbersByTicketId(ticket.getId());
         BigDecimal totalSeatsPrice = calculateTotalPrice(bookingSeatRepository.findByTicketId(ticket.getId()), BookingSeat::getTotal);
         BigDecimal totalComboPrice = calculateTotalPrice(bookingComboRepository.findByTicketId(ticket.getId()), BookingCombo::getTotalAmount);
-
+        TicketStatus ticketStatus = ticket.getStatus();
         return new TicketDTO(
                 imagePath,
                 movie.getName(),
@@ -213,7 +213,8 @@ public class TicketService {
                 seatNumbers,
                 totalSeatsPrice,
                 totalComboPrice,
-                totalSeatsPrice.add(totalComboPrice)
+                totalSeatsPrice.add(totalComboPrice),
+                ticketStatus
         );
     }
 

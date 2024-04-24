@@ -55,18 +55,13 @@ public class UserService {
     }
 
     public void changePassword(String username, String oldPassword, String newPassword) {
-        User user = findUserByUsername(username);
+        User user = findByUserName(username);
         if (passwordEncoder.matches(oldPassword, user.getPassword())) {
             user.setPassword(passwordEncoder.encode(newPassword));
             userRepository.save(user);
         } else {
             throw new IllegalArgumentException("The old password is incorrect.");
         }
-    }
-
-    private User findUserByUsername(String username) {
-        return userRepository.findByUserName(username)
-                .orElseThrow(() -> new IllegalArgumentException("User not found."));
     }
 
     public void initiateResetPassword(String email) {
@@ -79,7 +74,6 @@ public class UserService {
             throw new IllegalArgumentException("Email address not found.");
         }
     }
-
 
     private void sendResetPasswordLink(User user, String email) {
         String token = jwtTokenProvider.generateResetToken(user.getUserName());
@@ -99,7 +93,7 @@ public class UserService {
             throw new IllegalArgumentException("Invalid or expired reset token.");
         }
         String username = jwtTokenProvider.extractUserId(token);
-        User user = findUserByUsername(username);
+        User user = findByUserName(username);
         if (!isAllowedToResetPassword(user)) {
             throw new AccessDeniedException("You do not have permission to reset password.");
         }
@@ -121,7 +115,8 @@ public class UserService {
                 user.getAddress(),
                 user.getGender(),
                 user.getBirthdate(),
-                user.getPhone()
+                user.getPhone(),
+                user.getStatus()
         );
     }
 
@@ -218,8 +213,9 @@ public class UserService {
         user.setPhone(userDTO.getPhone());
     }
 
-    public Optional<User> findByUserName(String username) {
-        return userRepository.findByUserName(username);
+    public User findByUserName(String username) {
+        return userRepository.findByUserName(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found."));
     }
 
     public UserDTO getUserProfile(Integer userId) {
