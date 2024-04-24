@@ -64,4 +64,8 @@ public class User {
     @Column(name = "token")
     private String token;
 
+    @NotNull
+    @Column(name = "status", nullable = false)
+    private Integer status;
+
 }
