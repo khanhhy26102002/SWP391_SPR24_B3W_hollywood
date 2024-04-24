@@ -1,5 +1,6 @@
 package com.hollywood.fptu_cinema.util;
 
+import com.hollywood.fptu_cinema.config.security.CustomUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -24,7 +25,7 @@ public class JwtTokenProvider {
         this.signKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String extractUsername(String token) {
+    public String extractUserId(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -51,7 +52,7 @@ public class JwtTokenProvider {
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
+        final String username = extractUserId(token);
         return !isTokenExpired(token) &&
                 username.equals(userDetails.getUsername()) &&
                 !isTokenBlacklisted(token);
@@ -69,28 +70,22 @@ public class JwtTokenProvider {
         }
     }
 
-    public Boolean validateRefreshToken(String token) {
-        if (isTokenBlacklisted(token)) {
-            return false;
-        }
-        return !isTokenExpired(token);
-    }
-
     public String generateResetToken(String userName) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("resetPassword", true);
         return createToken(claims, userName);
     }
 
-    public String generateToken(String userName) {
+    public String generateToken(CustomUserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, userName);
+        String userIdAsString = userDetails.getUsername();
+        return createToken(claims, userIdAsString);
     }
 
-    private String createToken(Map<String, Object> claims, String userName) {
+    private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(userName)
+                .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALIDITY_MS))
                 .signWith(signKey, SignatureAlgorithm.HS256)

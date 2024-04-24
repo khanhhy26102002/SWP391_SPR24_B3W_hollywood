@@ -15,7 +15,6 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController()
@@ -25,15 +24,14 @@ public class ScreeningController {
     private final ScreeningService screeningService;
     private final UserService userService;
 
-    public ScreeningController(ScreeningService screeningService, UserService userService, UserService userService1) {
+    public ScreeningController(ScreeningService screeningService, UserService userService) {
         this.screeningService = screeningService;
-        this.userService = userService1;
+        this.userService = userService;
     }
 
     //Danh sach tat ca xuat chieu
     @Operation(summary = "List Screening Movie")
     @GetMapping("/listScreeningMovie")
-    @Secured({"ADMIN", "STAFF"})
     //do phan hoi tu may chu tra ve nen xai responseentity
     public ResponseEntity<?> listScreening() {
         try {
@@ -88,16 +86,14 @@ public class ScreeningController {
     public ResponseEntity<?> createMovie(@RequestBody ScreeningRequest screeningRequest) {
         try {
             //lay cai name cua nguoi dang nhap vo , gan vao bien username
-            String username = Util.currentUser();
-            if (username == null) {
+            String userIdString = Util.currentUser();
+            if (userIdString == null) {
                 throw new Exception("User not authenticated");
             }
-            Optional<User> currentUser = userService.findByUserName(username);
-            if (currentUser.isEmpty()) {
-                throw new Exception("User not found");
-            }
+            Integer userId = Integer.parseInt(userIdString);
+            User currentUser = userService.findUserById(userId);
 
-            ScreeningRequest movie = new ScreeningRequest(screeningService.createScreening(screeningRequest, currentUser.orElse(null)));
+            ScreeningRequest movie = new ScreeningRequest(screeningService.createScreening(screeningRequest, currentUser));
             return Response.success(movie);
         } catch (Exception e) {
             logger.error("An error occurred while creating the Screening: {}", e.getMessage());
@@ -118,14 +114,16 @@ public class ScreeningController {
                 throw new Exception("Screening not found");
             }
             //current user xai token
-            String username = Util.currentUser();
-            if (username == null) {
+
+            String userIdString = Util.currentUser();
+            if (userIdString == null) {
                 throw new Exception("User not authenticated"); // Ném ngoại lệ nếu không có người dùng nào được xác thực
             }
+            Integer userId = Integer.parseInt(userIdString);
             //tim kiem ten nguoi dung va ket qua tra ve 1 optional
-            Optional<User> user = userService.findByUserName(username);
-            screeningService.updateScreening(screeningRequest, screening, user.orElse(null));
-
+            User currentUser = userService.findUserById(userId);
+            screeningService.updateScreening(screeningRequest, screening, currentUser);
+            logger.info("Screening updated successfully");
             // Trả về phản hồi thành công với thông tin của bộ phim đã cập nhật
             return Response.success(screeningRequest);
         } catch (Exception e) {
@@ -133,6 +131,4 @@ public class ScreeningController {
             return Response.error(e);
         }
     }
-
-
 }

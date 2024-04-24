@@ -1,8 +1,6 @@
 package com.hollywood.fptu_cinema.service;
 
 import com.hollywood.fptu_cinema.model.Combo;
-import com.hollywood.fptu_cinema.model.Movie;
-import com.hollywood.fptu_cinema.model.Screening;
 import com.hollywood.fptu_cinema.repository.ComboRepository;
 import org.springframework.stereotype.Service;
 
