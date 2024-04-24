@@ -1,7 +1,6 @@
 package com.hollywood.fptu_cinema.controller;
 
 import com.hollywood.fptu_cinema.service.ComboService;
-import com.hollywood.fptu_cinema.service.UserService;
 import com.hollywood.fptu_cinema.viewModel.ComboDTO;
 import com.hollywood.fptu_cinema.viewModel.Response;
 import io.swagger.v3.oas.annotations.Operation;
