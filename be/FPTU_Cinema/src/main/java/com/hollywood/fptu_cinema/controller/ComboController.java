@@ -22,7 +22,7 @@ public class ComboController {
     private final ComboService comboService;
 
     //Tao constructor
-    public ComboController(ComboService comboService, UserService userService) {
+    public ComboController(ComboService comboService) {
         this.comboService = comboService;
     }
 
