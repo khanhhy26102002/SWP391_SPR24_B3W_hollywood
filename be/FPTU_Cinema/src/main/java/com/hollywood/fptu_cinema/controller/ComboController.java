@@ -1,8 +1,14 @@
 package com.hollywood.fptu_cinema.controller;
 
+import com.hollywood.fptu_cinema.model.Combo;
+import com.hollywood.fptu_cinema.model.Screening;
+import com.hollywood.fptu_cinema.model.User;
 import com.hollywood.fptu_cinema.service.ComboService;
+import com.hollywood.fptu_cinema.service.UserService;
+import com.hollywood.fptu_cinema.util.Util;
 import com.hollywood.fptu_cinema.viewModel.ComboDTO;
 import com.hollywood.fptu_cinema.viewModel.Response;
+import com.hollywood.fptu_cinema.viewModel.ScreeningDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,10 +25,11 @@ public class ComboController {
     private static final Logger logger = LogManager.getLogger(ComboController.class);
     //Lay Service ben class movie service len
     private final ComboService comboService;
-
+    private final UserService userService;
     //Tao constructor
-    public ComboController(ComboService comboService) {
+    public ComboController(ComboService comboService, UserService userService) {
         this.comboService = comboService;
+        this.userService = userService;
     }
 
     //Goi tat ca cac danh chi tiet cua combo
@@ -68,6 +75,58 @@ public class ComboController {
             return Response.success("Combo deleted successfully");
         } catch (RuntimeException e) {
             logger.error("An error occurred while deleting combo with ID {}: {}", comboId, e.getMessage());
+            return Response.error(e);
+        }
+    }
+    //Tao moi 1 combo
+    @Operation(summary = "Create a new Combo")
+    @PostMapping("/createCombo")
+    @Secured({"ADMIN", "STAFF"})
+    public ResponseEntity<?> createCombo(@RequestBody ComboDTO comboDTO) {
+        try {
+            //lay cai name cua nguoi dang nhap vo , gan vao bien username
+            String userIdString = Util.currentUser();
+            if (userIdString == null) {
+                throw new Exception("User not authenticated");
+            }
+            Integer userId = Integer.parseInt(userIdString);
+            User currentUser = userService.findUserById(userId);
+
+            ComboDTO combo = new ComboDTO(comboService.createCombo(comboDTO, currentUser));
+            return Response.success(combo);
+        } catch (Exception e) {
+            logger.error("An error occurred while creating the combo: {}", e.getMessage());
+            return Response.error(e);
+        }
+    }
+
+    //Update 1 combo
+    @Operation(summary = "Update Combo")
+    @PutMapping("/updateCombo/{comboId}")
+    // Thêm {movieId} vào đường dẫn để nhận giá trị từ đường dẫn của yêu cầu HTTP
+    @Secured({"ADMIN", "STAFF"})
+    public ResponseEntity<?> updateCombo(@PathVariable int comboId, @RequestBody ComboDTO comboDTO) {
+        try {
+            Combo combo = comboService.findById(comboId);
+            // Gọi phương thức updateCombo từ service
+            if (combo == null) {
+                throw new Exception("Combo not found");
+            }
+            //current user xai token
+
+            String userIdString = Util.currentUser();
+            if (userIdString == null) {
+                throw new Exception("User not authenticated"); // Ném ngoại lệ nếu không có người dùng nào được xác thực
+            }
+            Integer userId = Integer.parseInt(userIdString);
+            //tim kiem ten nguoi dung va ket qua tra ve 1 optional
+            User currentUser = userService.findUserById(userId);
+            comboService.updateCombo(comboDTO, combo, currentUser);
+            logger.info("Combo updated successfully");
+            // Trả về phản hồi thành công với thông tin của combo dã cập nhật
+            return Response.success(comboDTO);
+        } catch (Exception e) {
+            logger.error("An error occurred while updating combo: {}", e.getMessage());
             return Response.error(e);
         }
     }

@@ -93,8 +93,8 @@ public class ScreeningController {
             Integer userId = Integer.parseInt(userIdString);
             User currentUser = userService.findUserById(userId);
 
-            ScreeningDTO movie = new ScreeningDTO(screeningService.createScreening(screeningDTO, currentUser));
-            return Response.success(movie);
+            ScreeningDTO screening = new ScreeningDTO(screeningService.createScreening(screeningDTO, currentUser));
+            return Response.success(screening);
         } catch (Exception e) {
             logger.error("An error occurred while creating the Screening: {}", e.getMessage());
             return Response.error(e);
