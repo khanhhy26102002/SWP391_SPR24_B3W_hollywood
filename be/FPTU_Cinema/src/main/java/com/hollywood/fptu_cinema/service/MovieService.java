@@ -1,8 +1,10 @@
 package com.hollywood.fptu_cinema.service;
 
+import com.hollywood.fptu_cinema.enums.RoleEnum;
 import com.hollywood.fptu_cinema.model.Movie;
 import com.hollywood.fptu_cinema.model.User;
 import com.hollywood.fptu_cinema.repository.MovieRepository;
+import com.hollywood.fptu_cinema.util.SecurityUtils;
 import com.hollywood.fptu_cinema.validator.MovieValidator;
 import com.hollywood.fptu_cinema.viewModel.MovieRequest;
 import org.springframework.stereotype.Service;
@@ -30,8 +32,7 @@ public class MovieService {
 
     // Get details of a movie by ID
     public Movie getMovieDetails(int movieId) {
-        return movieRepository.findById(movieId)
-                .orElseThrow(() -> new RuntimeException("Movie not found with ID: " + movieId));
+        return findById(movieId);
     }
 
     //create movie
@@ -43,7 +44,6 @@ public class MovieService {
         return movieRepository.save(movie);
     }
 
-
     //update movie
     public void updateMovie(MovieRequest movieRequest, Movie movie, User currentUser) {
         setMovieDetails(movie, movieRequest, currentUser);
@@ -52,13 +52,16 @@ public class MovieService {
 
     //list movie
     public List<Movie> listMovie() {
-        return movieRepository.findByStatusNot(0);
+        if (SecurityUtils.hasRole(RoleEnum.ADMIN) || SecurityUtils.hasRole(RoleEnum.STAFF)) {
+            return movieRepository.findAll();
+        } else {
+            return movieRepository.findByStatusNot(0);
+        }
     }
 
     //Delete Movie theo change status (khong phai xoa ma chi an thong tin bo phim)
     public void deleteMovie(int movieId) {
-        Movie movie = movieRepository.findById(movieId)
-                .orElseThrow(() -> new RuntimeException("Movie not found with ID: " + movieId));
+        Movie movie = findById(movieId);
         movie.setStatus(0); // Set status to indicate deleted
         movieRepository.save(movie);
     }
@@ -82,5 +85,4 @@ public class MovieService {
         movie.setDuration(parseDuration(movieRequest.getDuration()));
         movie.setUser(currentUser);
     }
-
 }

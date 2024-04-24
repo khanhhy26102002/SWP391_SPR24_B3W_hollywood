@@ -6,7 +6,7 @@ import com.hollywood.fptu_cinema.service.ScreeningService;
 import com.hollywood.fptu_cinema.service.UserService;
 import com.hollywood.fptu_cinema.util.Util;
 import com.hollywood.fptu_cinema.viewModel.Response;
-import com.hollywood.fptu_cinema.viewModel.ScreeningRequest;
+import com.hollywood.fptu_cinema.viewModel.ScreeningDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,15 +35,15 @@ public class ScreeningController {
     //do phan hoi tu may chu tra ve nen xai responseentity
     public ResponseEntity<?> listScreening() {
         try {
-            List<ScreeningRequest> screeningRequests = screeningService.listScreenings().stream()
-                    .map(ScreeningRequest::new) // Sử dụng lambda expression thay thế constructor reference
+            List<ScreeningDTO> screeningDTOS = screeningService.listScreenings().stream()
+                    .map(ScreeningDTO::new) // Sử dụng lambda expression thay thế constructor reference
                     .collect(Collectors.toList());
 
-            if (screeningRequests.isEmpty()) {
+            if (screeningDTOS.isEmpty()) {
                 return Response.error(new Exception("No screenings found"));
             }
 
-            return Response.success(screeningRequests);
+            return Response.success(screeningDTOS);
         } catch (Exception e) {
             logger.error("An error occurred while listing screenings: {}", e.getMessage());
             return Response.error(e);
@@ -57,7 +57,7 @@ public class ScreeningController {
     public ResponseEntity<?> getMovieDetail(@PathVariable int screeningId) {
         try {
             //goi bien moi cho screening request (tra ve dto la co the giau duoc)
-            ScreeningRequest screeningDetails = new ScreeningRequest(screeningService.getScreeningDetails(screeningId));
+            ScreeningDTO screeningDetails = new ScreeningDTO(screeningService.getScreeningDetails(screeningId));
             return Response.success(screeningDetails);
         } catch (RuntimeException e) {
             logger.error("An error occurred while getting screening detail with ID {}: {}", screeningId, e.getMessage());
@@ -83,7 +83,7 @@ public class ScreeningController {
     @Operation(summary = "Create a new Screening")
     @PostMapping("/createScreening")
     @Secured({"ADMIN", "STAFF"})
-    public ResponseEntity<?> createMovie(@RequestBody ScreeningRequest screeningRequest) {
+    public ResponseEntity<?> createMovie(@RequestBody ScreeningDTO screeningDTO) {
         try {
             //lay cai name cua nguoi dang nhap vo , gan vao bien username
             String userIdString = Util.currentUser();
@@ -93,7 +93,7 @@ public class ScreeningController {
             Integer userId = Integer.parseInt(userIdString);
             User currentUser = userService.findUserById(userId);
 
-            ScreeningRequest movie = new ScreeningRequest(screeningService.createScreening(screeningRequest, currentUser));
+            ScreeningDTO movie = new ScreeningDTO(screeningService.createScreening(screeningDTO, currentUser));
             return Response.success(movie);
         } catch (Exception e) {
             logger.error("An error occurred while creating the Screening: {}", e.getMessage());
@@ -106,7 +106,7 @@ public class ScreeningController {
     @PutMapping("/updateScreening/{screeningId}")
     // Thêm {movieId} vào đường dẫn để nhận giá trị từ đường dẫn của yêu cầu HTTP
     @Secured({"ADMIN", "STAFF"})
-    public ResponseEntity<?> updateMovie(@PathVariable int screeningId, @RequestBody ScreeningRequest screeningRequest) {
+    public ResponseEntity<?> updateMovie(@PathVariable int screeningId, @RequestBody ScreeningDTO screeningDTO) {
         try {
             Screening screening = screeningService.findById(screeningId);
             // Gọi phương thức updateMovie từ service
@@ -122,10 +122,10 @@ public class ScreeningController {
             Integer userId = Integer.parseInt(userIdString);
             //tim kiem ten nguoi dung va ket qua tra ve 1 optional
             User currentUser = userService.findUserById(userId);
-            screeningService.updateScreening(screeningRequest, screening, currentUser);
+            screeningService.updateScreening(screeningDTO, screening, currentUser);
             logger.info("Screening updated successfully");
             // Trả về phản hồi thành công với thông tin của bộ phim đã cập nhật
-            return Response.success(screeningRequest);
+            return Response.success(screeningDTO);
         } catch (Exception e) {
             logger.error("An error occurred while updating screening: {}", e.getMessage());
             return Response.error(e);

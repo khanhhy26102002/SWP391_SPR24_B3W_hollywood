@@ -2,7 +2,7 @@ package com.hollywood.fptu_cinema.controller;
 
 import com.hollywood.fptu_cinema.service.ComboService;
 import com.hollywood.fptu_cinema.service.UserService;
-import com.hollywood.fptu_cinema.viewModel.ComboRequest;
+import com.hollywood.fptu_cinema.viewModel.ComboDTO;
 import com.hollywood.fptu_cinema.viewModel.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import org.apache.logging.log4j.LogManager;
@@ -32,8 +32,8 @@ public class ComboController {
     //do phan hoi tu may chu tra ve nen xai response
     public ResponseEntity<?> listCombo() {
         try {
-            List<ComboRequest> combo = comboService.listCombo().stream()
-                    .map(ComboRequest::new) // Thay thế constructor reference bằng lambda expression
+            List<ComboDTO> combo = comboService.listCombo().stream()
+                    .map(ComboDTO::new) // Thay thế constructor reference bằng lambda expression
                     .collect(Collectors.toList());
             if (combo.isEmpty()) {
                 return Response.error(new Exception("No combo found"));
@@ -49,10 +49,10 @@ public class ComboController {
     @Operation(summary = "Get Combo Detail")
     @GetMapping("detail/{comboId}")
     @Secured({"ADMIN", "STAFF"})
-    public ResponseEntity<?> getcomboDetails(@PathVariable int comboId) {
+    public ResponseEntity<?> getComboDetails(@PathVariable int comboId) {
         try {
             //goi bien moi cho combo request (tra ve dto la co the giau duoc)
-            ComboRequest comboDetails = new ComboRequest(comboService.getComboDetails(comboId));
+            ComboDTO comboDetails = new ComboDTO(comboService.getComboDetails(comboId));
             return Response.success(comboDetails);
         } catch (RuntimeException e) {
             logger.error("An error occurred while getting combo detail with ID {}: {}", comboId, e.getMessage());

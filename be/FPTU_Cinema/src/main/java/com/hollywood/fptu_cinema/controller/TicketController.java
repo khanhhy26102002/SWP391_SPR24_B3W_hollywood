@@ -16,7 +16,6 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "api/ticket")
@@ -40,8 +39,8 @@ public class TicketController {
             if (username == null) {
                 throw new Exception("User not authenticated");
             }
-            Optional<User> user = userService.findByUserName(username);
-            BookingResponseDTO response = ticketService.createBooking(bookingRequest, user.orElse(null));
+            User user = userService.findByUserName(username);
+            BookingResponseDTO response = ticketService.createBooking(bookingRequest, user);
 
             logger.info("Ticket created successfully for user: {}", username);
             return Response.success(response);

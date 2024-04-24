@@ -1,5 +1,6 @@
 package com.hollywood.fptu_cinema.viewModel;
 
+import com.hollywood.fptu_cinema.enums.TicketStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -21,4 +22,5 @@ public class TicketDTO {
     private BigDecimal totalSeatsPrice;
     private BigDecimal totalComboPrice;
     private BigDecimal totalPrice;
+    private TicketStatus status;
 }

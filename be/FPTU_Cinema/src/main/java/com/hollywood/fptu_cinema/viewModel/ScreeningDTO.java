@@ -10,7 +10,7 @@ import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
-public class ScreeningRequest {
+public class ScreeningDTO {
     private Integer screeningId;
     private String movieName;
     private String roomNumber;
@@ -23,9 +23,10 @@ public class ScreeningRequest {
 
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "UTC")
     private LocalDate date;
+    private Integer status;
 
 
-    public ScreeningRequest(Screening screening) {
+    public ScreeningDTO(Screening screening) {
         this.movieName = screening.getMovie().getName();
         this.roomNumber = screening.getRoom().getRoomNumber();
         this.createdBy = screening.getUser().getUserName();
@@ -33,6 +34,7 @@ public class ScreeningRequest {
         this.end_time = screening.getEndTime();
         this.date = screening.getDate();
         this.screeningId = screening.getId();
+        this.status = screening.getStatus();
     }
 
 }
