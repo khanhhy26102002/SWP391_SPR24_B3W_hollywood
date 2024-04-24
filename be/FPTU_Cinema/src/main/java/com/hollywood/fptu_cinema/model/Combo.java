@@ -35,4 +35,8 @@ public class Combo {
     @Column(name = "combo_price", nullable = false, precision = 10, scale = 2)
     private BigDecimal comboPrice;
 
+    @NotNull
+    @Column(name = "status", nullable = false)
+    private Integer status;
+
 }
