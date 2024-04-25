@@ -4,6 +4,7 @@ import com.hollywood.fptu_cinema.service.UserService;
 import com.hollywood.fptu_cinema.viewModel.Response;
 import com.hollywood.fptu_cinema.viewModel.UserDTO;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
@@ -42,7 +43,7 @@ public class UserController {
     @Operation(summary = "Update User")
     @PutMapping("update/{userId}")
     @Secured({"ADMIN", "STAFF", "MEMBER"})
-    public ResponseEntity<?> updateUser(@PathVariable("userId") Integer userId, @RequestBody UserDTO userDTO) {
+    public ResponseEntity<?> updateUser(@PathVariable("userId") Integer userId, @Valid @RequestBody UserDTO userDTO) {
         try {
             userService.updateUser(userId, userDTO);
             return Response.success("User updated successfully");

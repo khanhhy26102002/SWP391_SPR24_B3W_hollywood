@@ -12,6 +12,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class TicketDTO {
+    private Integer id;
     private String imagePath;
     private String movieName;
     private String rated;

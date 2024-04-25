@@ -197,13 +197,14 @@ public class TicketService {
         Screening screening = ticket.getScreening();
         Movie movie = screening.getMovie();
         Room room = screening.getRoom();
-
+        Integer id = ticket.getId();
         String imagePath = findImagePathByMovieId(movie.getId());
         List<String> seatNumbers = getSeatNumbersByTicketId(ticket.getId());
         BigDecimal totalSeatsPrice = calculateTotalPrice(bookingSeatRepository.findByTicketId(ticket.getId()), BookingSeat::getTotal);
         BigDecimal totalComboPrice = calculateTotalPrice(bookingComboRepository.findByTicketId(ticket.getId()), BookingCombo::getTotalAmount);
         TicketStatus ticketStatus = ticket.getStatus();
         return new TicketDTO(
+                id,
                 imagePath,
                 movie.getName(),
                 movie.getRated(),

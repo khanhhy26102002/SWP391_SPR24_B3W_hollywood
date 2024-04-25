@@ -9,6 +9,7 @@ import com.hollywood.fptu_cinema.viewModel.MovieDTO;
 import com.hollywood.fptu_cinema.viewModel.MovieRequest;
 import com.hollywood.fptu_cinema.viewModel.Response;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
@@ -55,7 +56,7 @@ public class MovieController {
     @Operation(summary = "Create a new movie")
     @PostMapping("/createMovie")
     @Secured({"ADMIN", "STAFF"})
-    public ResponseEntity<?> createMovie(@RequestBody MovieRequest movieRequest) {
+    public ResponseEntity<?> createMovie(@Valid @RequestBody MovieRequest movieRequest) {
         try {
             //lay cai name cua nguoi dang nhap vo , gan vao bien username
             String userIdString = Util.currentUser();
@@ -77,7 +78,7 @@ public class MovieController {
     @Operation(summary = "Update movie")
     @PutMapping("/updateMovie/{movieId}") // Thêm {movieId} vào đường dẫn để nhận giá trị từ đường dẫn của yêu cầu HTTP
     @Secured({"ADMIN", "STAFF"})
-    public ResponseEntity<?> updateMovie(@PathVariable int movieId, @RequestBody MovieRequest movieRequest) {
+    public ResponseEntity<?> updateMovie(@PathVariable int movieId, @Valid @RequestBody MovieRequest movieRequest) {
         try {
             Movie movie = movieService.findById(movieId);
             // Gọi phương thức updateMovie từ service

@@ -8,6 +8,7 @@ import com.hollywood.fptu_cinema.util.Util;
 import com.hollywood.fptu_cinema.viewModel.*;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
@@ -117,7 +118,7 @@ public class AuthenticationController {
 
     @Operation(summary = "Register new user")
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody UserRegistrationDTO registrationDTO) {
+    public ResponseEntity<?> register(@Valid @RequestBody UserRegistrationDTO registrationDTO) {
         try {
             userService.register(registrationDTO);
             return Response.success("created successfully");

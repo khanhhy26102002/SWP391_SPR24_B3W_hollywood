@@ -8,6 +8,7 @@ import com.hollywood.fptu_cinema.util.Util;
 import com.hollywood.fptu_cinema.viewModel.ComboDTO;
 import com.hollywood.fptu_cinema.viewModel.Response;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
@@ -82,7 +83,7 @@ public class ComboController {
     @Operation(summary = "Create a new Combo")
     @PostMapping("/createCombo")
     @Secured({"ADMIN", "STAFF"})
-    public ResponseEntity<?> createCombo(@RequestBody ComboDTO comboDTO) {
+    public ResponseEntity<?> createCombo(@Valid @RequestBody ComboDTO comboDTO) {
         try {
             //lay cai name cua nguoi dang nhap vo , gan vao bien username
             String userIdString = Util.currentUser();
@@ -105,7 +106,7 @@ public class ComboController {
     @PutMapping("/updateCombo/{comboId}")
     // Thêm {movieId} vào đường dẫn để nhận giá trị từ đường dẫn của yêu cầu HTTP
     @Secured({"ADMIN", "STAFF"})
-    public ResponseEntity<?> updateCombo(@PathVariable int comboId, @RequestBody ComboDTO comboDTO) {
+    public ResponseEntity<?> updateCombo(@PathVariable int comboId, @Valid @RequestBody ComboDTO comboDTO) {
         try {
             Combo combo = comboService.findById(comboId);
             // Gọi phương thức updateCombo từ service
