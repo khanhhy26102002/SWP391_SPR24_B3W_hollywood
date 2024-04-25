@@ -9,6 +9,7 @@ import com.hollywood.fptu_cinema.viewModel.BookingResponseDTO;
 import com.hollywood.fptu_cinema.viewModel.Response;
 import com.hollywood.fptu_cinema.viewModel.TicketDTO;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +34,7 @@ public class TicketController {
     @Operation(summary = "Create Booking")
     @PostMapping("/createBooking")
     @Secured({"MEMBER"})
-    public ResponseEntity<?> createBooking(@RequestBody BookingRequestDTO bookingRequest) {
+    public ResponseEntity<?> createBooking(@Valid @RequestBody BookingRequestDTO bookingRequest) {
         try {
             String username = Util.currentUser();
             if (username == null) {

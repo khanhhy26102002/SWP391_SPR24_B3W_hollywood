@@ -8,6 +8,7 @@ import com.hollywood.fptu_cinema.util.Util;
 import com.hollywood.fptu_cinema.viewModel.Response;
 import com.hollywood.fptu_cinema.viewModel.ScreeningDTO;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
@@ -83,7 +84,7 @@ public class ScreeningController {
     @Operation(summary = "Create a new Screening")
     @PostMapping("/createScreening")
     @Secured({"ADMIN", "STAFF"})
-    public ResponseEntity<?> createMovie(@RequestBody ScreeningDTO screeningDTO) {
+    public ResponseEntity<?> createMovie(@Valid @RequestBody ScreeningDTO screeningDTO) {
         try {
             //lay cai name cua nguoi dang nhap vo , gan vao bien username
             String userIdString = Util.currentUser();
@@ -106,7 +107,7 @@ public class ScreeningController {
     @PutMapping("/updateScreening/{screeningId}")
     // Thêm {movieId} vào đường dẫn để nhận giá trị từ đường dẫn của yêu cầu HTTP
     @Secured({"ADMIN", "STAFF"})
-    public ResponseEntity<?> updateMovie(@PathVariable int screeningId, @RequestBody ScreeningDTO screeningDTO) {
+    public ResponseEntity<?> updateMovie(@PathVariable int screeningId, @Valid @RequestBody ScreeningDTO screeningDTO) {
         try {
             Screening screening = screeningService.findById(screeningId);
             // Gọi phương thức updateMovie từ service

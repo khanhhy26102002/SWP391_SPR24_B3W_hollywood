@@ -5,7 +5,6 @@ import com.hollywood.fptu_cinema.model.Movie;
 import com.hollywood.fptu_cinema.model.User;
 import com.hollywood.fptu_cinema.repository.MovieRepository;
 import com.hollywood.fptu_cinema.util.SecurityUtils;
-import com.hollywood.fptu_cinema.validator.MovieValidator;
 import com.hollywood.fptu_cinema.viewModel.MovieRequest;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +15,6 @@ import java.util.List;
 @Service
 public class MovieService {
     private final MovieRepository movieRepository;
-    private final MovieValidator movieValidator = new MovieValidator();
 
     //Khai bao constructor cua movie service va truyen movie repository vao lam tham so
     public MovieService(MovieRepository movieRepository) {
@@ -72,7 +70,6 @@ public class MovieService {
 
     //Goi du lieu va luu vao database(trong ngoac la nhap con set la luu)
     private void setMovieDetails(Movie movie, MovieRequest movieRequest, User currentUser) {
-        movieValidator.validate(movieRequest);
         movie.setName(movieRequest.getName());
         movie.setDescription(movieRequest.getDescription());
         movie.setActor(movieRequest.getActor());

@@ -77,7 +77,7 @@ public class UserService {
 
     private void sendResetPasswordLink(User user, String email) {
         String token = jwtTokenProvider.generateResetToken(user.getUserName());
-        String resetPasswordLink = "http://localhost:8080/api/auth/resetPassword?token=" + token;
+        String resetPasswordLink = "http://localhost:3000/api/auth/resetPassword?token=" + token;
         try {
             emailService.sendResetPasswordEmail(email, resetPasswordLink);
         } catch (Exception e) {
@@ -199,9 +199,18 @@ public class UserService {
     }
 
     public void updateUser(Integer userId, UserDTO userDTO) {
-        User user = findUserById(userId);
-        updateUserFromDTO(user, userDTO);
-        userRepository.save(user);
+        User currentUser = getCurrentUser();
+        User userToUpdate = findUserById(userId);
+
+        boolean isSelfUpdate = currentUser.getId().equals(userId);
+        boolean isAdmin = "ADMIN".equals(currentUser.getRole().getRoleName());
+
+        if (isAdmin || isSelfUpdate) {
+            updateUserFromDTO(userToUpdate, userDTO);
+            userRepository.save(userToUpdate);
+        } else {
+            throw new AccessDeniedException("You do not have permission to update this profile.");
+        }
     }
 
     private void updateUserFromDTO(User user, UserDTO userDTO) {
@@ -222,5 +231,11 @@ public class UserService {
     public UserDTO getUserProfile(Integer userId) {
         User user = findUserById(userId);
         return convertToDTO(user);
+    }
+
+    private User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = ((UserDetails) authentication.getPrincipal()).getUsername();
+        return findByUserName(currentUsername);
     }
 }
