@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface SeatRepository extends JpaRepository<Seat, Integer> {
-    Optional<Seat> findBySeatNumber(String seatNumber);
+    Optional<Seat> findBySeatNumberAndRoomId(String seatNumber, Integer roomId);
 
     List<Seat> findByRoomId(Integer id);
 }

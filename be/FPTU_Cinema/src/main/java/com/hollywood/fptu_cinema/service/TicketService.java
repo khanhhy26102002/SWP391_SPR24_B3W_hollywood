@@ -133,7 +133,7 @@ public class TicketService {
 
     private List<BookingSeat> processBookingSeats(BookingRequestDTO bookingRequest, Screening screening) {
         return bookingRequest.getSeatNumbers().stream()
-                .map(seatNumberDTO -> seatRepository.findBySeatNumber(seatNumberDTO.getSeatNumber())
+                .map(seatNumberDTO -> seatRepository.findBySeatNumberAndRoomId(seatNumberDTO.getSeatNumber(), screening.getRoom().getId())
                         .filter(seat -> !bookingSeatRepository.isSeatBooked(seat.getId(), screening.getId()))
                         .map(seat -> {
                             BookingSeat bookingSeat = new BookingSeat();
