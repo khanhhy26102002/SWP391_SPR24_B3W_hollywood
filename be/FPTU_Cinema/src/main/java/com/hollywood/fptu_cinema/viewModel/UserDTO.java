@@ -1,5 +1,6 @@
 package com.hollywood.fptu_cinema.viewModel;
 
+import com.hollywood.fptu_cinema.model.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,4 +20,5 @@ public class UserDTO {
     private LocalDate birthdate;
     private String phone;
     private Integer status;
+    private Role role;
 }

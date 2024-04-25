@@ -116,7 +116,8 @@ public class UserService {
                 user.getGender(),
                 user.getBirthdate(),
                 user.getPhone(),
-                user.getStatus()
+                user.getStatus(),
+                user.getRole()
         );
     }
 

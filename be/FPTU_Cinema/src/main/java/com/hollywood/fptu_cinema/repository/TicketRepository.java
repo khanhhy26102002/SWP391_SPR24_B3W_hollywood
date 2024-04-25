@@ -11,9 +11,9 @@ import java.util.List;
 public interface TicketRepository extends JpaRepository<Ticket, Integer> {
     List<Ticket> findTicketsByExpirationTimeBefore(Instant now);
 
-    @Query("SELECT SUM(t.totalPrice) FROM Ticket t WHERE t.createdDate BETWEEN :start AND :end")
+    @Query("SELECT SUM(t.totalPrice) FROM Ticket t WHERE t.status = 2 AND t.createdDate BETWEEN :start AND :end")
     BigDecimal calculateRevenueInDateRange(Instant start, Instant end);
 
-    @Query("SELECT COUNT(t) FROM Ticket t WHERE t.createdDate BETWEEN :start AND :end")
-    long countByCreatedDateBetween(Instant start, Instant end);
+    @Query("SELECT COUNT(t) FROM Ticket t WHERE t.status = 2 AND t.createdDate BETWEEN :start AND :end")
+    long countByCreatedDateBetweenAndStatusIsSold(Instant start, Instant end);
 }

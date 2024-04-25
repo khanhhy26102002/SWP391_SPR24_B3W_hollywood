@@ -4,6 +4,9 @@ import com.hollywood.fptu_cinema.repository.MovieRepository;
 import com.hollywood.fptu_cinema.repository.TicketRepository;
 import com.hollywood.fptu_cinema.repository.UserRepository;
 import com.hollywood.fptu_cinema.viewModel.DashboardData;
+import com.hollywood.fptu_cinema.viewModel.MovieStatistics;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -11,6 +14,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
+import java.util.List;
 
 @Service
 public class DashboardService {
@@ -42,10 +46,15 @@ public class DashboardService {
         Instant startOfToday = now.atStartOfDay(ZoneId.systemDefault()).toInstant();
         Instant startOfNextDay = now.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant();
 
-        long ticketsSoldToday = ticketRepository.countByCreatedDateBetween(startOfToday, startOfNextDay);
+        long ticketsSoldToday = ticketRepository.countByCreatedDateBetweenAndStatusIsSold(startOfToday, startOfNextDay);
 
         long totalMoviesThisMonth = movieRepository.countByPremiereBetween(firstDayOfMonth, firstDayOfNextMonth);
 
         return new DashboardData(monthlyRevenue, totalUsers, ticketsSoldToday, totalMoviesThisMonth);
+    }
+
+    public List<MovieStatistics> getTopMoviesBasedOnTicketsSold() {
+        Pageable topFour = PageRequest.of(0, 4);
+        return movieRepository.findTopMoviesByTicketsSold(topFour);
     }
 }

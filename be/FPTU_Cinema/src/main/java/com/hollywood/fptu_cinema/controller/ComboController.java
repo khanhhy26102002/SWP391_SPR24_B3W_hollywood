@@ -1,14 +1,12 @@
 package com.hollywood.fptu_cinema.controller;
 
 import com.hollywood.fptu_cinema.model.Combo;
-import com.hollywood.fptu_cinema.model.Screening;
 import com.hollywood.fptu_cinema.model.User;
 import com.hollywood.fptu_cinema.service.ComboService;
 import com.hollywood.fptu_cinema.service.UserService;
 import com.hollywood.fptu_cinema.util.Util;
 import com.hollywood.fptu_cinema.viewModel.ComboDTO;
 import com.hollywood.fptu_cinema.viewModel.Response;
-import com.hollywood.fptu_cinema.viewModel.ScreeningDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,6 +24,7 @@ public class ComboController {
     //Lay Service ben class movie service len
     private final ComboService comboService;
     private final UserService userService;
+
     //Tao constructor
     public ComboController(ComboService comboService, UserService userService) {
         this.comboService = comboService;
@@ -78,6 +77,7 @@ public class ComboController {
             return Response.error(e);
         }
     }
+
     //Tao moi 1 combo
     @Operation(summary = "Create a new Combo")
     @PostMapping("/createCombo")
