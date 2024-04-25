@@ -32,19 +32,22 @@ public class ScreeningService {
         return screeningRepository.findById(screeningId)
                 .orElseThrow(() -> new RuntimeException("Screening not found with ID: " + screeningId));
     }
-//Tao ra xuat chieu phim
+
+    //Tao ra xuat chieu phim
     public Screening createScreening(ScreeningDTO screeningDTO, User currentUser) {
         Screening screening = new Screening();
         setScreeningDetails(screening, screeningDTO, currentUser);
         screening.setStatus(1);
         return screeningRepository.save(screening);
     }
-//Cap nhat xuat chieu phim
+
+    //Cap nhat xuat chieu phim
     public void updateScreening(ScreeningDTO screeningDTO, Screening screening, User currentUser) {
         setScreeningDetails(screening, screeningDTO, currentUser);
         screeningRepository.save(screening);
     }
-//Danh sach xuat chieu phim
+
+    //Danh sach xuat chieu phim
     public List<Screening> listScreenings() {
         if (SecurityUtils.hasRole(RoleEnum.ADMIN) || SecurityUtils.hasRole(RoleEnum.STAFF)) {
             return screeningRepository.findAll();

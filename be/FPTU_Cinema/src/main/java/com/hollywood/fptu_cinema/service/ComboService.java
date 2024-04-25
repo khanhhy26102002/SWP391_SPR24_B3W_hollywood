@@ -1,14 +1,13 @@
 package com.hollywood.fptu_cinema.service;
 
 import com.hollywood.fptu_cinema.enums.RoleEnum;
-import com.hollywood.fptu_cinema.model.*;
+import com.hollywood.fptu_cinema.model.Combo;
+import com.hollywood.fptu_cinema.model.User;
 import com.hollywood.fptu_cinema.repository.ComboRepository;
 import com.hollywood.fptu_cinema.util.SecurityUtils;
 import com.hollywood.fptu_cinema.viewModel.ComboDTO;
-import com.hollywood.fptu_cinema.viewModel.ScreeningDTO;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.List;
 
 @Service
