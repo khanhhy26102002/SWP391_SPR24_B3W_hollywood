@@ -36,14 +36,15 @@ public class TicketController {
     @Secured({"MEMBER"})
     public ResponseEntity<?> createBooking(@Valid @RequestBody BookingRequestDTO bookingRequest) {
         try {
-            String username = Util.currentUser();
-            if (username == null) {
+            String userIdString = Util.currentUser();
+            if (userIdString == null) {
                 throw new Exception("User not authenticated");
             }
-            User user = userService.findByUserName(username);
-            BookingResponseDTO response = ticketService.createBooking(bookingRequest, user);
+            Integer userId = Integer.parseInt(userIdString);
+            User currentUser = userService.findUserById(userId);
+            BookingResponseDTO response = ticketService.createBooking(bookingRequest, currentUser);
 
-            logger.info("Ticket created successfully for user: {}", username);
+            logger.info("Ticket created successfully for user: {}", currentUser.getUserName());
             return Response.success(response);
         } catch (Exception e) {
             logger.error("Error creating ticket for user: {}. Error: {}", Util.currentUser(), e.getMessage(), e);

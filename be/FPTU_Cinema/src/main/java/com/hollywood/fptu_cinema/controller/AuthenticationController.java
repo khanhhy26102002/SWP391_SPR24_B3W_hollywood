@@ -52,8 +52,10 @@ public class AuthenticationController {
             if (userIdString == null) {
                 throw new Exception("User not authenticated");
             }
+            Integer userId = Integer.parseInt(userIdString);
+            User currentUser = userService.findUserById(userId);
             userService.logout(request);
-            logger.info("{} logged out successfully!", userIdString);
+            logger.info("{} logged out successfully!", currentUser.getUserName());
             return Response.success("Logout successful");
         } catch (Exception e) {
             logger.error("Logout attempt failed: {}", e.getMessage());
