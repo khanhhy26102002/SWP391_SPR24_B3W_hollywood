@@ -180,8 +180,8 @@ public class UserService {
             String currentRoleName = ((UserDetails) principal).getAuthorities().iterator().next().getAuthority();
             if ("ADMIN".equals(currentRoleName)) {
                 newRoleId = STAFF_ROLE_ID;
-            } else if ("STAFF".equals(currentRoleName)) {
-                throw new IllegalStateException("Staff members are not allowed to create new users.");
+            } else if ("STAFF".equals(currentRoleName) || "MEMBER".equals(currentRoleName)) {
+                throw new IllegalStateException("Staff and Member users are not allowed to create new users.");
             }
         }
         return newRoleId;
