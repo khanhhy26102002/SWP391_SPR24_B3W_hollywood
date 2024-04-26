@@ -1,6 +1,7 @@
 package com.hollywood.fptu_cinema.service;
 
 import com.hollywood.fptu_cinema.enums.PaymentStatus;
+import com.hollywood.fptu_cinema.enums.RoomStatus;
 import com.hollywood.fptu_cinema.enums.SeatStatus;
 import com.hollywood.fptu_cinema.enums.TicketStatus;
 import com.hollywood.fptu_cinema.model.*;
@@ -31,6 +32,7 @@ public class TicketService {
     private final ImageRepository imageRepository;
     private final QRCodeService qrCodeService;
     private final PaymentRepository paymentRepository;
+    private final RoomRepository roomRepository;
 
     public TicketService(TicketRepository ticketRepository,
                          SeatRepository seatRepository,
@@ -39,7 +41,7 @@ public class TicketService {
                          BookingComboRepository bookingComboRepository,
                          ComboRepository comboRepository,
                          ImageRepository imageRepository,
-                         QRCodeService qrCodeService, PaymentRepository paymentRepository) {
+                         QRCodeService qrCodeService, PaymentRepository paymentRepository, RoomRepository roomRepository) {
         this.ticketRepository = ticketRepository;
         this.seatRepository = seatRepository;
         this.screeningRepository = screeningRepository;
@@ -49,6 +51,7 @@ public class TicketService {
         this.imageRepository = imageRepository;
         this.qrCodeService = qrCodeService;
         this.paymentRepository = paymentRepository;
+        this.roomRepository = roomRepository;
     }
 
     public TicketDTO getTicketDetails(int ticketId) {
@@ -101,6 +104,8 @@ public class TicketService {
         bookingCombos.forEach(bookingCombo -> bookingCombo.setTicket(ticket));
 
         bookingSeats = bookingSeatRepository.saveAll(bookingSeats);
+        updateRoomStatusAfterBooking(screening.getRoom().getId());
+
         bookingCombos = bookingComboRepository.saveAll(bookingCombos);
 
         List<Seat> updatedSeats = bookingSeats.stream()
@@ -237,6 +242,7 @@ public class TicketService {
                 Seat seat = bookedSeat.getSeat();
                 seat.setStatus(SeatStatus.AVAILABLE);
                 seatRepository.save(seat);
+                updateRoomStatusAfterBooking(ticket.getScreening().getRoom().getId());
             }
             Optional<Payment> optionalPayment = paymentRepository.findByTicket(ticket);
             if (optionalPayment.isPresent()) {
@@ -244,6 +250,21 @@ public class TicketService {
                 payment.setStatus(PaymentStatus.CANCELLED);
                 paymentRepository.save(payment);
             }
+        }
+    }
+
+    public void updateRoomStatusAfterBooking(int roomId) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new RuntimeException("Room not found with ID: " + roomId));
+
+        long availableSeats = seatRepository.countByRoomIdAndStatus(roomId, SeatStatus.AVAILABLE);
+
+        if (availableSeats == 0) {
+            room.setStatus(RoomStatus.FULL);
+            roomRepository.save(room);
+        } else if (room.getStatus() == RoomStatus.FULL && availableSeats > 0) {
+            room.setStatus(RoomStatus.ACTIVE);
+            roomRepository.save(room);
         }
     }
 }

@@ -44,7 +44,7 @@ public class Payment {
     public void setTicketId(int ticketId) {
     }
 
-    public void setTicketPrice(Object totalPrice){
+    public void setTicketPrice(Object totalPrice) {
 
     }
 }

@@ -1,6 +1,8 @@
 package com.hollywood.fptu_cinema.model;
 
+import com.hollywood.fptu_cinema.enums.RoomStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -22,11 +24,15 @@ public class Room {
     private String roomNumber;
 
     @NotNull
+    @Min(1)
     @Column(name = "number_of_seat", nullable = false)
     private Integer numberOfSeat;
 
     @NotNull
     @Column(name = "status", nullable = false)
-    private Integer status;
+    private RoomStatus status;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private User user;
 }
