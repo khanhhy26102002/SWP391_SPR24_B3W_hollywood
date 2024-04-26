@@ -65,7 +65,7 @@ useEffect(() => {
     try {
         const response = await getAllScreen();
         setScreens([...response.data]);
-        setScreenFilter([...response.data]);
+        setScreenFilter([...response.data.reverse()]);
         const res = await fetchMovieData();
         setMovieList([...res.data]);
       } catch (error) {
@@ -88,6 +88,7 @@ useEffect(() => {
     setEndTime("");
     setDate("");
     setMess("");
+    setPage(1);
     setIsEdit(false);
     setOpenDialog(false);
   };
@@ -178,7 +179,7 @@ useEffect(() => {
                     <AddIcon />
                 </IconButton>
                 <Pagination
-                  count={Math.ceil(screenFilter.length / 5)}
+                  count={Math.ceil(screenFilter.length / 7)}
                   page={page}
                   onChange={(event, newPage) =>
                     setPage( newPage)
@@ -197,11 +198,12 @@ useEffect(() => {
                     <StyledTableCell align="center">Room</StyledTableCell>
                     <StyledTableCell align="center">Screen</StyledTableCell>
                     <StyledTableCell align="center">Date</StyledTableCell>
+                    <StyledTableCell align="center">Status</StyledTableCell>
                     <StyledTableCell align="center">Action</StyledTableCell>
                   </TableRow>
                 </StyledTableHead>
                 <TableBody>
-                 {screenFilter.slice((page - 1) * 5, page * 5).map((screen) => (
+                 {screenFilter.slice((page - 1) * 7, page * 7).map((screen) => (
                   <TableRow key={screen.screeningId}>
                       <StyledTableCell align="center">
                       {screen.movieName}
@@ -214,6 +216,9 @@ useEffect(() => {
                       </StyledTableCell>
                       <StyledTableCell align="center">
                       {screen.date}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                      {screen.status === 1 ? (<div className='badge badge-outline-success'>On Screening</div>): <div className='badge badge-outline-danger'>Removed</div>}
                       </StyledTableCell>
                       <StyledTableCell align="center">
                       <IconButton aria-label="edit" onClick={() => handleOpenDialog(screen)}>

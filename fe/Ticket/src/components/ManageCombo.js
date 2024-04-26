@@ -45,7 +45,7 @@ const ManageCombo = () => {
   const fetchData = async () =>{
     try{
       const response = await fetchComboData()
-      setCombos([...response.data]);
+      setCombos([...response.data.reverse()]);
     }catch (error) {
       console.error("Error fetching posts:", error);
     }
@@ -150,6 +150,7 @@ const ManageCombo = () => {
                     <StyledTableCell align="center">Name</StyledTableCell>
                     <StyledTableCell align="center">Description</StyledTableCell>
                     <StyledTableCell align="center">Price</StyledTableCell>
+                    <StyledTableCell align="center">Status</StyledTableCell>
                     <StyledTableCell align="center">Action</StyledTableCell>
                   </TableRow>
                 </StyledTableHead>
@@ -163,7 +164,11 @@ const ManageCombo = () => {
                       {combo.description}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                      {combo.comboPrice}&nbsp;₫
+                      ${combo.comboPrice}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                      {combo.status === 1 ? (<div className='badge badge-outline-success'>On Selling</div>): <div className='badge badge-outline-danger'>Removed</div>}
+
                       </StyledTableCell>
                       <StyledTableCell align="center">
                       <IconButton aria-label="edit" onClick={() => handleOpenDialog(combo)}>
