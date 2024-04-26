@@ -1,5 +1,6 @@
 package com.hollywood.fptu_cinema.service;
 
+import com.hollywood.fptu_cinema.enums.PaymentStatus;
 import com.hollywood.fptu_cinema.enums.SeatStatus;
 import com.hollywood.fptu_cinema.enums.TicketStatus;
 import com.hollywood.fptu_cinema.model.*;
@@ -15,6 +16,7 @@ import java.sql.Date;
 import java.time.*;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -28,6 +30,7 @@ public class TicketService {
     private final ComboRepository comboRepository;
     private final ImageRepository imageRepository;
     private final QRCodeService qrCodeService;
+    private final PaymentRepository paymentRepository;
 
     public TicketService(TicketRepository ticketRepository,
                          SeatRepository seatRepository,
@@ -36,7 +39,7 @@ public class TicketService {
                          BookingComboRepository bookingComboRepository,
                          ComboRepository comboRepository,
                          ImageRepository imageRepository,
-                         QRCodeService qrCodeService) {
+                         QRCodeService qrCodeService, PaymentRepository paymentRepository) {
         this.ticketRepository = ticketRepository;
         this.seatRepository = seatRepository;
         this.screeningRepository = screeningRepository;
@@ -45,6 +48,7 @@ public class TicketService {
         this.comboRepository = comboRepository;
         this.imageRepository = imageRepository;
         this.qrCodeService = qrCodeService;
+        this.paymentRepository = paymentRepository;
     }
 
     public TicketDTO getTicketDetails(int ticketId) {
@@ -233,6 +237,12 @@ public class TicketService {
                 Seat seat = bookedSeat.getSeat();
                 seat.setStatus(SeatStatus.AVAILABLE);
                 seatRepository.save(seat);
+            }
+            Optional<Payment> optionalPayment = paymentRepository.findByTicket(ticket);
+            if (optionalPayment.isPresent()) {
+                Payment payment = optionalPayment.get();
+                payment.setStatus(PaymentStatus.CANCELLED);
+                paymentRepository.save(payment);
             }
         }
     }

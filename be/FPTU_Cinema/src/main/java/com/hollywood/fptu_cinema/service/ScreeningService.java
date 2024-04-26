@@ -8,7 +8,7 @@ import com.hollywood.fptu_cinema.model.User;
 import com.hollywood.fptu_cinema.repository.MovieRepository;
 import com.hollywood.fptu_cinema.repository.RoomRepository;
 import com.hollywood.fptu_cinema.repository.ScreeningRepository;
-import com.hollywood.fptu_cinema.util.SecurityUtils;
+import com.hollywood.fptu_cinema.util.Util;
 import com.hollywood.fptu_cinema.viewModel.ScreeningDTO;
 import org.springframework.stereotype.Service;
 
@@ -49,7 +49,7 @@ public class ScreeningService {
 
     //Danh sach xuat chieu phim
     public List<Screening> listScreenings() {
-        if (SecurityUtils.hasRole(RoleEnum.ADMIN) || SecurityUtils.hasRole(RoleEnum.STAFF)) {
+        if (Util.hasRole(RoleEnum.ADMIN) || Util.hasRole(RoleEnum.STAFF)) {
             return screeningRepository.findAll();
         } else {
             return screeningRepository.findByStatusNot(0);

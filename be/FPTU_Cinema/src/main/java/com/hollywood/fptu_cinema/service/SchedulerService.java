@@ -2,23 +2,18 @@ package com.hollywood.fptu_cinema.service;
 
 import com.hollywood.fptu_cinema.enums.SeatStatus;
 import com.hollywood.fptu_cinema.enums.TicketStatus;
-import com.hollywood.fptu_cinema.model.BookingSeat;
-import com.hollywood.fptu_cinema.model.Screening;
-import com.hollywood.fptu_cinema.model.Seat;
-import com.hollywood.fptu_cinema.model.Ticket;
-import com.hollywood.fptu_cinema.repository.BookingSeatRepository;
-import com.hollywood.fptu_cinema.repository.ScreeningRepository;
-import com.hollywood.fptu_cinema.repository.SeatRepository;
-import com.hollywood.fptu_cinema.repository.TicketRepository;
+import com.hollywood.fptu_cinema.model.*;
+import com.hollywood.fptu_cinema.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
 @Component
-public class TicketSchedulerService {
+public class SchedulerService {
 
     private final TicketRepository ticketRepository;
 
@@ -28,13 +23,17 @@ public class TicketSchedulerService {
 
     private final BookingSeatRepository bookingSeatRepository;
 
-    public TicketSchedulerService(TicketRepository ticketRepository, ScreeningRepository screeningRepository, SeatRepository seatRepository, BookingSeatRepository bookingSeatRepository) {
+    private final MovieRepository movieRepository;
+
+    public SchedulerService(TicketRepository ticketRepository, ScreeningRepository screeningRepository, SeatRepository seatRepository, BookingSeatRepository bookingSeatRepository, MovieRepository movieRepository) {
         this.ticketRepository = ticketRepository;
         this.screeningRepository = screeningRepository;
         this.seatRepository = seatRepository;
         this.bookingSeatRepository = bookingSeatRepository;
+        this.movieRepository = movieRepository;
     }
 
+    // Lập lịch hàm này để chạy mỗi phút một lần, hủy vé đã hết hạn
     @Transactional
     @Scheduled(fixedRate = 60000)
     public void cancelExpiredTicketsTask() {
@@ -56,6 +55,7 @@ public class TicketSchedulerService {
         }
     }
 
+    // Lập lịch hàm này để chạy vào đầu mỗi phút, đặt lại trạng thái ghế sau mỗi suất chiếu
     @Scheduled(cron = "0 * * * * *")
     public void resetSeatsAfterScreening() {
         List<Screening> finishedScreenings = screeningRepository.findFinishedScreenings(Instant.now());
@@ -65,6 +65,19 @@ public class TicketSchedulerService {
                 seat.setStatus(SeatStatus.AVAILABLE);
                 seatRepository.save(seat);
             });
+        }
+    }
+
+    // Lập lịch hàm này để chạy mỗi đêm nửa đêm, cập nhật trạng thái phim sau 1 tháng công chiếu
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void updateMovieStatus() {
+        List<Movie> movies = movieRepository.findAll();
+        LocalDate oneMonthAgo = LocalDate.now().minusMonths(1);
+        for (Movie movie : movies) {
+            if (movie.getPremiere().isBefore(oneMonthAgo) && movie.getStatus() != 0) {
+                movie.setStatus(0);
+                movieRepository.save(movie);
+            }
         }
     }
 }

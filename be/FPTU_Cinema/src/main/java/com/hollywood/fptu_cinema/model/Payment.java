@@ -1,5 +1,6 @@
 package com.hollywood.fptu_cinema.model;
 
+import com.hollywood.fptu_cinema.enums.PaymentStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -38,7 +39,7 @@ public class Payment {
 
     @NotNull
     @Column(name = "status", nullable = false)
-    private Integer status;
+    private PaymentStatus status;
 
     public void setTicketId(int ticketId) {
     }

@@ -2,6 +2,7 @@ package com.hollywood.fptu_cinema.viewModel;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.hollywood.fptu_cinema.model.Screening;
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -21,14 +22,17 @@ public class ScreeningDTO {
     private String roomNumber;
     private String createdBy;
     @NotNull(message = "Start time is required")
+    @Future(message = "Start time must be in the future.")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
     private Instant start_time;
 
     @NotNull(message = "End time is required")
+    @Future(message = "End time must be in the future.")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
     private Instant end_time;
 
     @NotNull(message = "Date time is required")
+    @Future(message = "Date must be in the future.")
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "UTC")
     private LocalDate date;
     private Integer status;

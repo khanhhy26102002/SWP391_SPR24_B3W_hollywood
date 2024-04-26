@@ -4,7 +4,7 @@ import com.hollywood.fptu_cinema.enums.RoleEnum;
 import com.hollywood.fptu_cinema.model.Combo;
 import com.hollywood.fptu_cinema.model.User;
 import com.hollywood.fptu_cinema.repository.ComboRepository;
-import com.hollywood.fptu_cinema.util.SecurityUtils;
+import com.hollywood.fptu_cinema.util.Util;
 import com.hollywood.fptu_cinema.viewModel.ComboDTO;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +28,7 @@ public class ComboService {
 
     //danh sach combo
     public List<Combo> listCombo() {
-        if (SecurityUtils.hasRole(RoleEnum.ADMIN) || SecurityUtils.hasRole(RoleEnum.STAFF)) {
+        if (Util.hasRole(RoleEnum.ADMIN) || Util.hasRole(RoleEnum.STAFF)) {
             return comboRepository.findAll();
         } else {
             return comboRepository.findByStatusNot(0);

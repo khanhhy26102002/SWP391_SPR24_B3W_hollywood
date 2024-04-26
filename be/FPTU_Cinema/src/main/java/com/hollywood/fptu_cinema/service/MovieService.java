@@ -4,7 +4,7 @@ import com.hollywood.fptu_cinema.enums.RoleEnum;
 import com.hollywood.fptu_cinema.model.Movie;
 import com.hollywood.fptu_cinema.model.User;
 import com.hollywood.fptu_cinema.repository.MovieRepository;
-import com.hollywood.fptu_cinema.util.SecurityUtils;
+import com.hollywood.fptu_cinema.util.Util;
 import com.hollywood.fptu_cinema.viewModel.MovieRequest;
 import org.springframework.stereotype.Service;
 
@@ -50,7 +50,7 @@ public class MovieService {
 
     //list movie
     public List<Movie> listMovie() {
-        if (SecurityUtils.hasRole(RoleEnum.ADMIN) || SecurityUtils.hasRole(RoleEnum.STAFF)) {
+        if (Util.hasRole(RoleEnum.ADMIN) || Util.hasRole(RoleEnum.STAFF)) {
             return movieRepository.findAll();
         } else {
             return movieRepository.findByStatusNot(0);

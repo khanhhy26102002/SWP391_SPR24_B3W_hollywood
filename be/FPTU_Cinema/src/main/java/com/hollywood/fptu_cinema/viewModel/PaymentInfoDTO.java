@@ -12,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PaymentInfoDTO {
+    private Integer paymentId;
     private String imagePath;
     private String movieName;
     private String rated;
