@@ -252,10 +252,4 @@ public class UserService {
         User user = findUserById(userId);
         return convertToDTO(user);
     }
-
-    private User getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUsername = ((UserDetails) authentication.getPrincipal()).getUsername();
-        return findByUserName(currentUsername);
-    }
 }
