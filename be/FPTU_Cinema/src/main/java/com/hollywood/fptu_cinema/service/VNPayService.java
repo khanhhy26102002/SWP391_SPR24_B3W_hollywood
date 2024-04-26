@@ -1,6 +1,8 @@
 package com.hollywood.fptu_cinema.service;
 
 import com.hollywood.fptu_cinema.config.VNPayConfig;
+import com.hollywood.fptu_cinema.enums.TicketStatus;
+import com.hollywood.fptu_cinema.model.Ticket;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 
@@ -83,12 +85,13 @@ public class VNPayService {
     }
 
     public int orderReturn(HttpServletRequest request) {
-        Map fields = new HashMap();
-        for (Enumeration params = request.getParameterNames(); params.hasMoreElements(); ) {
+        Ticket ticket = new Ticket();
+        Map<String, String> fields = new HashMap<>();
+        for (Enumeration<String> params = request.getParameterNames(); params.hasMoreElements(); ) {
             String fieldName = null;
             String fieldValue = null;
             try {
-                fieldName = URLEncoder.encode((String) params.nextElement(), StandardCharsets.US_ASCII.toString());
+                fieldName = URLEncoder.encode(params.nextElement(), StandardCharsets.US_ASCII.toString());
                 fieldValue = URLEncoder.encode(request.getParameter(fieldName), StandardCharsets.US_ASCII.toString());
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -108,13 +111,34 @@ public class VNPayService {
         String signValue = VNPayConfig.hashAllFields(fields);
         if (signValue.equals(vnp_SecureHash)) {
             if ("00".equals(request.getParameter("vnp_TransactionStatus"))) {
-                return 1;
+                // Cập nhật trạng thái của đơn hàng
+                int orderUpdateResult = updateOrderStatus();
+                if (orderUpdateResult == 1) {
+                    // Nếu cập nhật đơn hàng thành công, thay đổi trạng thái của vé
+                    ticket.setStatus(TicketStatus.PAID);
+                    // Kiểm tra trạng thái của vé sau khi cập nhật
+                    TicketStatus newTicketStatus = ticket.getStatus();
+                    if (newTicketStatus == TicketStatus.PAID) {
+                        return 1; // Trả về 1 nếu cả hai cập nhật thành công
+                    } else {
+                        return -1; // Trả về -1 nếu trạng thái vé không thay đổi thành công
+                    }
+                } else {
+                    return 0; // Trả về 0 nếu việc cập nhật đơn hàng không thành công
+                }
             } else {
-                return 0;
+                return 0; // Trả về 0 nếu trạng thái giao dịch không thành công
             }
         } else {
-            return -1;
+            return -1; // Trả về -1 nếu xác thực chữ ký không thành công
         }
+    }
+
+    // Phương thức để cập nhật trạng thái của đơn hàng
+    private int updateOrderStatus() {
+        // Thực hiện cập nhật trạng thái đơn hàng
+        // Trả về 1 nếu cập nhật thành công, 0 nếu không thành công
+        return 1;
     }
 
 }
