@@ -104,7 +104,7 @@ const Moviedetail = () => {
                         <span>Booking</span>
                       </Col>
                       <Col lg={2} className="buy-ticket">
-                        <span>Watch Trailer</span>
+                        <a href="#watch" style={{textDecoration: "none"}}>Watch Trailer</a>
                       </Col>
                     </Row>
                   </div>
@@ -113,7 +113,7 @@ const Moviedetail = () => {
             </div>
             <p style={{ fontSize: "20px" }}>"{movie.description}"</p>
           </div>
-          <iframe width="600" height="400" src={movie.trailer} frameborder="0" allowfullscreen></iframe>
+          <iframe id="watch" width="1000" height="800" src={movie.trailer} frameborder="0"></iframe>
 
         </div>
       </div>

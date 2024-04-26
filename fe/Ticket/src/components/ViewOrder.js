@@ -10,13 +10,8 @@ import {
   TableHead,
   TableRow,
   TableCell,
-  TableBody,
-  FormControl,
-  IconButton,
+  TableBody,    
   Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   TextField
 } from "@mui/material";
 import { fetchTicketData } from '../api/ticketApi';
@@ -26,12 +21,11 @@ export default function ViewOrder() {
   useEffect(()=>{
     fetchData();
   },[]);
+
   const fetchData = async () => {
     try {
       const response = await fetchTicketData(sessionStorage.getItem("jwt"));
       setTicket([...response.data]);
-      console.log(response.data);
-      console.log(ticket);
     } catch (error) {
       console.error("Error fetching ticket!!", error)
     }
@@ -49,7 +43,7 @@ export default function ViewOrder() {
               </div>
                <FlexContainer>
                 <Pagination
-                  count={Math.ceil(ticket.length / 5)}
+                  count={Math.ceil(ticket.length / 7)}
                   page={page}
                   onChange={(event, newPage) =>
                     setPage(newPage)
@@ -61,17 +55,16 @@ export default function ViewOrder() {
               <StyledTable aria-label="User table">
                 <StyledTableHead>
                   <TableRow>
-                    <StyledTableCell align="center">Ngày chiếu</StyledTableCell>
-                    <StyledTableCell align="center">Suất chiếu</StyledTableCell>
-                    <StyledTableCell align="center">Ghế</StyledTableCell>
-<StyledTableCell align="center">Combo</StyledTableCell>
-                    <StyledTableCell align="center">movies</StyledTableCell>
-                    <StyledTableCell align="center">rated</StyledTableCell>
-                    <StyledTableCell align="center">status</StyledTableCell>
+                    <StyledTableCell align="center">Date</StyledTableCell>
+                    <StyledTableCell align="center">Screen</StyledTableCell>
+                    <StyledTableCell align="center">Movies</StyledTableCell>
+                    <StyledTableCell align="center">Seats</StyledTableCell>
+                    <StyledTableCell align="center">Combo</StyledTableCell>
+                    <StyledTableCell align="center">Status</StyledTableCell>
                   </TableRow>
                 </StyledTableHead>
                 <TableBody>
-                    {ticket.map((a)=>(
+                    {ticket.slice((page - 1) * 7, page * 7).reverse().map((a)=>(
                       <TableRow>
                       <StyledTableCell align="center">
                          {a.screeningDate}
@@ -80,19 +73,17 @@ export default function ViewOrder() {
                          {a.screeningTime}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                         {a.seatNumbers}
+                        {a.movieName}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                      {a.seatNumbers}
                       </StyledTableCell>
                       <StyledTableCell align="center">
                          {a.totalComboPrice}
                       </StyledTableCell>
+                      
                       <StyledTableCell align="center">
-                        {a.movieName}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {a.rated}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        <div className='badge badge-outline-success'>Đã Trả</div>
+                        {a.status === "UNPAID" ? <div className='badge badge-outline-warning '>UNPAID</div> : a.status ===  "PAID" ? (<div className='badge badge-outline-success'>PAID</div>): <div className='badge badge-outline-danger'>CANCEL</div>}
                       </StyledTableCell>
                     </TableRow>
                     ))}

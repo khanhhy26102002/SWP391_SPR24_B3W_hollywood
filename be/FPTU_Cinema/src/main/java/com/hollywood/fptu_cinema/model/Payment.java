@@ -41,4 +41,10 @@ public class Payment {
     @Column(name = "status", nullable = false)
     private PaymentStatus status;
 
+    public void setTicketId(int ticketId) {
+    }
+
+    public void setTicketPrice(Object totalPrice){
+
+    }
 }

@@ -56,7 +56,7 @@ function Dashboard1() {
         <div className="main-panel" style={{ backgroundColor: "whitesmoke", paddingTop: "140px", paddingLeft: "20px", paddingRight: "20px" }}>
           <Row>
             <Col lg={8}>
-              <div class="content-wrapper" style={{ backgroundColor: "white", borderRadius: "10px", paddingBottom: "47px" }}>
+              <div class="content-wrapper" style={{ backgroundColor: "white", borderRadius: "10px", paddingBottom: "66px" }}>
                 <div>
                    <div>
                    <h5 style={{color:"black"}}>Top 4 movies most viewed</h5>
@@ -66,16 +66,16 @@ function Dashboard1() {
               </div>
             </Col>
             <Col lg={4}>
-              <div className="content-wrapper" style={{ backgroundColor: "white", borderRadius: "10px", padding: "52px" }}>
-                <h5 style={{ marginBottom: "20px", color: "black" }}>Explain</h5>
+              <div className="content-wrapper" style={{ backgroundColor: "white", borderRadius: "10px", padding: "52px",height:"500px"}}>
+                <h5 style={{ marginBottom: "30px", color: "black" ,marginTop:"-30px"}}>Explain</h5>
                 <div className="legend">
-                     <div className="card" style={{ backgroundColor: "white", borderRadius: "10px" }}>
+                     <div className="card" style={{ backgroundColor: "white", borderRadius:"10px",height:"400px",marginTop:"-20px", marginLeft:"-40px", paddingBottom:"400px", marginRight:"-40px"}}>
                      <div className="card-body">
                         {topmovies.map((a,index)=>(
                           <ListGroup variant="flush">
                           <ListGroup.Item>
-                            <div className="d-flex align-items-center">
-<div className="legend-color" style={{ backgroundColor: `${color[index]}`, width: "30px", height: "15px" }}></div>
+<div className="d-flex align-items-center">
+                              <div className="legend-color" style={{ backgroundColor: `${color[index]}`, width: "30px", height: "15px" }}></div>
                               <span style={{ marginLeft: "10px", color: "black" }}>{a.movieName}</span>
                             </div>
                           </ListGroup.Item>
@@ -134,9 +134,9 @@ function Dashboard1() {
             </div>
             <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
               <div class="card" style={{ backgroundColor: "white", borderRadius: "10px" }}>
-                <div class="card-body">
+<div class="card-body">
                   <div class="row">
-<div class="col-9">
+                    <div class="col-9">
                       <div class="d-flex align-items-center align-self-start">
                         <h3 class="mb-0" style={{ color: "black" }}>{chartData.totalMoviesThisMonth}</h3>
                         <p class="text-success ml-2 mb-0 font-weight-medium"></p>
