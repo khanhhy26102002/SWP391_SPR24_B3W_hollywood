@@ -13,16 +13,10 @@ class CustomError extends Error {
     try {
       const response = await axios.post(
         `${baseUrl}/api/ticket/createBooking`,{
-          screeningDate: "",
-          screeningTime: "",
-          seatNumbers: [
-            {seatNumber: ""},
-            {seatNumber: ""}
-          ],
-            comboQuantities: {
-
-            }
-
+          screeningDate: date,
+          screeningTime: time,
+          seatNumbers: seats,
+          comboQuantities: combo
         },{
             headers: {
                 Authorization: `Bearer ${token}`,

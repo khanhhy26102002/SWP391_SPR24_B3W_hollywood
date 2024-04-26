@@ -24,9 +24,17 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from '@mui/icons-material/Edit';
+import AddIcon from "@mui/icons-material/Add";
 import { Button, Row, Col } from "react-bootstrap";
 import Sidebar from "./Sidebar";
 import { deleteUser, getListUsers, updateUser } from "../api/manageUserApi";
+import { register } from "../api/authApi";
+import av1 from "../img/avatar/hyldk.jpg";
+import av2 from "../img/avatar/quynhntm.jpg";
+import av3 from "../img/avatar/quihp.jpg";
+import av4 from "../img/avatar/trihk.jpg";
+import av5 from "../img/avatar/truonghd.jpg";
+import av6 from "../img/avatar/hiepdv.jpg";
 
 const ManageUser = () => {
   const [userSize, setUserSize] = useState(0);
@@ -43,12 +51,15 @@ const ManageUser = () => {
   const [birthdate, setBirthdate] = useState("");
   const [phone, setPhone] = useState("");
   const [mess, setMess] = useState("");
+  const [password,setPasword] = useState("");
+  const [status,setStatus] = useState(0);
+  const [isEdit,setIsEdit] = useState(false);
 
   const fetchData = async () => {
     await getListUsers(sessionStorage.getItem("jwt"))
       .then((res) => {
         console.log(res.data);
-        setUsers(res.data)
+        setUsers(res.data.reverse())
         setUserSize(users.length);
       })
       .catch((error) => {
@@ -69,9 +80,13 @@ const ManageUser = () => {
   const handleOnCloseConfirmationDialog = () => {
     setOpenConfirmationDialog(false);
     setOpenDialog(false);
+    setIsEdit(false);
+    setPage(1);
     setSelectedUser("");
     setAddress("");
     setAvt("");
+    setPasword("");
+    setStatus(0);
     setBirthdate("");
     setEmail("");
     setGender("");
@@ -92,6 +107,7 @@ const ManageUser = () => {
 
   const handleOpenDialog = (user) => {
     setOpenDialog(true);
+    setIsEdit(true);
     setSelectedUser(user.id);
     setAddress(user.address);
     setAvt(user.avatar);
@@ -113,6 +129,19 @@ const ManageUser = () => {
     }
   }
 
+  const handleAddUser = async (e) => {
+    e.preventDefault();
+        await register(name, email, address,gender, birthdate,phone, password )
+        .then((res) =>{
+          setOpenConfirmationDialog(true);
+          setMess("Add user information success !!!!");
+          fetchData();
+        })
+          .catch((error) => {
+            console.log(error);
+          });
+  }
+
   return (
     <div className="container-scroller">
       <Sidebar />
@@ -123,8 +152,13 @@ const ManageUser = () => {
             <div class="page-header">
               <TableTitle>User</TableTitle>
               <FlexContainer>
+              {sessionStorage.getItem("userRoleName") === "ADMIN" && (
+                <IconButton aria-label="add" onClick={() => setOpenDialog(true)}>
+                    <AddIcon />
+                </IconButton>
+              )}
                 <Pagination
-                  count={Math.ceil(userSize / 5)}
+                  count={Math.ceil(userSize / 7)}
                   page={page}
                   onChange={(e, newPage) => setPage(newPage)}
                 />
@@ -139,15 +173,20 @@ const ManageUser = () => {
                     <StyledTableCell align="center">Name</StyledTableCell>
                     <StyledTableCell align="center">Email</StyledTableCell>
                     <StyledTableCell align="center">Phone</StyledTableCell>
+                    <StyledTableCell align="center">Status</StyledTableCell>
                     <StyledTableCell align="center">Action</StyledTableCell>
                   </TableRow>
                 </StyledTableHead>
                 <TableBody>
-                  {users.slice((page - 1) * 5, page * 5).map((user) => (
+                  {users.slice((page - 1) * 7, page * 7).reverse().map((user) => (
                     <TableRow>
                       <StyledTableCell align="center">
                       <div class="navbar-profile" style={{marginRight: "0"}}>
-                        <img class="img-xs rounded-circle" src={user.avatar} alt=""/>
+                        <img class="img-xs rounded-circle" src={user.avatar === "hyldk.jpg" ? av1 : 
+                                                                  (user.avatar === "quynhntm.jpg" ? av2 :
+                                                                  (user.avatar === "quihp.jpg" ? av3 :
+                                                                  (user.avatar === "trihk.jpg" ? av4 :
+                                                                  (user.avatar === "truonghd.jpg" ? av5 : av6)))) } style={{width:"50px",height:"50px", borderRadius:"50%"}} alt=""/>
                     </div>
                       </StyledTableCell>
                       <StyledTableCell align="center">
@@ -158,6 +197,9 @@ const ManageUser = () => {
                       </StyledTableCell>
                       <StyledTableCell align="center">
                         {user.phone}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {user.status === 1 ? (<div className='badge badge-outline-success'>Active</div>): (<div className='badge badge-outline-danger'>Unactive</div>)}
                       </StyledTableCell>
                       <StyledTableCell align="center">
                       <IconButton aria-label="edit" onClick={() => handleOpenDialog(user)}>
@@ -181,7 +223,7 @@ const ManageUser = () => {
 
       {openDialog && (
         <StyledDialog open={openDialog} onClose={() => setOpenDialog(false)}>
-      <DialogTitle>Update User</DialogTitle>
+      <DialogTitle>{isEdit ? "Edit" : "Add New"} User</DialogTitle>
       <DialogContent>
         <DialogTextField
           label="Name"
@@ -201,6 +243,13 @@ const ManageUser = () => {
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
         />
+        {!isEdit && (<DialogTextField
+          label="Password"
+          name="password"
+          value={password}
+          onChange={(e) => setPasword(e.target.value)}
+          type="password"
+        />)}
         <DialogTextField
           label="Address"
           name="address"
@@ -214,12 +263,19 @@ const ManageUser = () => {
           value={birthdate}
           onChange={(e) => setBirthdate(e.target.value)}
         />
-        <DialogTextField
-          label="Gender"
-          name="gender"
-          value={gender}
-          onChange={(e) => setGender(e.target.value)}
-        />
+        <SelectOutlined variant="outlined" style={{ width: "100%" }}>
+          <InputLabel>Gender</InputLabel>
+          <Select
+            label="Gender"
+            name="gender"
+            value={gender}
+            onChange={(e) => setGender(e.target.value)}
+          >
+              <MenuItem value="Male">Male</MenuItem>
+              <MenuItem value="Female">Female</MenuItem>
+              <MenuItem value="Another">Other</MenuItem>
+          </Select>
+        </SelectOutlined>
         <DialogTextField
           label="Avatar"
           name="avatar"
@@ -228,11 +284,25 @@ const ManageUser = () => {
           onChange={(e) => setAvt(e.target.value)}
         />
       </DialogContent>
+      <SelectOutlined variant="outlined" style={{ width: "100%" }}>
+          <InputLabel>Status</InputLabel>
+          <Select
+            label="Status"
+            name="status"
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+          >
+              <MenuItem value={0}>Unactive</MenuItem>
+              <MenuItem value={1}>Active</MenuItem>
+          </Select>
+        </SelectOutlined>
 
       <DialogActions>
-        <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
-        <Button onClick={handleEditUser} color="primary">
-          Update
+        <Button onClick={handleOnCloseConfirmationDialog}>Cancel</Button>
+        <Button onClick={isEdit ? handleEditUser : handleAddUser}
+              color="primary"
+            >
+              {isEdit ? "Update" : "Add"}
         </Button>
       </DialogActions>
     </StyledDialog>
@@ -250,7 +320,7 @@ const ManageUser = () => {
           </DialogContent>
           <DialogActions>
             <Button onClick={handleOnCloseConfirmationDialog} color="primary">
-              Cancel
+            {mess === "" ? "Cancel" : "OK"}
             </Button>
             {mess === "" && (
               <Button onClick={handleDeleteUser} color="primary">
@@ -342,4 +412,9 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
 
 const DialogTextField = styled(TextField)({
   width: "100%",
+});
+
+const SelectOutlined = styled(FormControl)({
+  width: "30%",
+  marginBottom: "10px",
 });

@@ -15,6 +15,13 @@ import {
   DialogActions,
 } from "@mui/material";
 import pic from "../img/logo-removebg-preview.png";
+import av1 from "../img/avatar/hyldk.jpg";
+import av2 from "../img/avatar/quynhntm.jpg";
+import av3 from "../img/avatar/quihp.jpg";
+import av4 from "../img/avatar/trihk.jpg";
+import av5 from "../img/avatar/truonghd.jpg";
+import av6 from "../img/avatar/hiepdv.jpg";
+import { Image } from "@mui/icons-material";
 
 export const Header = () => {
   const navigate = useNavigate();
@@ -64,7 +71,7 @@ export const Header = () => {
             </div>
           </div>
           <div
-            className="col-lg-8"
+            className="col-lg-6"
             style={{ display: "flex", alignItems: "center" }}
           >
             <div className="header__nav">
@@ -93,16 +100,20 @@ export const Header = () => {
             </div>
           </div>
           <div
-            className="col-lg-2"
+            className="col-lg-4"
             style={{ display: "flex", alignItems: "center" }}
           >
             <div className="header__right">
               {sessionStorage.getItem("jwt") !== null ? (
                 <>
                   <div class="navbar-profile" style={{display:"flex"}}>
-                    <AccountCircleIcon
-                      style={{ width: "40px", height: "40px" }}
-                    />
+                  <div class="navbar-profile" style={{marginRight: "0"}}>
+                        <img class="img-xs rounded-circle" src={sessionStorage.getItem("userAvt") === "hyldk.jpg" ? av1 : 
+                                                                  (sessionStorage.getItem("userAvt") === "quynhntm.jpg" ? av2 :
+                                                                  (sessionStorage.getItem("userAvt") === "quihp.jpg" ? av3 :
+                                                                  (sessionStorage.getItem("userAvt") === "trihk.jpg" ? av4 :
+                                                                  (sessionStorage.getItem("userAvt") === "truonghd.jpg" ? av5 : av6)))) } style={{width:"50px",height:"50px", borderRadius:"50%"}} alt=""/>
+                    </div>
                     <span>Welcome, <strong>{sessionStorage.getItem("userName")}</strong></span>
                   </div>
                   <ul className="dropdown">

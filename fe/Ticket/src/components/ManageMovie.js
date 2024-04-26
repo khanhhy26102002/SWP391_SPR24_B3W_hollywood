@@ -58,7 +58,7 @@ const ManageMovie = () => {
   const fetchData = async () => {
     try {
       const response = await fetchMovieData();
-      setMovie([...response.data]);
+      setMovie([...response.data.reverse()]);
     } catch (error) {
       console.error("Error fetching posts:", error);
     }
@@ -95,6 +95,7 @@ const ManageMovie = () => {
     setPremiere("");
     setRated("");
     setPoster("");
+    setPage(1);
     setIsEdit(false);
     setMess("");
   };
@@ -188,7 +189,7 @@ const ManageMovie = () => {
                     <AddIcon />
                   </IconButton>
                   <Pagination
-                    count={Math.ceil(movie.length / 5 )}
+                    count={Math.ceil(movie.length / 7 )}
                     page={page}
                     onChange={(e, newPage) => setPage(newPage)}
                   />
@@ -203,11 +204,12 @@ const ManageMovie = () => {
                       <StyledTableCell align="center">Genre</StyledTableCell>
                       <StyledTableCell align="center">Duration</StyledTableCell>
                       <StyledTableCell align="center">Premiere</StyledTableCell>
+                      <StyledTableCell align="center">Status</StyledTableCell>
                       <StyledTableCell align="center">Action</StyledTableCell>
                     </TableRow>
                   </StyledTableHead>
                   <TableBody>
-                    {movie.slice((page - 1) * 5, page * 5).map((film) => (
+                    {movie.slice((page - 1) * 7, page * 7).map((film) => (
                       <TableRow key={film.id}>
                         <StyledTableCell align="center">
                           {film.name}
@@ -220,6 +222,9 @@ const ManageMovie = () => {
                         </StyledTableCell>
                         <StyledTableCell align="center">
                           {film.premiere}
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                        {film.status === 1 ? (<div className='badge badge-outline-success'>On Screening</div>): <div className='badge badge-outline-danger'>Removed</div>}
                         </StyledTableCell>
                         <StyledTableCell align="center">
                           <IconButton
@@ -389,7 +394,7 @@ const ManageMovie = () => {
                                   </Col>
                                   <Col lg={8}>
                                     <DialogTextField
-                                      value={director}
+                                      value={trailer}
                                       onChange={(e) =>
                                         setTrailer(e.target.value)
                                       }
