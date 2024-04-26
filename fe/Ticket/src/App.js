@@ -2,8 +2,6 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./App.css";
 import { styled } from "@mui/material/styles";
-import { useState } from "react";
-import { useEffect } from "react";
 import Contact from "./components/contact";
 import Category from "./components/category";
 import BuyTicket from "./components/buy-ticket";
@@ -11,7 +9,7 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import FURules from "./components/FURule";
 import Moviedetail from "./components/Detail";
-import Dashboard from "./components/AdminPage";
+import Dashboard1 from "./components/AdminPage";
 import ManageUser from "./components/ManageUser";
 import ManageCombo from "./components/ManageCombo";
 import ManageMovie from "./components/ManageMovie";
@@ -19,6 +17,8 @@ import ManageScreening from "./components/ManageScreening";
 import Profile from "./components/Profile";
 import ResetPassword from "./components/ResetPassword";
 import ViewOrder from "./components/ViewOrder";
+import TestImage from "./components/Image";
+import Payment from "./components/Payment";
 
 function App() {
 
@@ -35,7 +35,7 @@ function App() {
               <Route path="/register" element={<Register/>}/>
               <Route path="/rule" element={<FURules/>}/>
               <Route path="/detail" element={<Moviedetail/>}/>
-              <Route path="/admin" element={<Dashboard/>}/>
+              <Route path="/admin" element={<Dashboard1/>}/>
               <Route path="/manageuser" element={<ManageUser/>}/>
               <Route path="/managecombo" element={<ManageCombo/>}/>
               <Route path="/managemovie" element={<ManageMovie/>}/>
@@ -43,6 +43,8 @@ function App() {
               <Route path="/myprofile" element={<Profile/>}/>
               <Route path="/api/auth/resetPassword" element={<ResetPassword/>}/>
               <Route path="/vieworder" element={<ViewOrder/>}/>
+              <Route path="/test" element={<TestImage/>}/>
+              <Route path="/payment" element={<Payment/>}/>
             </Routes>
       </Router>
     </div>

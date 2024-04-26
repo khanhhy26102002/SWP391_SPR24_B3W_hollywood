@@ -2295,8 +2295,14 @@ textarea:hover
 
 .seat-selection .legend div span.selected {
     background-color: #00b300;
-    background-position: 50%;
-    background-repeat: no-repeat;
+    box-shadow: 0 0 11px #00b300;
+    color: #fff;
+}
+
+.seat-selection .legend div span.vip {
+    background-color: #b30083;
+	box-shadow: 0 0 11px #b30083;
+    color: #fff
 }
 
 .seat-selection .legend div span.taken {
@@ -2422,6 +2428,12 @@ textarea:hover
 .seat-selection .seats ul.seat-row li.available {
     background-color: #999 !important;
     box-shadow: 0 0 11px #999;
+    color: #fff;
+}
+
+.seat-selection .seats ul.seat-row li.vip {
+    background-color: #b30083 !important;
+    box-shadow: 0 0 11px #b30083;
     color: #fff;
 }
 .seat-selection .seats ul.seat-row li.selected {

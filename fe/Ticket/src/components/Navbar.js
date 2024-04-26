@@ -3,10 +3,15 @@ import "../styles/admin.css";
 import "./Navbar.css";
 import { styled, Dialog, DialogTitle, DialogContent, TextField, Button, DialogActions} from "@mui/material";
 import { changePassword, userLogout } from "../api/authApi";
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useNavigate } from "react-router-dom";
 import { Image } from "react-bootstrap";
+import av1 from "../img/avatar/hyldk.jpg";
+import av2 from "../img/avatar/quynhntm.jpg";
+import av3 from "../img/avatar/quihp.jpg";
+import av4 from "../img/avatar/trihk.jpg";
+import av5 from "../img/avatar/truonghd.jpg";
+import av6 from "../img/avatar/hiepdv.jpg";
 
 const Navbar = () => {
     const [openDialog, setOpenDialog] = useState(false);
@@ -51,7 +56,11 @@ const Navbar = () => {
               {sessionStorage.getItem("jwt") !== null && (
                 <div class="navbar-profile">
                 <div class="navbar-profile" style={{marginRight: "0"}}>
-                        <Image class="img-xs rounded-circle" src="../img/avatar/quynhntm.jpg" alt=""/>
+                        <Image class="img-xs rounded-circle" src={sessionStorage.getItem("userAvt") === "hyldk.jpg" ? av1 : 
+                                                                  (sessionStorage.getItem("userAvt") === "quynhntm.jpg" ? av2 :
+                                                                  (sessionStorage.getItem("userAvt") === "quihp.jpg" ? av3 :
+                                                                  (sessionStorage.getItem("userAvt") === "trihk.jpg" ? av4 :
+                                                                  (sessionStorage.getItem("userAvt") === "truonghd.jpg" ? av5 : av6)))) } style={{width:"50px",height:"50px", borderRadius:"50%"}} alt=""/>
                     </div>
                   <span>Welcome, <strong>{sessionStorage.getItem("userName")}</strong></span>
                 </div>
