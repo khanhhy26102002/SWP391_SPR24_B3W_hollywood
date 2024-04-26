@@ -5,6 +5,7 @@ import com.hollywood.fptu_cinema.model.User;
 import com.hollywood.fptu_cinema.repository.RoleRepository;
 import com.hollywood.fptu_cinema.repository.UserRepository;
 import com.hollywood.fptu_cinema.util.JwtTokenProvider;
+import com.hollywood.fptu_cinema.util.Util;
 import com.hollywood.fptu_cinema.viewModel.UserDTO;
 import com.hollywood.fptu_cinema.viewModel.UserRegistrationDTO;
 import jakarta.servlet.http.HttpServletRequest;
@@ -168,6 +169,7 @@ public class UserService {
         newUser.setPhone(registrationDto.getPhone());
         newUser.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
         newUser.setRole(role);
+        newUser.setStatus(1);
         return newUser;
     }
 
@@ -199,7 +201,11 @@ public class UserService {
     }
 
     public void updateUser(Integer userId, UserDTO userDTO) {
-        User currentUser = getCurrentUser();
+        String currentUserIdString = Util.currentUser();
+        assert currentUserIdString != null;
+        Integer currentUserId = Integer.parseInt(currentUserIdString);
+
+        User currentUser = findUserById(currentUserId);
         User userToUpdate = findUserById(userId);
 
         boolean isSelfUpdate = currentUser.getId().equals(userId);
@@ -214,13 +220,27 @@ public class UserService {
     }
 
     private void updateUserFromDTO(User user, UserDTO userDTO) {
-        user.setAvatar(userDTO.getAvatar());
-        user.setUserName(userDTO.getUserName());
-        user.setEmail(userDTO.getEmail());
-        user.setAddress(userDTO.getAddress());
-        user.setGender(userDTO.getGender());
-        user.setBirthdate(userDTO.getBirthdate());
-        user.setPhone(userDTO.getPhone());
+        if (userDTO.getAvatar() != null) {
+            user.setAvatar(userDTO.getAvatar());
+        }
+        if (userDTO.getUserName() != null) {
+            user.setUserName(userDTO.getUserName());
+        }
+        if (userDTO.getEmail() != null) {
+            user.setEmail(userDTO.getEmail());
+        }
+        if (userDTO.getAddress() != null) {
+            user.setAddress(userDTO.getAddress());
+        }
+        if (userDTO.getGender() != null) {
+            user.setGender(userDTO.getGender());
+        }
+        if (userDTO.getBirthdate() != null) {
+            user.setBirthdate(userDTO.getBirthdate());
+        }
+        if (userDTO.getPhone() != null) {
+            user.setPhone(userDTO.getPhone());
+        }
     }
 
     public User findByUserName(String username) {
@@ -231,11 +251,5 @@ public class UserService {
     public UserDTO getUserProfile(Integer userId) {
         User user = findUserById(userId);
         return convertToDTO(user);
-    }
-
-    private User getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUsername = ((UserDetails) authentication.getPrincipal()).getUsername();
-        return findByUserName(currentUsername);
     }
 }
