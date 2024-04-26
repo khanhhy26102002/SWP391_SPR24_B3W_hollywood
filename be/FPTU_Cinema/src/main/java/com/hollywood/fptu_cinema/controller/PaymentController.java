@@ -8,10 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/payment")
@@ -34,6 +31,20 @@ public class PaymentController {
             return Response.success(paymentInfo);
         } catch (Exception e) {
             logger.error("Error retrieving payment information for ticket ID: {}. Error: {}", ticketId, e.getMessage(), e);
+            return Response.error(e);
+        }
+    }
+
+    @Operation(summary = "Process Payment")
+    @Secured({"MEMBER"})
+    @PostMapping("/processPayment/{ticket}")
+    public ResponseEntity<?> processPayment(@PathVariable int ticket, @RequestBody String paymentMethod) {
+        try {
+            paymentService.processPayment(ticket, paymentMethod);
+            logger.info("Processed payment successfully for ticket ID: {}", ticket);
+            return Response.success("Processed payment successfully for ticket ID: " + ticket);
+        } catch (Exception e) {
+            logger.error("Error processing payment for ticket ID: {}", ticket);
             return Response.error(e);
         }
     }

@@ -220,27 +220,13 @@ public class UserService {
     }
 
     private void updateUserFromDTO(User user, UserDTO userDTO) {
-        if (userDTO.getAvatar() != null) {
-            user.setAvatar(userDTO.getAvatar());
-        }
-        if (userDTO.getUserName() != null) {
-            user.setUserName(userDTO.getUserName());
-        }
-        if (userDTO.getEmail() != null) {
-            user.setEmail(userDTO.getEmail());
-        }
-        if (userDTO.getAddress() != null) {
-            user.setAddress(userDTO.getAddress());
-        }
-        if (userDTO.getGender() != null) {
-            user.setGender(userDTO.getGender());
-        }
-        if (userDTO.getBirthdate() != null) {
-            user.setBirthdate(userDTO.getBirthdate());
-        }
-        if (userDTO.getPhone() != null) {
-            user.setPhone(userDTO.getPhone());
-        }
+        user.setAvatar(userDTO.getAvatar());
+        user.setUserName(userDTO.getUserName());
+        user.setEmail(userDTO.getEmail());
+        user.setAddress(userDTO.getAddress());
+        user.setGender(userDTO.getGender());
+        user.setBirthdate(userDTO.getBirthdate());
+        user.setPhone(userDTO.getPhone());
     }
 
     public User findByUserName(String username) {

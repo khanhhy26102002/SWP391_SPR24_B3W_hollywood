@@ -1,14 +1,15 @@
 package com.hollywood.fptu_cinema.service;
 
+import com.hollywood.fptu_cinema.enums.PaymentStatus;
+import com.hollywood.fptu_cinema.enums.TicketStatus;
 import com.hollywood.fptu_cinema.model.*;
-import com.hollywood.fptu_cinema.repository.BookingComboRepository;
-import com.hollywood.fptu_cinema.repository.BookingSeatRepository;
-import com.hollywood.fptu_cinema.repository.ImageRepository;
-import com.hollywood.fptu_cinema.repository.TicketRepository;
+import com.hollywood.fptu_cinema.repository.*;
 import com.hollywood.fptu_cinema.viewModel.PaymentInfoDTO;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
@@ -26,11 +27,14 @@ public class PaymentService {
 
     private final BookingComboRepository bookingComboRepository;
 
-    public PaymentService(ImageRepository imageRepository, TicketRepository ticketRepository, BookingSeatRepository bookingSeatRepository, BookingComboRepository bookingComboRepository) {
+    private final PaymentRepository paymentRepository;
+
+    public PaymentService(ImageRepository imageRepository, TicketRepository ticketRepository, BookingSeatRepository bookingSeatRepository, BookingComboRepository bookingComboRepository, PaymentRepository paymentRepository) {
         this.imageRepository = imageRepository;
         this.ticketRepository = ticketRepository;
         this.bookingSeatRepository = bookingSeatRepository;
         this.bookingComboRepository = bookingComboRepository;
+        this.paymentRepository = paymentRepository;
     }
 
     public PaymentInfoDTO preparePaymentInfo(int ticketId) {
@@ -61,6 +65,7 @@ public class PaymentService {
         LocalDateTime expirationTime = ticket.getExpirationTime().atZone(defaultZoneId).toLocalDateTime();
 
         return new PaymentInfoDTO(
+                ticket.getId(),
                 movie.getName(),
                 imagePath,
                 movie.getRated(),
@@ -85,5 +90,31 @@ public class PaymentService {
         return bookingCombos.stream()
                 .map(BookingCombo::getTotalAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    @Transactional
+    public void processPayment(int ticketId, String paymentMethod) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new NoSuchElementException("Ticket not found with ID: " + ticketId));
+
+        if (ticket.getStatus() == TicketStatus.UNPAID) {
+            ticket.setStatus(TicketStatus.PAID);
+            ticketRepository.save(ticket);
+        } else {
+            throw new IllegalStateException("Ticket is not in the UNPAID state.");
+        }
+
+        Payment payment = paymentRepository.findByTicket(ticket)
+                .orElseGet(() -> {
+                    Payment newPayment = new Payment();
+                    newPayment.setTicket(ticket);
+                    newPayment.setPaymentMethod(paymentMethod);
+                    return newPayment;
+                });
+
+        payment.setPaymentDate(Instant.now());
+        payment.setStatus(PaymentStatus.PAID);
+        payment.setAmount(ticket.getTotalPrice());
+        paymentRepository.save(payment);
     }
 }
