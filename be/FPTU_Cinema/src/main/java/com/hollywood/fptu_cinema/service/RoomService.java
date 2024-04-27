@@ -31,7 +31,7 @@ public class RoomService {
         if (Util.hasRole(RoleEnum.ADMIN) || Util.hasRole(RoleEnum.STAFF)) {
             return roomRepository.findAll();
         } else {
-            return roomRepository.findByStatusNot(0);
+            return roomRepository.findByStatusNot(RoomStatus.INACTIVE);
         }
     }
 

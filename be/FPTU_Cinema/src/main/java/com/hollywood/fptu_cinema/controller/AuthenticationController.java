@@ -1,6 +1,5 @@
 package com.hollywood.fptu_cinema.controller;
 
-import com.hollywood.fptu_cinema.config.security.CustomUserDetails;
 import com.hollywood.fptu_cinema.model.User;
 import com.hollywood.fptu_cinema.service.UserService;
 import com.hollywood.fptu_cinema.util.JwtTokenProvider;

@@ -104,7 +104,7 @@ public class MovieController {
 
     //Ham delete theo kieu status(Trang thai bang 0 la an khac khong van hien)
     @Operation(summary = "Delete Movie")
-    @DeleteMapping("delete/{movieId}")
+    @PostMapping("delete/{movieId}")
     public ResponseEntity<?> deleteMovie(@PathVariable int movieId) {
         try {
             movieService.deleteMovie(movieId);

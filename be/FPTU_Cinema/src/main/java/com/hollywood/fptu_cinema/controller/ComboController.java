@@ -68,7 +68,7 @@ public class ComboController {
 
     // Xóa Combo theo trạng thái
     @Operation(summary = "Delete Combo")
-    @DeleteMapping("delete/{comboId}")
+    @PostMapping("delete/{comboId}")
     public ResponseEntity<?> deleteCombo(@PathVariable int comboId) {
         try {
             comboService.deleteCombo(comboId);

@@ -55,7 +55,7 @@ public class UserService {
         String token = getTokenFromHeader(request);
         if (token != null && !jwtTokenProvider.isTokenBlacklisted(token)) {
             Optional<User> userOptional = userRepository.findByToken(token);
-            if(userOptional.isPresent()) {
+            if (userOptional.isPresent()) {
                 User user = userOptional.get();
                 user.setToken(null);
                 userRepository.save(user);
