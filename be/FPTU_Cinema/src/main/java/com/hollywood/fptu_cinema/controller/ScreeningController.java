@@ -68,7 +68,7 @@ public class ScreeningController {
 
     //Ham delete theo kieu status(Trang thai bang 0 la an khac khong van hien)
     @Operation(summary = "Delete Screening")
-    @DeleteMapping("delete/{screeningId}")
+    @PostMapping("delete/{screeningId}")
     @Secured({"ADMIN", "STAFF"})
     public ResponseEntity<?> deleteScreening(@PathVariable int screeningId) {
         try {

@@ -68,7 +68,7 @@ public class RoomController {
 
     // Xóa Room theo trạng thái
     @Operation(summary = "Delete Room")
-    @DeleteMapping("delete/{roomId}")
+    @PostMapping("delete/{roomId}")
     public ResponseEntity<?> deleteRoom(@PathVariable int roomId) {
         try {
             roomService.deleteRoom(roomId);

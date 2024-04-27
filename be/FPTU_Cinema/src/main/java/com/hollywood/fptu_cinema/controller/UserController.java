@@ -54,7 +54,7 @@ public class UserController {
     }
 
     @Operation(summary = "Delete User")
-    @DeleteMapping("delete/{userId}")
+    @PostMapping("delete/{userId}")
     @Secured({"ADMIN"})
     public ResponseEntity<?> deleteUser(@PathVariable("userId") Integer userId) {
         try {
