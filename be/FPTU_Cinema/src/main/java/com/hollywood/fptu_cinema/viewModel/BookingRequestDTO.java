@@ -18,8 +18,7 @@ public class BookingRequestDTO {
     @NotNull(message = "Screening time cannot be null")
     private String screeningTime;
 
-    @NotEmpty(message = "Seat numbers cannot be empty")
-    private List<@NotBlank(message = "Seat number cannot be blank") SeatNumberDTO> seatNumbers;
+    private List< SeatNumberDTO> seatNumbers;
 
-    private Map<Integer, @Positive(message = "Quantity must be positive") Integer> comboQuantities;
+    private Map<Integer, Integer> comboQuantities;
 }
