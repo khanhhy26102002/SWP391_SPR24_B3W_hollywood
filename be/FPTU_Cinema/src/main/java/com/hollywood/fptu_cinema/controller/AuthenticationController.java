@@ -34,8 +34,7 @@ public class AuthenticationController {
     public ResponseEntity<?> login(@RequestParam("loginValue") String loginValue, @RequestParam("password") String password) {
         try {
             User user = userService.login(loginValue, password);
-            CustomUserDetails userDetails = new CustomUserDetails(user);
-            String token = jwtTokenProvider.generateToken(userDetails);
+            String token = user.getToken();
             return Response.success(new JwtAuthenticationResponse(token));
         } catch (Exception e) {
             logger.error("Login attempt failed for user with phone/email: {}", loginValue);
@@ -48,14 +47,7 @@ public class AuthenticationController {
     @Secured({"ADMIN", "MEMBER", "STAFF"})
     public ResponseEntity<?> logout(HttpServletRequest request) {
         try {
-            String userIdString = Util.currentUser();
-            if (userIdString == null) {
-                throw new Exception("User not authenticated");
-            }
-            Integer userId = Integer.parseInt(userIdString);
-            User currentUser = userService.findUserById(userId);
             userService.logout(request);
-            logger.info("{} logged out successfully!", currentUser.getUserName());
             return Response.success("Logout successful");
         } catch (Exception e) {
             logger.error("Logout attempt failed: {}", e.getMessage());

@@ -1,5 +1,6 @@
 package com.hollywood.fptu_cinema.service;
 
+import com.hollywood.fptu_cinema.config.security.CustomUserDetails;
 import com.hollywood.fptu_cinema.model.Role;
 import com.hollywood.fptu_cinema.model.User;
 import com.hollywood.fptu_cinema.repository.RoleRepository;
@@ -38,14 +39,27 @@ public class UserService {
     }
 
     public User login(String identifier, String password) {
-        return userRepository.findByPhoneOrEmail(identifier, identifier)
-                .filter(user -> passwordEncoder.matches(password, user.getPassword()))
+        User user = userRepository.findByPhoneOrEmail(identifier, identifier)
+                .filter(u -> passwordEncoder.matches(password, u.getPassword()))
                 .orElseThrow(() -> new AccessDeniedException("Invalid login credentials"));
+
+        CustomUserDetails userDetails = new CustomUserDetails(user);
+        String token = jwtTokenProvider.generateToken(userDetails);
+        user.setToken(token);
+        userRepository.save(user);
+
+        return user;
     }
 
     public void logout(HttpServletRequest request) {
         String token = getTokenFromHeader(request);
         if (token != null && !jwtTokenProvider.isTokenBlacklisted(token)) {
+            Optional<User> userOptional = userRepository.findByToken(token);
+            if(userOptional.isPresent()) {
+                User user = userOptional.get();
+                user.setToken(null);
+                userRepository.save(user);
+            }
             jwtTokenProvider.invalidateToken(token);
         }
     }

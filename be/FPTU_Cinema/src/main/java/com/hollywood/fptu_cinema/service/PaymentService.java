@@ -60,7 +60,7 @@ public class PaymentService {
                 .map(Image::getPath)
                 .orElse(null);
 
-        ZoneId defaultZoneId = ZoneId.systemDefault();
+        ZoneId defaultZoneId = ZoneId.of("UTC");
         LocalDateTime startTime = screening.getStartTime().atZone(defaultZoneId).toLocalDateTime();
         LocalDateTime expirationTime = ticket.getExpirationTime().atZone(defaultZoneId).toLocalDateTime();
 
