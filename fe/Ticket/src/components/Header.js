@@ -81,7 +81,7 @@ export const Header = () => {
                     onClick={() => navigate("/home")}
                     style={{ cursor: "pointer" }}
                   >
-                    Homepage
+                    Movie
                   </li>
                   <li
                     onClick={() => navigate("/rule")}
@@ -114,7 +114,7 @@ export const Header = () => {
                                                                   (sessionStorage.getItem("userAvt") === "trihk.jpg" ? av4 :
                                                                   (sessionStorage.getItem("userAvt") === "truonghd.jpg" ? av5 : av6)))) } style={{width:"50px",height:"50px", borderRadius:"50%"}} alt=""/>
                     </div>
-                    <span>Welcome, <strong>{sessionStorage.getItem("userName")}</strong></span>
+                    <span style={{display: "flex", alignItems: "center", marginLeft: "10px"}}>Welcome, <strong>{sessionStorage.getItem("userName")}</strong></span>
                   </div>
                   <ul className="dropdown">
                     <li>

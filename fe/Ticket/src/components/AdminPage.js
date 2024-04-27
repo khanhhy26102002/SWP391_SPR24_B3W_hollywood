@@ -4,6 +4,10 @@ import { Col, ListGroup, Row } from 'react-bootstrap';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 import { fetchReport, fetchgetTopMovies } from '../api/reportApi';
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
+import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
+import LocalMoviesIcon from '@mui/icons-material/LocalMovies';
 function Dashboard1() {
   const [chartData, setChartData] = useState([{}]);
   const [topmovies, setTopMovies] = useState([{}]);
@@ -49,11 +53,95 @@ function Dashboard1() {
   }, [topmovies]);
 
   return (
-    <div className="container-scroller">
-      <div><Sidebar /></div>
-      <div className="container-fluid page-body-wrapper">
+    <div className="container-scroller" style={{display: "block"}}>
+      <Row>
+        <Col lg={2}>
+          <Sidebar/>
+        </Col>
+        <Col lg={10}>
+        <Row>
         <Navbar />
-        <div className="main-panel" style={{ backgroundColor: "whitesmoke", paddingTop: "140px", paddingLeft: "20px", paddingRight: "20px" }}>
+        </Row>
+        <Row>
+        <div className="main-panel" style={{ backgroundColor: "whitesmoke", paddingTop: "140px", paddingLeft: "20px", paddingRight: "20px" ,marginLeft: "-30px"}}>
+        <div class="row" style={{ paddingTop: "20px" }}>
+            <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+              <div class="card" style={{ backgroundColor: "white", borderRadius: "10px" }}>
+                <div class="card-body">
+                  <div class="row">
+                    <Col lg={9}>
+                      <div class="d-flex align-items-center align-self-start">
+                        <h3 class="mb-0" style={{ color: "black" }}>${chartData.monthlyRevenue}</h3>
+                      </div>
+                      <h6 class="text-muted font-weight-normal">Monthly Revenue</h6>
+                    </Col>
+                    <Col lg={3}>
+                      <MonetizationOnIcon style={{    width: "50px", height: "50px", color: "#33FF66"}}/>
+                    </Col>
+                  </div>
+                  
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+              <div class="card" style={{ backgroundColor: "white", borderRadius: "10px" }}>
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-9">
+                      <div class="d-flex align-items-center align-self-start">
+                        <h3 class="mb-0" style={{ color: "black" }}>{chartData.totalUsers}</h3>
+                        <p class="text-success ml-2 mb-0 font-weight-medium"></p>
+                      </div>
+                      <h6 class="text-muted font-weight-normal">Total Users</h6>
+                    </div>
+                    <Col lg={3}>
+                      <PeopleAltIcon style={{    width: "50px", height: "50px", color: "#3333FF"}}/>
+                    </Col>
+                  </div>
+                  
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+              <div class="card" style={{ backgroundColor: "white", borderRadius: "10px" }}>
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-9">
+                      <div class="d-flex align-items-center align-self-start">
+                        <h3 class="mb-0" style={{ color: "black" }}>{chartData.ticketsSoldToday}</h3>
+                        <p class="text-danger ml-2 mb-0 font-weight-medium"></p>
+                      </div>
+                      <h6 class="text-muted font-weight-normal">Tickets Sold Today</h6>
+                    </div>
+                    <Col lg={3}>
+                      <ConfirmationNumberIcon style={{    width: "50px", height: "50px", color: "#FF3333"}}/>
+                    </Col>
+                  </div>
+                  
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+              <div class="card" style={{ backgroundColor: "white", borderRadius: "10px" }}>
+<div class="card-body">
+                  <div class="row">
+                    <div class="col-9">
+                      <div class="d-flex align-items-center align-self-start">
+                        <h3 class="mb-0" style={{ color: "black" }}>{chartData.totalMoviesThisMonth}</h3>
+                        <p class="text-success ml-2 mb-0 font-weight-medium"></p>
+                      </div>
+                      <h6 class="text-muted font-weight-normal">Total Movies This Month</h6>
+                    </div>
+                    <Col lg={3}>
+                      <LocalMoviesIcon style={{    width: "50px", height: "50px", color: "#003300"}}/>
+                    </Col>
+                  </div>
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+
           <Row>
             <Col lg={8}>
               <div class="content-wrapper" style={{ backgroundColor: "white", borderRadius: "10px", paddingBottom: "66px" }}>
@@ -87,69 +175,12 @@ function Dashboard1() {
               </div>
             </Col>
           </Row>
-          <div class="row" style={{ paddingTop: "20px" }}>
-            <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-              <div class="card" style={{ backgroundColor: "white", borderRadius: "10px" }}>
-                <div class="card-body">
-                  <div class="row">
-                    <div class="col-9">
-                      <div class="d-flex align-items-center align-self-start">
-                        <h3 class="mb-0" style={{ color: "black" }}>${chartData.monthlyRevenue}</h3>
-                      </div>
-                    </div>
-                  </div>
-                  <h6 class="text-muted font-weight-normal">Monthly Revenue</h6>
-                </div>
-              </div>
-            </div>
-            <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-              <div class="card" style={{ backgroundColor: "white", borderRadius: "10px" }}>
-                <div class="card-body">
-                  <div class="row">
-                    <div class="col-9">
-                      <div class="d-flex align-items-center align-self-start">
-                        <h3 class="mb-0" style={{ color: "black" }}>{chartData.totalUsers}</h3>
-                        <p class="text-success ml-2 mb-0 font-weight-medium"></p>
-                      </div>
-                    </div>
-                  </div>
-                  <h6 class="text-muted font-weight-normal">Total Users</h6>
-                </div>
-              </div>
-            </div>
-            <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-              <div class="card" style={{ backgroundColor: "white", borderRadius: "10px" }}>
-                <div class="card-body">
-                  <div class="row">
-                    <div class="col-9">
-                      <div class="d-flex align-items-center align-self-start">
-                        <h3 class="mb-0" style={{ color: "black" }}>{chartData.ticketsSoldToday}</h3>
-                        <p class="text-danger ml-2 mb-0 font-weight-medium"></p>
-                      </div>
-                    </div>
-                  </div>
-                  <h6 class="text-muted font-weight-normal">Tickets Sold Today</h6>
-                </div>
-              </div>
-            </div>
-            <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-              <div class="card" style={{ backgroundColor: "white", borderRadius: "10px" }}>
-<div class="card-body">
-                  <div class="row">
-                    <div class="col-9">
-                      <div class="d-flex align-items-center align-self-start">
-                        <h3 class="mb-0" style={{ color: "black" }}>{chartData.totalMoviesThisMonth}</h3>
-                        <p class="text-success ml-2 mb-0 font-weight-medium"></p>
-                      </div>
-                    </div>
-                  </div>
-                  <h6 class="text-muted font-weight-normal">Total Movies This Month</h6>
-                </div>
-              </div>
-            </div>
-          </div>
+          
         </div>
-      </div>
+        </Row>
+        </Col>
+      </Row>
+      
     </div>
   );
 }
