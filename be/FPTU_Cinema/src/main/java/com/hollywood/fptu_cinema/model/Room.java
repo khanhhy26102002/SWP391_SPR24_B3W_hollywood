@@ -29,6 +29,7 @@ public class Room {
     private Integer numberOfSeat;
 
     @NotNull
+    @Enumerated(EnumType.ORDINAL)
     @Column(name = "status", nullable = false)
     private RoomStatus status;
 

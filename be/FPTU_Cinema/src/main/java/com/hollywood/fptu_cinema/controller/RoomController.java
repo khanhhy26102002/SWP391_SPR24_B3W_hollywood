@@ -103,11 +103,14 @@ public class RoomController {
 
     //Update 1 Room
     @Operation(summary = "Update Room")
-    @PutMapping("/updateRoom/{roomId}")
+    @PostMapping("/updateRoom/{roomId}")
     // Thêm {movieId} vào đường dẫn để nhận giá trị từ đường dẫn của yêu cầu HTTP
     @Secured({"ADMIN", "STAFF"})
     public ResponseEntity<?> updateRoom(@PathVariable int roomId, @Valid @RequestBody RoomDTO roomDTO) {
         try {
+            if (roomService.existsByRoomNumber(roomDTO.getRoomNumber())) {
+                throw new Exception("Room number already exists");
+            }
             Room room = roomService.findById(roomId);
             // Gọi phương thức updateCombo từ service
             if (room == null) {

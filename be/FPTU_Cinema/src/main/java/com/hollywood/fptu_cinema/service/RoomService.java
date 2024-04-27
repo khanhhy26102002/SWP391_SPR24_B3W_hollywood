@@ -63,9 +63,12 @@ public class RoomService {
 
     private void setRoomDetails(Room room, RoomDTO roomDTO, User currentUser) {
         room.setRoomNumber(roomDTO.getRoomNumber());
-        room.setId(roomDTO.getRoomId());
-        room.setStatus(roomDTO.getStatus());
         room.setUser(currentUser);
         room.setNumberOfSeat(roomDTO.getNumberOfSeat());
+    }
+
+
+    public boolean existsByRoomNumber(String roomNumber) {
+        return roomRepository.findByRoomNumber(roomNumber).isPresent();
     }
 }
