@@ -6,11 +6,13 @@ import { getMovieDetail } from "../api/movieApi";
 import { Footer } from "./Footer";
 import { useNavigate } from "react-router-dom";
 import { Col, Row } from "react-bootstrap";
+import { DialogTitle, DialogContent, DialogActions, Button, styled, Dialog } from "@mui/material";
 
 const Moviedetail = () => {
   const [movie, setMovie] = useState({});
   const location = useLocation();
   const navigate = useNavigate();
+  const [openDialog, setOpenDialog] = useState(false);
 
   const movieId = location.state;
 
@@ -104,7 +106,7 @@ const Moviedetail = () => {
                         <span>Booking</span>
                       </Col>
                       <Col lg={2} className="buy-ticket">
-                        <a href="#watch" style={{textDecoration: "none"}}>Watch Trailer</a>
+                        <div style={{textDecoration: "none"}} onClick={() => setOpenDialog(true)}>Watch Trailer</div>
                       </Col>
                     </Row>
                   </div>
@@ -113,8 +115,20 @@ const Moviedetail = () => {
             </div>
             <p style={{ fontSize: "20px" }}>"{movie.description}"</p>
           </div>
-          <iframe id="watch" width="1000" height="800" src={movie.trailer} frameborder="0"></iframe>
+          {openDialog && (
+            <StyledDialog style={{paddingLeft: "25%",paddingRight: "25%"}} open={openDialog} onClose={() => setOpenDialog(false)}>
+      <DialogTitle>Trailer</DialogTitle>
+      <DialogContent>
+      <iframe id="watch" width="1000" height="600" src={movie.trailer} frameborder="0"></iframe>
+      </DialogContent>
 
+      <DialogActions>
+        <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
+      </DialogActions>
+    </StyledDialog>
+      )}
+          
+      
         </div>
       </div>
       <Footer />
@@ -123,3 +137,31 @@ const Moviedetail = () => {
 };
 
 export default Moviedetail;
+
+const StyledDialog = styled(Dialog)(({ theme }) => ({
+  "& .MuiPaper-root": {
+    width: "100%",
+    maxWidth: "1500px",
+  },
+  "& .MuiDialogTitle-root": {
+    fontWeight: "bold",
+    fontSize: "1.5rem",
+    textShadow: "none",
+  },
+  "& .MuiTextField-root": {
+    marginBottom: theme.spacing(2),
+  },
+  "& .MuiDialogContent-root": {
+    paddingTop: "1rem",
+  },
+  "& .MuiFormControl-root": {
+    marginBottom: theme.spacing(2),
+  },
+  "& .MuiTypography-root": {
+    color: "black",
+    marginBottom: theme.spacing(2),
+  },
+  "& .MuiButton-root:not(:last-child)": {
+    marginRight: theme.spacing(1),
+  },
+}));

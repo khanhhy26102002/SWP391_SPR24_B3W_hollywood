@@ -13,7 +13,7 @@ import pic from "../img/logo-removebg-preview.png"
 export const Footer = () => {
     const navigate = useNavigate();
     return (
-        <footer className="footer">
+        <footer className="footer" style={{position: "fixed", bottom: "0", width:"100%"}}>
           <div className="container">
                 <Row style={{display:"flex", justifyContent:"center"}}>
                         <div className="footer__nav">

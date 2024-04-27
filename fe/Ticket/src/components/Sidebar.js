@@ -22,7 +22,7 @@ const Sidebar = () => {
     }
   }, [location.state]);
     return(
-        <nav class="sidebar sidebar-offcanvas" id="sidebar" style={{background: "#070720"}}>
+        <nav class="sidebar sidebar-offcanvas" id="sidebar" style={{background: "#070720", position:"fixed",height:"100%"}}>
         <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
           <img src={pic} alt="logo" />
         </div>
