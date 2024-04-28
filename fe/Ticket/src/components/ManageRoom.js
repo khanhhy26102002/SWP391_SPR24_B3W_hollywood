@@ -17,35 +17,34 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField
+  TextField, Select, MenuItem, InputLabel
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from '@mui/icons-material/Edit';
 import { Button, Col, Row } from "react-bootstrap";
 import Sidebar from "./Sidebar";
-import { createCombo, deleteCombo, fetchComboData, updateCombo } from "../api/comboApi";
+import { createRoom, deleteRoom, fetchRoom, updateRoom } from "../api/roomApi";
 
-const ManageCombo = () => {
+const ManageRoom = () => {
   const [page, setPage] = useState(1);
-  const [combos, setCombos] = useState([]);
+  const [rooms, setRooms] = useState([]);
   const [openConfirmationDialog, setOpenConfirmationDialog] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
-  const [selectedCombo, setSelectedCombo] = useState();
-  const [name, setName] = useState("");
-  const [description, setDesciption]= useState("");
-  const [price, setPrice] = useState(0);
+  const [selectedRoom, setSelectedRoom] = useState();
   const [mess, setMess] = useState("");
   const [isEdit, setIsEdit] = useState(false);
-
+  const [roomNumber,setRoomNumber] = useState("");
+  const [numberOfSeat,setNumberOfSeat] = useState(0);
+  const [status,setStatus] = useState("INACTIVE");
   useEffect(() => {
     fetchData();
   },[])
 
   const fetchData = async () =>{
     try{
-      const response = await fetchComboData()
-      setCombos([...response.data.reverse()]);
+      const response = await fetchRoom();
+      setRooms([...response.data]);
     }catch (error) {
       console.error("Error fetching posts:", error);
     }
@@ -53,32 +52,33 @@ const ManageCombo = () => {
 
   const handleOpenConfirmationDialog = (id) => {
     setOpenConfirmationDialog(true);
-    setSelectedCombo(id);
+    setSelectedRoom(id);
   };
 
   const handleOnCloseConfirmationDialog = () => {
     setOpenConfirmationDialog(false);
     setOpenDialog(false);
-    setName("");
-    setDesciption("");
-    setPrice(0);
+    setSelectedRoom("");
+    setRoomNumber("");
+    setNumberOfSeat("");
+    setStatus("");
     setIsEdit(false);
     setMess("");
   };
 
-  const handleOpenDialog = (combo) => {
+  const handleOpenDialog = (room) => {
     setOpenDialog(true);
-    setSelectedCombo(combo.comboId);
-    setName(combo.comboName);
-    setDesciption(combo.description);
-    setPrice(combo.comboPrice);
+    setSelectedRoom(room.roomId);
+    setRoomNumber(room.roomNumber);
+    setNumberOfSeat(room.numberOfSeat);
+    setStatus(room.status);
     setIsEdit(true);
   };
 
-  const handleDeleteCombo = async () => {
+  const handleDeleteRoom = async () => {
     try {
-      await deleteCombo(selectedCombo, sessionStorage.getItem("jwt"));
-      setMess("Delete combo successfully !!!");
+      await deleteRoom(selectedRoom, sessionStorage.getItem("jwt"));
+      setMess("Delete room successfully !!!");
       setOpenConfirmationDialog(true);
       fetchData();
     } catch (error) {
@@ -86,12 +86,14 @@ const ManageCombo = () => {
     }
   };
 
-  const handleAddCombo = async () =>{
+  const handleAddRoom = async () =>{
     try {
-      await createCombo(
-        name,
-        description,
-        price,
+        console.log(roomNumber,
+            numberOfSeat,
+              sessionStorage.getItem("jwt"));
+      await createRoom(
+        roomNumber,
+      numberOfSeat,
         sessionStorage.getItem("jwt")
       );
       setMess("Add combo successfully !!!");
@@ -103,16 +105,15 @@ const ManageCombo = () => {
     }
   }
 
-  const handleEditCombo = async() => {
+  const handleEditRoom = async() => {
     try {
-      await updateCombo(
-        selectedCombo,
-        name,
-        description,
-        price,
+      await updateRoom(
+        selectedRoom,
+        roomNumber,
+      numberOfSeat,
         sessionStorage.getItem("jwt")
       );
-      setMess("Update combo successfully !!!");
+setMess("Update room successfully !!!");
       setOpenConfirmationDialog(true);
       fetchData();
     } catch (error) {
@@ -131,16 +132,16 @@ const ManageCombo = () => {
         <Navbar />
         </Row>
         <Row>
-        <div className="main-panel" style={{ paddingLeft: "20px", paddingRight: "20px" ,marginLeft: "-30px"}}>
+        <div className="main-panel">
           <div class="content-wrapper" style={{backgroundColor: "white", top: "50px"}}>
             <div class="page-header">
-              <TableTitle>Combo</TableTitle>
+              <TableTitle>Room</TableTitle>
               <FlexContainer>
                 <IconButton aria-label="add" onClick={() => setOpenDialog(true)}>
                     <AddIcon />
                 </IconButton>
                 <Pagination
-                  count={Math.ceil(combos.length / 5)}
+                  count={Math.ceil(rooms.length / 5)}
                   page={page}
                   onChange={(event, newPage) =>
                     setPage(newPage)
@@ -153,36 +154,30 @@ const ManageCombo = () => {
               <StyledTable aria-label="Combo table">
                 <StyledTableHead>
                   <TableRow>
-                    <StyledTableCell align="center">Name</StyledTableCell>
-                    <StyledTableCell align="center">Description</StyledTableCell>
-                    <StyledTableCell align="center">Price</StyledTableCell>
+                    <StyledTableCell align="center">Room Number</StyledTableCell>
+                    <StyledTableCell align="center">Number Of Seat</StyledTableCell>
                     <StyledTableCell align="center">Status</StyledTableCell>
-                    <StyledTableCell align="center">Action</StyledTableCell>
                   </TableRow>
                 </StyledTableHead>
                 <TableBody>
-                {combos.slice((page - 1) * 5, page * 5).map((combo) => (
+                {rooms.slice((page - 1) * 5, page * 5).map((room) => (
                   <TableRow>
                       <StyledTableCell align="center">
-                      {combo.comboName}
+                      {room.roomNumber}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                      {combo.description}
+                      {room.numberOfSeat}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                      ${combo.comboPrice}
+                      {room.status}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                      {combo.status === 1 ? (<div className='badge badge-outline-success'>On Selling</div>): <div className='badge badge-outline-danger'>Removed</div>}
-
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                      <IconButton aria-label="edit" onClick={() => handleOpenDialog(combo)}>
+                      <IconButton aria-label="edit" onClick={() => handleOpenDialog(room)}>
                             <EditIcon color="warning"/>
                         </IconButton>
-                        <IconButton
+                         <IconButton
                           aria-label="delete"
-                          onClick={() => handleOpenConfirmationDialog(combo.comboId)}
+                          onClick={() => handleOpenConfirmationDialog(room.roomId)}
                         >
                           <DeleteIcon color="error" />
                         </IconButton>
@@ -201,33 +196,25 @@ const ManageCombo = () => {
 
       {openDialog && (
         <StyledDialog open={openDialog} onClose={() => setOpenDialog(false)}>
-      <DialogTitle>{isEdit ? "Edit" : "Add New"} Combo</DialogTitle>
-      <DialogContent>
+      <DialogTitle>{isEdit ? "Edit" : "Add New"} Room</DialogTitle>
+<DialogContent>
         <DialogTextField
-          label="Name"
-          name="name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          label="Room Number"
+          name="roomnumber"
+          value={roomNumber}
+          onChange={(e) => setRoomNumber(e.target.value)}
         />
         <DialogTextField
-          label="Description"
-          name="description"
-          value={description}
-          onChange={(e) => setDesciption(e.target.value)}
-        />
-        <DialogTextField
-          label="Price"
-          name="price"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-          defaultValue={0}
-          type="number"
+          label="Number of seats"
+          name="seats"
+          value={numberOfSeat}
+          onChange={(e) => setNumberOfSeat(e.target.value)}
         />
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={handleOnCloseConfirmationDialog}>{mess === "" ? "Cancel" : "OK"}</Button>
-        <Button onClick={isEdit? handleEditCombo : handleAddCombo} color="primary">
+        <Button onClick={handleOnCloseConfirmationDialog}>Cancel</Button>
+        <Button onClick={isEdit? handleEditRoom : handleAddRoom} color="primary">
           {isEdit ? "Update" : "Add"}
         </Button>
       </DialogActions>
@@ -242,17 +229,17 @@ const ManageCombo = () => {
           style={{paddingLeft: "35%",paddingRight:"35%"}}
         >
           <DialogTitle>
-            {mess === "" ? "Delete Movie" : "Notifacation"}
+            {mess === "" ? "Delete Room" : "Notifacation"}
           </DialogTitle>
           <DialogContent>
-            {mess === "" ? "Are you sure you want to delete this movie?" : mess}
+            {mess === "" ? "Are you sure you want to delete this room?" : mess}
           </DialogContent>
           <DialogActions>
             <Button onClick={handleOnCloseConfirmationDialog} color="primary">
               {mess === "" ? "Cancel" : "OK"}
             </Button>
             {mess === "" && (
-              <Button onClick={handleDeleteCombo} color="primary">
+              <Button onClick={handleDeleteRoom} color="primary">
                 Delete
               </Button>
             )}
@@ -263,7 +250,7 @@ const ManageCombo = () => {
   );
 };
 
-export default ManageCombo;
+export default ManageRoom;
 
 const TableTitle = styled("div")({
   fontWeight: "bold",
@@ -327,7 +314,7 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
     paddingTop: "1rem",
   },
   "& .MuiFormControl-root": {
-    marginBottom: theme.spacing(2),
+marginBottom: theme.spacing(2),
   },
   "& .MuiTypography-root": {
     color: "black",
@@ -340,4 +327,9 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
 
 const DialogTextField = styled(TextField)({
     width: "100%",
+  });
+
+  const SelectOutlined = styled(FormControl)({
+    width: "30%",
+    marginBottom: "10px",
   });

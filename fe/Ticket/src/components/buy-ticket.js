@@ -57,7 +57,7 @@ const BuyTicket = () => {
     if (location.state !== null) {
       setMovie(location.state);
     }
-  }, [location.state]);
+  }, []);
 
   const handleSeatClick = (seat) => {
     console.log(room);
@@ -104,6 +104,7 @@ const BuyTicket = () => {
         );
         setOpenDialog(true);
         setIsLoading(false);
+       
         navigate("/payment", {state: response.data.ticketId})
       } catch (error) {
         console.error("Error fetching posts:", error);

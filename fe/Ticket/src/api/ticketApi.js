@@ -43,3 +43,18 @@ class CustomError extends Error {
       throw new CustomError(error.response.status, error.response.data.errors);
     }
   };
+
+  export const cancelTicket = async (id,token) =>{
+    try {
+      const response = await axios.post(
+        `${baseUrl}/api/ticket/cancel/${id}`,{
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        }
+      );
+      if (response.status === 200) return response.data;
+    } catch (error) {
+      throw new CustomError(error.response.status, error.response.data.errors);
+    }
+  };

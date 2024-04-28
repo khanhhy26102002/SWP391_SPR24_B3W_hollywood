@@ -10,31 +10,54 @@ import {
   TableHead,
   TableRow,
   TableCell,
-  TableBody,    
+  TableBody,
+  FormControl,
+  IconButton,
   Dialog,
-  TextField
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Button
 } from "@mui/material";
-import { fetchTicketData } from '../api/ticketApi';
+import { fetchTicketData, cancelTicket } from '../api/ticketApi';
+import { Col, Row } from 'react-bootstrap';
 export default function ViewOrder() {
   const [page, setPage] = useState(1);
   const [ticket, setTicket] = useState([{}]);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState({});
   useEffect(()=>{
     fetchData();
   },[]);
-
   const fetchData = async () => {
     try {
       const response = await fetchTicketData(sessionStorage.getItem("jwt"));
-      setTicket([...response.data]);
+      setTicket([...response.data.reverse()]);
     } catch (error) {
       console.error("Error fetching ticket!!", error)
     }
   };
+  
+  const handleCancelTicket = async (id) => {
+    try{
+      console.log(sessionStorage.getItem("jwt"));
+      await cancelTicket(id, sessionStorage.getItem("jwt"));
+    } catch (error) {
+      console.error("Error fetching ticket!!", error)
+    }
+  }
   return (
-    <div className='container-scroller'>
-       <Sidebar/>
-       <div className='container-fluid page-body-wrapper'>
-        <Navbar/>
+    <div className="container-scroller" style={{display: "block"}}>
+      <Row>
+        <Col lg={2}>
+          <Sidebar/>
+        </Col>
+        <Col lg={10}>
+        <Row>
+        <Navbar />
+        </Row>
+        <Row>
         <div className="main-panel">
           <div class="content-wrapper" style={{ backgroundColor: "white", top: "50px" }}>
             <div class="page-header">
@@ -43,7 +66,7 @@ export default function ViewOrder() {
               </div>
                <FlexContainer>
                 <Pagination
-                  count={Math.ceil(ticket.length / 7)}
+                  count={Math.ceil(ticket.length / 5)}
                   page={page}
                   onChange={(event, newPage) =>
                     setPage(newPage)
@@ -55,35 +78,26 @@ export default function ViewOrder() {
               <StyledTable aria-label="User table">
                 <StyledTableHead>
                   <TableRow>
-                    <StyledTableCell align="center">Date</StyledTableCell>
-                    <StyledTableCell align="center">Screen</StyledTableCell>
-                    <StyledTableCell align="center">Movies</StyledTableCell>
-                    <StyledTableCell align="center">Seats</StyledTableCell>
-                    <StyledTableCell align="center">Combo</StyledTableCell>
-                    <StyledTableCell align="center">Status</StyledTableCell>
+                    <StyledTableCell align="center">Ngày chiếu</StyledTableCell>
+                    <StyledTableCell align="center">movies</StyledTableCell>
+                    <StyledTableCell align="center">status</StyledTableCell>
+                    <StyledTableCell align="center">Action</StyledTableCell>
                   </TableRow>
                 </StyledTableHead>
                 <TableBody>
-                    {ticket.slice((page - 1) * 7, page * 7).reverse().map((a)=>(
-                      <TableRow>
+                    {ticket.slice((page - 1) * 5, page*5).map((a)=>(
+                      <TableRow >
                       <StyledTableCell align="center">
                          {a.screeningDate}
                       </StyledTableCell>
-                      <StyledTableCell align="center">
-                         {a.screeningTime}
+                      <StyledTableCell align="center" onClick={() => {setOpenDialog(true);setSelectedOrder({...a})}}>
+                      <Button>{a.movieName}</Button>
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {a.movieName}
+                        <div className='badge badge-outline-success'>{a.status}</div>
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                      {a.seatNumbers}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                         {a.totalComboPrice}
-                      </StyledTableCell>
-                      
-                      <StyledTableCell align="center">
-                        {a.status === "UNPAID" ? <div className='badge badge-outline-warning '>UNPAID</div> : a.status ===  "PAID" ? (<div className='badge badge-outline-success'>PAID</div>): <div className='badge badge-outline-danger'>CANCEL</div>}
+                        <Button onClick={() => handleCancelTicket(a.id)}>Cancel</Button>
                       </StyledTableCell>
                     </TableRow>
                     ))}
@@ -92,7 +106,95 @@ export default function ViewOrder() {
             </StyledTableContainer>
           </div>
         </div>
-       </div>
+        </Row>
+        </Col>
+      </Row>
+      {openDialog && (
+        <StyledDialog open={openDialog} onClose={() => setOpenDialog(false)} style={{ width: "30%", marginLeft:"35%" }}>
+      <DialogTitle>Order detail:</DialogTitle>
+      <DialogContent>
+      <Row >
+              <div class="form-ticket" style={{width: "100%"}}>
+                  <Row>
+                      <Col lg={4}>
+                        Phim: 
+                      </Col>
+                      <Col lg={8}>
+                      <strong>{selectedOrder.movieName}</strong>
+                      </Col>
+                  </Row>
+                  <Row>
+                      <Col lg={4}>
+                        Suất: 
+                      </Col>
+                      <Col lg={8}>
+                      <strong>{selectedOrder.screeningTime}</strong>
+                      </Col>
+                  </Row>
+                  <Row>
+                      <Col lg={4}>
+                        Phòng: 
+                      </Col>
+                      <Col lg={8}>
+                      <strong>
+                            {selectedOrder.roomNumber}
+                          </strong>
+                      </Col>
+                  </Row>
+                  <Row>
+                      <Col lg={4}>
+                        Ghế: 
+                      </Col>
+                      <Col lg={8}>
+                      <strong>
+                      {selectedOrder.seatNumbers}
+                          </strong>
+                      </Col>
+                  </Row>
+                  <Row>
+                      <Col lg={4}>
+                        Tổng tiền ghế: 
+                      </Col>
+                      <Col lg={8}>
+                      <strong>
+                      {selectedOrder.totalSeatsPrice}
+                          </strong>
+                      </Col>
+                  </Row>
+                  <Row>
+                      <Col lg={4}>
+                        Tổng tiền combo: 
+                      </Col>
+                      <Col lg={8}>
+                      <strong>
+                    {selectedOrder.totalComboPrice}
+                          </strong>
+                      </Col>
+                  </Row>
+                  <Row>
+                      <Col lg={4}>
+                        Tổng: 
+                      </Col>
+                      <Col lg={8}>
+                      <strong>
+                      ${selectedOrder.totalPrice}
+                          </strong>
+                      </Col>
+                  </Row>
+              </div>
+            </Row>
+      </DialogContent>
+      <DialogTextField
+          label="Status"
+          name="status"
+          value={selectedOrder.status}
+          disabled
+        />
+      <DialogActions>
+        <Button onClick={()=> setOpenDialog(false)}>Cancel</Button>
+      </DialogActions>
+    </StyledDialog>
+      )}
     </div>
   )
 }
@@ -142,6 +244,10 @@ const StyledTableCell = styled(TableCell)`
 `;
 
 const StyledDialog = styled(Dialog)(({ theme }) => ({
+  "& .MuiPaper-root": {
+    width: "100%",
+    maxWidth: "1500px",
+  },
   "& .MuiDialogTitle-root": {
     fontWeight: "bold",
     fontSize: "1.5rem",

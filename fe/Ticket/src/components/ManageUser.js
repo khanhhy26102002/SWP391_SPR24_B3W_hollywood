@@ -143,11 +143,17 @@ const ManageUser = () => {
   }
 
   return (
-    <div className="container-scroller">
-      <Sidebar />
-      <div className="container-fluid page-body-wrapper">
+    <div className="container-scroller" style={{display: "block"}}>
+      <Row>
+        <Col lg={2}>
+          <Sidebar/>
+        </Col>
+        <Col lg={10}>
+        <Row>
         <Navbar />
-        <div className="main-panel">
+        </Row>
+        <Row>
+        <div className="main-panel" style={{ paddingLeft: "20px", paddingRight: "20px" ,marginLeft: "-30px"}}>
           <div class="content-wrapper" style={{backgroundColor: "white", top: "50px"}}>
             <div class="page-header">
               <TableTitle>User</TableTitle>
@@ -202,9 +208,9 @@ const ManageUser = () => {
                         {user.status === 1 ? (<div className='badge badge-outline-success'>Active</div>): (<div className='badge badge-outline-danger'>Unactive</div>)}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                      <IconButton aria-label="edit" onClick={() => handleOpenDialog(user)}>
+                      {/*<IconButton aria-label="edit" onClick={() => handleOpenDialog(user)}>
                             <EditIcon color="warning"/>
-                        </IconButton>
+                        </IconButton>*/}
                         <IconButton
                           aria-label="delete"
                           onClick={() => handleOpenConfirmationDialog(user)}
@@ -219,7 +225,9 @@ const ManageUser = () => {
             </StyledTableContainer>
           </div>
         </div>
-      </div>
+        </Row>
+        </Col>
+      </Row>
 
       {openDialog && (
         <StyledDialog open={openDialog} onClose={() => setOpenDialog(false)}>

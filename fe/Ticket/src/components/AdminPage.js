@@ -63,7 +63,8 @@ function Dashboard1() {
         <Navbar />
         </Row>
         <Row>
-        <div className="main-panel" style={{ backgroundColor: "whitesmoke", paddingTop: "140px", paddingLeft: "20px", paddingRight: "20px" ,marginLeft: "-30px"}}>
+        <div className="main-panel" style={{ backgroundColor: "whitesmoke", paddingTop: "100px", paddingLeft: "20px", paddingRight: "20px" ,marginLeft: "-30px"}}>
+        <h1 style={{color: "black", fontWeight: "700"}}>ADMIN DASHBOARD</h1>
         <div class="row" style={{ paddingTop: "20px" }}>
             <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
               <div class="card" style={{ backgroundColor: "white", borderRadius: "10px" }}>
