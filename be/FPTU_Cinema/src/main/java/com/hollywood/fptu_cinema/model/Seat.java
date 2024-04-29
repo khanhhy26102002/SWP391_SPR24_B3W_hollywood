@@ -6,16 +6,13 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.math.BigDecimal;
+import org.hibernate.annotations.ColumnDefault;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "Seat", schema = "Movie_Booking_Ticket")
 public class Seat {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "seat_id", nullable = false)
     private Integer id;
 
@@ -28,16 +25,8 @@ public class Seat {
     @Column(name = "seat_number", nullable = false, length = 10)
     private String seatNumber;
 
-    @Size(max = 50)
     @NotNull
-    @Column(name = "seat_type", nullable = false, length = 50)
-    private String seatType;
-
-    @NotNull
-    @Column(name = "seat_price", nullable = false, precision = 10, scale = 2)
-    private BigDecimal seatPrice;
-
-    @NotNull
+    @ColumnDefault("1")
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "status", nullable = false)
     private SeatStatus status;
@@ -46,5 +35,9 @@ public class Seat {
     @NotNull
     @Column(name = "seat_row", nullable = false, length = 10)
     private String seatRow;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "seat_type_id")
+    private SeatType seatType;
 
 }

@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -13,10 +14,8 @@ import java.time.Instant;
 @Getter
 @Setter
 @Entity
-@Table(name = "Ticket", schema = "Movie_Booking_Ticket")
 public class Ticket {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ticket_id", nullable = false)
     private Integer id;
 
@@ -29,7 +28,7 @@ public class Ticket {
     private Screening screening;
 
     @Column(name = "total_price", precision = 10, scale = 2)
-    private BigDecimal totalPrice = BigDecimal.ZERO;
+    private BigDecimal totalPrice;
 
     @NotNull
     @Column(name = "created_date", nullable = false)
@@ -47,6 +46,7 @@ public class Ticket {
     private String qrCode;
 
     @NotNull
+    @ColumnDefault("1")
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "status", nullable = false)
     private TicketStatus status;

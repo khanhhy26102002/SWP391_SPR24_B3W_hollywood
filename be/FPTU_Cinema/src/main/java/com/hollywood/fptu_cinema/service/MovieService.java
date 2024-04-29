@@ -1,5 +1,6 @@
 package com.hollywood.fptu_cinema.service;
 
+import com.hollywood.fptu_cinema.enums.MovieStatus;
 import com.hollywood.fptu_cinema.enums.RoleEnum;
 import com.hollywood.fptu_cinema.model.Movie;
 import com.hollywood.fptu_cinema.model.User;
@@ -38,7 +39,6 @@ public class MovieService {
         Movie movie = new Movie();
         setMovieDetails(movie, movieRequest, currentUser);
         //mac dinh trang thai hoat dong
-        movie.setStatus(1);
         return movieRepository.save(movie);
     }
 
@@ -53,14 +53,14 @@ public class MovieService {
         if (Util.hasRole(RoleEnum.ADMIN) || Util.hasRole(RoleEnum.STAFF)) {
             return movieRepository.findAll();
         } else {
-            return movieRepository.findByStatusNot(0);
+            return movieRepository.findByStatusNot(MovieStatus.UNAVAILABLE);
         }
     }
 
     //Delete Movie theo change status (khong phai xoa ma chi an thong tin bo phim)
     public void deleteMovie(int movieId) {
         Movie movie = findById(movieId);
-        movie.setStatus(0); // Set status to indicate deleted
+        movie.setStatus(MovieStatus.UNAVAILABLE); // Set status to indicate deleted
         movieRepository.save(movie);
     }
 

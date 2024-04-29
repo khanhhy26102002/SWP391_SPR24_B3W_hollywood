@@ -55,7 +55,7 @@ public class ScreeningController {
     @Operation(summary = "Get Screening Detail")
     @GetMapping("detail/{screeningId}")
     @Secured({"ADMIN", "STAFF"})
-    public ResponseEntity<?> getMovieDetail(@PathVariable int screeningId) {
+    public ResponseEntity<?> getScreeningDetail(@PathVariable int screeningId) {
         try {
             //goi bien moi cho screening request (tra ve dto la co the giau duoc)
             ScreeningDTO screeningDetails = new ScreeningDTO(screeningService.getScreeningDetails(screeningId));
@@ -84,7 +84,7 @@ public class ScreeningController {
     @Operation(summary = "Create a new Screening")
     @PostMapping("/createScreening")
     @Secured({"ADMIN", "STAFF"})
-    public ResponseEntity<?> createMovie(@Valid @RequestBody ScreeningDTO screeningDTO) {
+    public ResponseEntity<?> createScreening(@Valid @RequestBody ScreeningDTO screeningDTO) {
         try {
             //lay cai name cua nguoi dang nhap vo , gan vao bien username
             String userIdString = Util.currentUser();
@@ -107,7 +107,7 @@ public class ScreeningController {
     @PutMapping("/updateScreening/{screeningId}")
     // Thêm {movieId} vào đường dẫn để nhận giá trị từ đường dẫn của yêu cầu HTTP
     @Secured({"ADMIN", "STAFF"})
-    public ResponseEntity<?> updateMovie(@PathVariable int screeningId, @Valid @RequestBody ScreeningDTO screeningDTO) {
+    public ResponseEntity<?> updateScreening(@PathVariable int screeningId, @Valid @RequestBody ScreeningDTO screeningDTO) {
         try {
             Screening screening = screeningService.findById(screeningId);
             // Gọi phương thức updateMovie từ service

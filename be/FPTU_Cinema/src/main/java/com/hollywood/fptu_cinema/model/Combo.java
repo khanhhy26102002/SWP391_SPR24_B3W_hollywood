@@ -1,42 +1,35 @@
 package com.hollywood.fptu_cinema.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.math.BigDecimal;
+import org.hibernate.annotations.ColumnDefault;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "Combo", schema = "Movie_Booking_Ticket")
 public class Combo {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "combo_id", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
-    private User user;
-
     @Size(max = 255)
     @NotNull
-    @Column(name = "combo_name", nullable = false)
-    private String comboName;
+    @Column(name = "name", nullable = false)
+    private String name;
 
     @Lob
     @Column(name = "description")
     private String description;
 
     @NotNull
-    @Column(name = "combo_price", nullable = false, precision = 10, scale = 2)
-    private BigDecimal comboPrice;
-
-    @NotNull
+    @ColumnDefault("1")
     @Column(name = "status", nullable = false)
-    private Integer status;
+    private Byte status;
 
 }

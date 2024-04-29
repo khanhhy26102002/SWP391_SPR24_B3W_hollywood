@@ -1,22 +1,20 @@
 package com.hollywood.fptu_cinema.model;
 
+import com.hollywood.fptu_cinema.enums.UserStatus;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDate;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "User", schema = "Movie_Booking_Ticket")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id", nullable = false)
     private Integer id;
 
@@ -31,7 +29,6 @@ public class User {
 
     @Size(max = 255)
     @NotNull
-    @Email(message = "Invalid email format")
     @Column(name = "email", nullable = false)
     private String email;
 
@@ -48,7 +45,6 @@ public class User {
     @Column(name = "gender")
     private String gender;
 
-    @Past
     @Column(name = "birthdate")
     private LocalDate birthdate;
 
@@ -65,7 +61,9 @@ public class User {
     private String token;
 
     @NotNull
+    @ColumnDefault("1")
+    @Enumerated(EnumType.ORDINAL)
     @Column(name = "status", nullable = false)
-    private Integer status;
+    private UserStatus status;
 
 }

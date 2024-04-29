@@ -1,6 +1,7 @@
 package com.hollywood.fptu_cinema.service;
 
 import com.hollywood.fptu_cinema.config.security.CustomUserDetails;
+import com.hollywood.fptu_cinema.enums.UserStatus;
 import com.hollywood.fptu_cinema.model.Role;
 import com.hollywood.fptu_cinema.model.User;
 import com.hollywood.fptu_cinema.repository.RoleRepository;
@@ -183,7 +184,6 @@ public class UserService {
         newUser.setPhone(registrationDto.getPhone());
         newUser.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
         newUser.setRole(role);
-        newUser.setStatus(1);
         return newUser;
     }
 
@@ -205,7 +205,7 @@ public class UserService {
 
     public void deleteUser(Integer userId) {
         User user = findUserById(userId);
-        user.setStatus(0);
+        user.setStatus(UserStatus.INACTIVE);
         userRepository.save(user);
     }
 

@@ -1,5 +1,6 @@
 package com.hollywood.fptu_cinema.service;
 
+import com.hollywood.fptu_cinema.enums.MovieStatus;
 import com.hollywood.fptu_cinema.enums.SeatStatus;
 import com.hollywood.fptu_cinema.enums.TicketStatus;
 import com.hollywood.fptu_cinema.model.*;
@@ -74,8 +75,8 @@ public class SchedulerService {
         List<Movie> movies = movieRepository.findAll();
         LocalDate oneMonthAgo = LocalDate.now().minusMonths(1);
         for (Movie movie : movies) {
-            if (movie.getPremiere().isBefore(oneMonthAgo) && movie.getStatus() != 0) {
-                movie.setStatus(0);
+            if (movie.getPremiere().isBefore(oneMonthAgo) && movie.getStatus() != MovieStatus.UNAVAILABLE) {
+                movie.setStatus(MovieStatus.AVAILABLE);
                 movieRepository.save(movie);
             }
         }

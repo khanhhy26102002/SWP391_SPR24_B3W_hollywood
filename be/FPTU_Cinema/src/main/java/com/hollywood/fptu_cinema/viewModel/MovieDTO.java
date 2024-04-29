@@ -1,5 +1,6 @@
 package com.hollywood.fptu_cinema.viewModel;
 
+import com.hollywood.fptu_cinema.enums.MovieStatus;
 import com.hollywood.fptu_cinema.model.Image;
 import com.hollywood.fptu_cinema.model.Movie;
 import lombok.Data;
@@ -29,7 +30,7 @@ public class MovieDTO {
     private String rated;
     private Instant createdDate;
     private Instant updatedDate;
-    private Integer status;
+    private MovieStatus status;
 
     //Tao constructer
     public MovieDTO(Movie movie) {

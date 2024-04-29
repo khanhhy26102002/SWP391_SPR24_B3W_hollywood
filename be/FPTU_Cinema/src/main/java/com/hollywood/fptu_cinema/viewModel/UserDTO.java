@@ -1,5 +1,6 @@
 package com.hollywood.fptu_cinema.viewModel;
 
+import com.hollywood.fptu_cinema.enums.UserStatus;
 import com.hollywood.fptu_cinema.model.Role;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -33,6 +34,6 @@ public class UserDTO {
 
     @Pattern(regexp = "^\\+?\\d{10,15}$", message = "Phone number should be valid.")
     private String phone;
-    private Integer status;
+    private UserStatus status;
     private Role role;
 }

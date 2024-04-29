@@ -1,11 +1,12 @@
 package com.hollywood.fptu_cinema.model;
 
+import com.hollywood.fptu_cinema.enums.MovieStatus;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -15,10 +16,8 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "Movie", schema = "Movie_Booking_Ticket")
 public class Movie {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "movie_id", nullable = false)
     private Integer id;
 
@@ -52,7 +51,6 @@ public class Movie {
     private String genre;
 
     @NotNull
-    @Future
     @Column(name = "premiere", nullable = false)
     private LocalDate premiere;
 
@@ -74,15 +72,17 @@ public class Movie {
     private User user;
 
     @NotNull
-    @Column(name = "created_date", nullable = false, updatable = false)
+    @Column(name = "created_date", nullable = false)
     private Instant createdDate;
 
     @Column(name = "updated_date")
     private Instant updatedDate;
 
     @NotNull
+    @ColumnDefault("1")
+    @Enumerated(EnumType.ORDINAL)
     @Column(name = "status", nullable = false)
-    private Integer status;
+    private MovieStatus status;
 
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Image> images;

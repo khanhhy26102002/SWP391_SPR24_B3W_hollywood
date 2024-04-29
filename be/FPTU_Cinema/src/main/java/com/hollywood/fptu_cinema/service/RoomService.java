@@ -51,7 +51,6 @@ public class RoomService {
     public Room createRoom(RoomDTO roomDTO, User currentUser) {
         Room room = new Room();
         setRoomDetails(room, roomDTO, currentUser);
-        room.setStatus(RoomStatus.ACTIVE);
         return roomRepository.save(room);
     }
 
