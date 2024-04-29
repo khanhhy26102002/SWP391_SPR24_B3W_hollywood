@@ -203,6 +203,7 @@ public class TicketService {
         Movie movie = screening.getMovie();
         Room room = screening.getRoom();
         Integer id = ticket.getId();
+        User user = ticket.getUser();
         String imagePath = findImagePathByMovieId(movie.getId());
         List<String> seatNumbers = getSeatNumbersByTicketId(ticket.getId());
         BigDecimal totalSeatsPrice = calculateTotalPrice(bookingSeatRepository.findByTicketId(ticket.getId()), BookingSeat::getTotalPrice);
@@ -220,7 +221,8 @@ public class TicketService {
                 totalSeatsPrice,
                 totalComboPrice,
                 totalSeatsPrice.add(totalComboPrice),
-                ticketStatus
+                ticketStatus,
+                user.getUserName()
         );
     }
 
