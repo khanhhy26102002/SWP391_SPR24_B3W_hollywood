@@ -214,7 +214,7 @@ public class TicketService {
                 imagePath,
                 movie.getName(),
                 movie.getRated(),
-                screening.getStartTime().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+                screening.getStartTime().atZone(ZoneId.of("UTC")).toLocalDateTime(),
                 Date.valueOf(screening.getDate()),
                 room.getRoomNumber(),
                 seatNumbers,

@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 @Table(name = "Screening_combo_price", schema = "Movie_Booking_Ticket")
 public class ScreeningComboPrice {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "screening_combo_price_id", nullable = false)
     private Integer id;
 
