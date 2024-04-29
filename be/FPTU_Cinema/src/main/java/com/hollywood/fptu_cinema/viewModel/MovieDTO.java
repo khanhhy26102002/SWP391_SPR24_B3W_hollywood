@@ -1,5 +1,6 @@
 package com.hollywood.fptu_cinema.viewModel;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.hollywood.fptu_cinema.enums.MovieStatus;
 import com.hollywood.fptu_cinema.model.Image;
 import com.hollywood.fptu_cinema.model.Movie;
@@ -28,7 +29,9 @@ public class MovieDTO {
     private String userName;
     private LocalDate premiere;
     private String rated;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
     private Instant createdDate;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
     private Instant updatedDate;
     private MovieStatus status;
 

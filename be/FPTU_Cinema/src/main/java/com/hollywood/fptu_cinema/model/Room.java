@@ -13,6 +13,7 @@ import org.hibernate.annotations.ColumnDefault;
 @Entity
 public class Room {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "room_id", nullable = false)
     private Integer id;
 
