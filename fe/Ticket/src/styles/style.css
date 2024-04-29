@@ -2420,11 +2420,6 @@ textarea:hover
     width: 25px;
 }
 
-.seat-selection .seats ul.seat-row li.unavailable {
-    background-color: #e53637 !important;
-    box-shadow: 0 0 11px #e53637;
-    color: #fff;
-}
 .seat-selection .seats ul.seat-row li.available {
     background-color: #999 !important;
     box-shadow: 0 0 11px #999;
@@ -2439,6 +2434,12 @@ textarea:hover
 .seat-selection .seats ul.seat-row li.selected {
     background-color: #00b300 !important;
     box-shadow: 0 0 11px #00b300;
+    color: #fff;
+}
+
+.seat-selection .seats ul.seat-row li.unavailable {
+    background-color: #e53637 !important;
+    box-shadow: 0 0 11px #e53637;
     color: #fff;
 }
 

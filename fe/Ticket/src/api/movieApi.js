@@ -55,10 +55,10 @@ export const fetchMovieData = async () => {
          director:director,
          actor:actor,
          genre:genre,
-         premiere:premiere,
          language:language,
-         rated:rated,
-         trailer:trailer
+         trailer:trailer,
+         premiere:premiere,
+         rated:rated
     },{
       headers: {
         Authorization: `Bearer ${token}`,

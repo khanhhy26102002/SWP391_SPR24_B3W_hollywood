@@ -25,7 +25,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from '@mui/icons-material/Edit';
-import { Button } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 import Sidebar from "./Sidebar";
 import { createScreen, deleteScreen, getAllScreen, updateScreen } from "../api/screenApi";
 import { fetchMovieData } from "../api/movieApi";
@@ -157,11 +157,17 @@ useEffect(() => {
   }
 
   return (
-    <div className="container-scroller" style={{background: "#070720"}}>
-      <Sidebar />
-      <div className="container-fluid page-body-wrapper">
+    <div className="container-scroller" style={{display: "block"}}>
+      <Row>
+        <Col lg={2}>
+          <Sidebar/>
+        </Col>
+        <Col lg={10}>
+        <Row>
         <Navbar />
-        <div className="main-panel">
+        </Row>
+        <Row>
+        <div className="main-panel" style={{ paddingLeft: "20px", paddingRight: "20px" ,marginLeft: "-30px"}}>
           <div class="content-wrapper" style={{backgroundColor: "white", top: "50px"}}>
             <div class="page-header">
               <TableTitle>Screening</TableTitle>
@@ -241,7 +247,9 @@ useEffect(() => {
             ) }
           </div>
         </div>
-      </div>
+        </Row>
+        </Col>
+      </Row>
 
       {openDialog && (
         <StyledDialog style={{paddingLeft: "25%",paddingRight: "25%"}} open={openDialog} onClose={() => {setOpenDialog(false); setIsEdit(false)}}>

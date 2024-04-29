@@ -80,6 +80,14 @@ const Sidebar = () => {
               <span class="menu-title">Manage Screening</span>
             </div>
           </li>
+          <li class={`nav-item menu-items ${page === "manageroom" ? "active1" : ""}`} style={{cursor: "pointer"}} onClick={() => navigate("/manageroom", {state: "manageroom"})}>
+            <div class="nav-link">
+              <span class="menu-icon">
+                <TvIcon/>
+              </span>
+              <span class="menu-title">Manage Room</span>
+            </div>
+          </li>
         </ul>
       </nav>
     );

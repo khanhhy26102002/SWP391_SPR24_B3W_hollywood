@@ -19,6 +19,7 @@ import ResetPassword from "./components/ResetPassword";
 import ViewOrder from "./components/ViewOrder";
 import TestImage from "./components/Image";
 import Payment from "./components/Payment";
+import ManageRoom from "./components/ManageRoom";
 
 function App() {
 
@@ -40,6 +41,7 @@ function App() {
               <Route path="/managecombo" element={<ManageCombo/>}/>
               <Route path="/managemovie" element={<ManageMovie/>}/>
               <Route path="/managescreening" element={<ManageScreening/>}/>
+              <Route path="/manageroom" element={<ManageRoom/>}/>
               <Route path="/myprofile" element={<Profile/>}/>
               <Route path="/api/auth/resetPassword" element={<ResetPassword/>}/>
               <Route path="/vieworder" element={<ViewOrder/>}/>

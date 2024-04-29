@@ -166,12 +166,17 @@ const ManageMovie = () => {
   };
 
   return (
-    <div className="container-scroller" style={{background: "#070720"}}>
-      <Sidebar />
-      <div className="container-fluid page-body-wrapper">
+    <div className="container-scroller" style={{display: "block"}}>
+      <Row>
+        <Col lg={2}>
+          <Sidebar/>
+        </Col>
+        <Col lg={10}>
+        <Row>
         <Navbar />
-        <div style={{ padding: "50px 0", width: "100%" }}>
-          <div className="main-panel">
+        </Row>
+        <Row>
+        <div className="main-panel" style={{ paddingLeft: "20px", paddingRight: "20px" ,marginLeft: "-30px"}}>
             <div
               class="content-wrapper"
               style={{ backgroundColor: "white", top: "50px" }}
@@ -249,8 +254,9 @@ const ManageMovie = () => {
               </StyledTableContainer>
             </div>
           </div>
-        </div>
-      </div>
+        </Row>
+        </Col>
+      </Row>
 
       {openDialog && (
         <StyledDialog
