@@ -2,7 +2,6 @@ package com.hollywood.fptu_cinema.controller;
 
 import com.hollywood.fptu_cinema.model.User;
 import com.hollywood.fptu_cinema.service.UserService;
-import com.hollywood.fptu_cinema.util.JwtTokenProvider;
 import com.hollywood.fptu_cinema.util.Util;
 import com.hollywood.fptu_cinema.viewModel.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,12 +18,9 @@ import org.springframework.web.bind.annotation.*;
 public class AuthenticationController {
     private static final Logger logger = LogManager.getLogger(AuthenticationController.class);
     private final UserService userService;
-    private final JwtTokenProvider jwtTokenProvider;
 
-    public AuthenticationController(UserService userService, JwtTokenProvider jwtTokenProvider) {
-
+    public AuthenticationController(UserService userService) {
         this.userService = userService;
-        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     //login

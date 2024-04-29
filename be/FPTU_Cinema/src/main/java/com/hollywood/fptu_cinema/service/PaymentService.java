@@ -29,12 +29,21 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
 
-    public PaymentService(ImageRepository imageRepository, TicketRepository ticketRepository, BookingSeatRepository bookingSeatRepository, BookingComboRepository bookingComboRepository, PaymentRepository paymentRepository) {
+    private final SeatRepository seatRepository;
+
+    private final ScreeningSeatPriceRepository screeningSeatPriceRepository;
+
+    private final ScreeningComboPriceRepository screeningComboPriceRepository;
+
+    public PaymentService(ImageRepository imageRepository, TicketRepository ticketRepository, BookingSeatRepository bookingSeatRepository, BookingComboRepository bookingComboRepository, PaymentRepository paymentRepository, SeatRepository seatRepository, ScreeningSeatPriceRepository screeningSeatPriceRepository, ScreeningComboPriceRepository screeningComboPriceRepository) {
         this.imageRepository = imageRepository;
         this.ticketRepository = ticketRepository;
         this.bookingSeatRepository = bookingSeatRepository;
         this.bookingComboRepository = bookingComboRepository;
         this.paymentRepository = paymentRepository;
+        this.seatRepository = seatRepository;
+        this.screeningSeatPriceRepository = screeningSeatPriceRepository;
+        this.screeningComboPriceRepository = screeningComboPriceRepository;
     }
 
     public PaymentInfoDTO preparePaymentInfo(int ticketId) {
@@ -47,11 +56,14 @@ public class PaymentService {
 
         List<BookingSeat> bookingSeats = bookingSeatRepository.findByTicketId(ticketId);
         List<String> seatNumbers = bookingSeats.stream()
-                .map(bs -> bs.getSeat().getSeatNumber())
+                .map(bookingSeat -> {
+                    Seat seat = seatRepository.findById(bookingSeat.getSeat().getId())
+                            .orElseThrow(() -> new NoSuchElementException("Seat not found with ID: " + bookingSeat.getSeat().getId()));
+                    return seat.getSeatNumber();
+                })
                 .collect(Collectors.toList());
 
         BigDecimal totalSeatsPrice = calculateTotalPriceForSeats(bookingSeats);
-
         List<BookingCombo> bookingCombos = bookingComboRepository.findByTicketId(ticketId);
         BigDecimal totalComboPrice = calculateTotalPriceForCombos(bookingCombos);
 
@@ -60,10 +72,10 @@ public class PaymentService {
                 .map(Image::getPath)
                 .orElse(null);
 
-        ZoneId defaultZoneId = ZoneId.of("UTC");
-        LocalDateTime startTime = screening.getStartTime().atZone(defaultZoneId).toLocalDateTime();
-        LocalDateTime expirationTime = ticket.getExpirationTime().atZone(defaultZoneId).toLocalDateTime();
-
+        ZoneId defaultZoneId = ZoneId.systemDefault();
+        LocalDateTime startTime = LocalDateTime.ofInstant(screening.getStartTime(), defaultZoneId);
+        LocalDateTime expirationTime = LocalDateTime.ofInstant(ticket.getExpirationTime(), defaultZoneId);
+        PaymentInfoDTO paymentInfoDTO = new PaymentInfoDTO();
         return new PaymentInfoDTO(
                 ticket.getId(),
                 movie.getName(),
@@ -76,19 +88,24 @@ public class PaymentService {
                 totalComboPrice,
                 totalSeatsPrice.add(totalComboPrice),
                 expirationTime,
-                "e-wallet"
+                paymentInfoDTO.getPaymentMethod()
         );
     }
 
+
     private BigDecimal calculateTotalPriceForSeats(List<BookingSeat> bookingSeats) {
         return bookingSeats.stream()
-                .map(BookingSeat::getTotal)
+                .map(bookingSeat -> screeningSeatPriceRepository.findById(bookingSeat.getScreeningSeatPrice().getId())
+                        .orElseThrow(() -> new NoSuchElementException("ScreeningSeatPrice not found with ID: " + bookingSeat.getScreeningSeatPrice().getId()))
+                        .getPrice())
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     private BigDecimal calculateTotalPriceForCombos(List<BookingCombo> bookingCombos) {
         return bookingCombos.stream()
-                .map(BookingCombo::getTotalAmount)
+                .map(bookingCombo -> screeningComboPriceRepository.findById(bookingCombo.getScreeningComboPrice().getId())
+                        .orElseThrow(() -> new NoSuchElementException("ScreeningComboPrice not found with ID: " + bookingCombo.getScreeningComboPrice().getId()))
+                        .getPrice().multiply(BigDecimal.valueOf(bookingCombo.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 

@@ -1,6 +1,7 @@
 package com.hollywood.fptu_cinema.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,7 +10,6 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @Entity
-@Table(name = "Booking_seat", schema = "Movie_Booking_Ticket")
 public class BookingSeat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,9 +21,15 @@ public class BookingSeat {
     private Ticket ticket;
 
     @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "screening_seat_price_id")
+    private ScreeningSeatPrice screeningSeatPrice;
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "seat_id")
     private Seat seat;
 
-    @Column(name = "total", precision = 10, scale = 2)
-    private BigDecimal total = BigDecimal.ZERO;
+    @NotNull
+    @Column(name = "total_price", nullable = false, precision = 10, scale = 2)
+    private BigDecimal totalPrice;
+
 }

@@ -1,5 +1,6 @@
 package com.hollywood.fptu_cinema.repository;
 
+import com.hollywood.fptu_cinema.enums.MovieStatus;
 import com.hollywood.fptu_cinema.model.Movie;
 import com.hollywood.fptu_cinema.viewModel.MovieStatistics;
 import org.springframework.data.domain.Pageable;
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MovieRepository extends JpaRepository<Movie, Integer> {
-    List<Movie> findByStatusNot(Integer status);
+    List<Movie> findByStatusNot(MovieStatus status);
 
     Optional<Movie> findByName(String name);
 

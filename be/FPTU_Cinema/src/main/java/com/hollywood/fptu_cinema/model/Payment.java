@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -13,10 +14,8 @@ import java.time.Instant;
 @Getter
 @Setter
 @Entity
-@Table(name = "Payment", schema = "Movie_Booking_Ticket")
 public class Payment {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "payment_id", nullable = false)
     private Integer id;
 
@@ -27,7 +26,7 @@ public class Payment {
     @Size(max = 50)
     @NotNull
     @Column(name = "payment_method", nullable = false, length = 50)
-    private String paymentMethod = "e-wallet";
+    private String paymentMethod;
 
     @NotNull
     @Column(name = "payment_date", nullable = false)
@@ -38,13 +37,9 @@ public class Payment {
     private BigDecimal amount;
 
     @NotNull
+    @ColumnDefault("1")
+    @Enumerated(EnumType.ORDINAL)
     @Column(name = "status", nullable = false)
     private PaymentStatus status;
 
-    public void setTicketId(int ticketId) {
-    }
-
-    public void setTicketPrice(Object totalPrice) {
-
-    }
 }
