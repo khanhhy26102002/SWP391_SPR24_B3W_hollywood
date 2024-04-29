@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @Entity
+@Table(name = "Booking_combo", schema = "Movie_Booking_Ticket")
 public class BookingCombo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

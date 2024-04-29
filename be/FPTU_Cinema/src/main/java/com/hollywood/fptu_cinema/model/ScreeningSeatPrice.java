@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @Entity
+@Table(name = "Screening_seat_price", schema = "Movie_Booking_Ticket")
 public class ScreeningSeatPrice {
     @Id
     @Column(name = "screening_seat_price_id", nullable = false)
