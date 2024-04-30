@@ -1,6 +1,8 @@
 package com.hollywood.fptu_cinema.viewModel;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.hollywood.fptu_cinema.enums.TicketStatus;
+import com.hollywood.fptu_cinema.model.User;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -26,6 +28,7 @@ public class TicketDTO {
     @Size(min = 1, message = "Rating cannot be empty.")
     private String rated;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
     @Future(message = "Screening time must be in the future.")
     private LocalDateTime screeningTime;
     @Future(message = "Screening date must be in the future.")
@@ -49,4 +52,5 @@ public class TicketDTO {
     @Min(value = 0, message = "Total price cannot be negative.")
     private BigDecimal totalPrice;
     private TicketStatus status;
+    private String userName;
 }

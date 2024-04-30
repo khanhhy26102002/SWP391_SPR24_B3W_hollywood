@@ -21,6 +21,7 @@ import java.util.List;
 
 public class Movie {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "movie_id", nullable = false)
     private Integer id;
 

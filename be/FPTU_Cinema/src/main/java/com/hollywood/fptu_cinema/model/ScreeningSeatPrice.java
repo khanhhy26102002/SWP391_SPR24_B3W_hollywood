@@ -10,8 +10,10 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @Entity
+@Table(name = "Screening_seat_price", schema = "Movie_Booking_Ticket")
 public class ScreeningSeatPrice {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "screening_seat_price_id", nullable = false)
     private Integer id;
 

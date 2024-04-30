@@ -60,7 +60,7 @@ public class ScreeningService {
         if (Util.hasRole(RoleEnum.ADMIN) || Util.hasRole(RoleEnum.STAFF)) {
             return screeningRepository.findAll();
         } else {
-            return screeningRepository.findByStatusNot(0);
+            return screeningRepository.findByStatusNot(ScreeningStatus.INACTIVE);
         }
     }
 

@@ -16,6 +16,7 @@ import java.util.Set;
 @Entity
 public class Screening {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "screening_id", nullable = false)
     private Integer id;
 
