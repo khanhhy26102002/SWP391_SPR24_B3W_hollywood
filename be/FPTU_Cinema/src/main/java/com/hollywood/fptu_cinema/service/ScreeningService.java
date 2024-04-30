@@ -45,6 +45,7 @@ public class ScreeningService {
     public Screening createScreening(ScreeningDTO screeningDTO, User currentUser) {
         Screening screening = new Screening();
         setScreeningDetails(screening, screeningDTO, currentUser);
+        screening.setStatus(ScreeningStatus.ACTIVE);
         return screeningRepository.save(screening);
     }
 

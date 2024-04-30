@@ -1,5 +1,6 @@
 package com.hollywood.fptu_cinema.model;
 
+import com.hollywood.fptu_cinema.enums.ImageStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -10,10 +11,13 @@ import org.hibernate.annotations.ColumnDefault;
 @Getter
 @Setter
 @Entity
+
 public class Image {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "image_id", nullable = false)
     private Integer id;
+
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "movie_id")
@@ -36,6 +40,7 @@ public class Image {
     @NotNull
     @ColumnDefault("1")
     @Column(name = "status", nullable = false)
-    private Byte status;
+    @Enumerated(EnumType.ORDINAL)
+    private ImageStatus status;
 
 }
