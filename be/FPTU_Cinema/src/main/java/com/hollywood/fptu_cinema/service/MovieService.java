@@ -38,6 +38,7 @@ public class MovieService {
     public Movie createMovie(MovieRequest movieRequest, User currentUser) {
         Movie movie = new Movie();
         setMovieDetails(movie, movieRequest, currentUser);
+        movie.setStatus(MovieStatus.AVAILABLE);
         //mac dinh trang thai hoat dong
         return movieRepository.save(movie);
     }

@@ -7,6 +7,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -16,6 +18,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+
 public class Movie {
     @Id
     @Column(name = "movie_id", nullable = false)

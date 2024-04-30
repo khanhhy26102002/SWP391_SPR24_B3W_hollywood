@@ -157,6 +157,7 @@ public class UserService {
         int newRoleId = getNewRoleId();
         Role role = findRoleById(newRoleId);
         User newUser = createNewUser(registrationDto, role);
+        newUser.setStatus(UserStatus.ACTIVE);
         convertToDTO(userRepository.save(newUser));
     }
 

@@ -4,6 +4,7 @@ import com.hollywood.fptu_cinema.enums.MovieStatus;
 import com.hollywood.fptu_cinema.model.Image;
 import com.hollywood.fptu_cinema.model.Movie;
 import lombok.Data;
+import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -12,6 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 
 @Data
 public class MovieDTO {
