@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -81,11 +82,7 @@ public class ScreeningService {
                 .orElseThrow(() -> new RuntimeException("Movie not found with ID: " + screening.getMovie().getId()));
         Room room = roomRepository.findById(screeningDTO.getRoomId())
                 .orElseThrow(() -> new RuntimeException("Room not found with ID: " + screening.getRoom().getId()));
-        List<ScreeningSeatPrice> seatPrices = createScreeningSeatPrices(screeningDTO.getSeatPrices(), screening);
-        screeningSeatPriceRepository.saveAll(seatPrices);
 
-        List<ScreeningComboPrice> comboPrices = createScreeningComboPrices(screeningDTO.getComboPrices(), screening);
-        screeningComboPriceRepository.saveAll(comboPrices);
         screening.setMovie(movie);
         screening.setRoom(room);
         screening.setUser(currentUser);
@@ -94,6 +91,14 @@ public class ScreeningService {
         screening.setStartTime(startInstant);
         screening.setEndTime(endInstant);
         screening.setDate(screeningDTO.getDate());
+        screeningRepository.save(screening);
+        List<ScreeningSeatPrice> seatPrices = createScreeningSeatPrices(screeningDTO.getSeatPrices(), screening);
+        screeningSeatPriceRepository.saveAll(seatPrices);
+
+        List<ScreeningComboPrice> comboPrices = createScreeningComboPrices(screeningDTO.getComboPrices(), screening);
+        screeningComboPriceRepository.saveAll(comboPrices);
+        screening.setSeatPrices(new HashSet<>(seatPrices));
+        screening.setComboPrices(new HashSet<>(comboPrices));
     }
 
     private List<ScreeningSeatPrice> createScreeningSeatPrices(List<SeatPriceDTO> seatPriceDTOs, Screening screening) {

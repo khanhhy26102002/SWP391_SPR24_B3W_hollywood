@@ -56,4 +56,10 @@ public class Screening {
     @OneToMany(mappedBy = "screening", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<ScreeningComboPrice> comboPrices;
 
+    @PrePersist
+    protected void onPersist() {
+        if (this.status == null) {
+            this.status = ScreeningStatus.ACTIVE;
+        }
+    }
 }
