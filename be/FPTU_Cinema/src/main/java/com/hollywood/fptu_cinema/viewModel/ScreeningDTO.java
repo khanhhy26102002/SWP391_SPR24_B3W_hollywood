@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.hollywood.fptu_cinema.enums.ScreeningStatus;
 import com.hollywood.fptu_cinema.model.Screening;
 import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,11 +19,11 @@ import java.util.stream.Collectors;
 public class ScreeningDTO {
     private Integer screeningId;
 
-    @NotBlank(message = "Movie name is required")
-    private String movieName;
+    @NotNull(message = "MovieId is required")
+    private Integer movieId;
 
-    @NotBlank(message = "Room number is required")
-    private String roomNumber;
+    @NotNull(message = "RoomId is required")
+    private Integer roomId;
 
     private String createdBy;
 
@@ -50,8 +49,8 @@ public class ScreeningDTO {
 
     public ScreeningDTO(Screening screening) {
         this.screeningId = screening.getId();
-        this.movieName = screening.getMovie().getName();
-        this.roomNumber = screening.getRoom().getRoomNumber();
+        this.movieId = screening.getMovie().getId();
+        this.roomId = screening.getRoom().getId();
         this.createdBy = screening.getUser().getUserName();
         this.startTime = LocalDateTime.ofInstant(screening.getStartTime(), ZoneId.of("UTC"));
         this.endTime = LocalDateTime.ofInstant(screening.getEndTime(), ZoneId.of("UTC"));

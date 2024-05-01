@@ -77,10 +77,10 @@ public class ScreeningService {
     }
 
     private void setScreeningDetails(Screening screening, ScreeningDTO screeningDTO, User currentUser) {
-        Movie movie = movieRepository.findByName(screeningDTO.getMovieName())
-                .orElseThrow(() -> new RuntimeException("Movie not found with name: " + screening.getMovie().getName()));
-        Room room = roomRepository.findByRoomNumber(screeningDTO.getRoomNumber())
-                .orElseThrow(() -> new RuntimeException("Room not found with roomNumber: " + (screening.getRoom().getRoomNumber())));
+        Movie movie = movieRepository.findById(screeningDTO.getMovieId())
+                .orElseThrow(() -> new RuntimeException("Movie not found with ID: " + screening.getMovie().getId()));
+        Room room = roomRepository.findById(screeningDTO.getRoomId())
+                .orElseThrow(() -> new RuntimeException("Room not found with ID: " + screening.getRoom().getId()));
         List<ScreeningSeatPrice> seatPrices = createScreeningSeatPrices(screeningDTO.getSeatPrices(), screening);
         screeningSeatPriceRepository.saveAll(seatPrices);
 
