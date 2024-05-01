@@ -19,4 +19,14 @@ public interface ScreeningRepository extends JpaRepository<Screening, Integer> {
     List<Screening> findByStatusNot(ScreeningStatus status);
 
     Optional<Screening> findByDateAndStartTime(LocalDate date, Instant startTime);
+
+    @Query(value = "SELECT s.movie_id, COUNT(*) as screeningCount, SUM(t.total_price) as totalRevenue " +
+            "FROM Screening s " +
+            "JOIN Ticket t ON s.screening_id = t.screening_id " +
+            "JOIN Payment p ON t.ticket_id = p.ticket_id " +
+            "WHERE s.date BETWEEN :startDate AND :endDate " +
+            "AND p.status = 1 " +
+            "GROUP BY s.movie_id",
+            nativeQuery = true)
+    List<Object[]> findMovieScreeningAndRevenueForWeek(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 }
