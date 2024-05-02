@@ -113,6 +113,11 @@ public class UserService {
         if (!isAllowedToResetPassword(user)) {
             throw new AccessDeniedException("You do not have permission to reset password.");
         }
+        String currentPassword = user.getPassword();
+        boolean isMatched = passwordEncoder.matches(newPassword, currentPassword);
+        if (isMatched) {
+            throw new IllegalArgumentException("New password must not be the same as the current password.");
+        }
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }

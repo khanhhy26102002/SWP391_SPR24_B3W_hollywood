@@ -89,7 +89,6 @@ public class DashboardService {
             Integer movieId = (Integer) result[0];
             Long screeningCount = (Long) result[1];
             BigDecimal totalRevenue = (BigDecimal) result[2];
-            // Tìm thông tin phim dựa trên movieId để lấy tên phim
             Optional<Movie> movie = movieRepository.findById(movieId);
             String movieName = movie.map(Movie::getName).orElse("Unknown");
             return new MovieScreeningAndRevenueDTO(movieName, screeningCount, totalRevenue);
