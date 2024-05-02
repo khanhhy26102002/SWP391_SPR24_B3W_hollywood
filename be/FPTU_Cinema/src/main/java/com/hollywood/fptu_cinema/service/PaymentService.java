@@ -131,6 +131,8 @@ public class PaymentService {
         ZoneId defaultZoneId = ZoneId.systemDefault();
         LocalDateTime startTime = LocalDateTime.ofInstant(screening.getStartTime(), defaultZoneId);
         LocalDateTime expirationTime = LocalDateTime.ofInstant(ticket.getExpirationTime(), defaultZoneId);
+        LocalDateTime paymentDate = LocalDateTime.ofInstant(payment.getPaymentDate(), defaultZoneId);
+        PaymentStatus status = payment.getStatus();
         return new PaymentInfoDTO(
                 ticket.getId(),
                 movie.getName(),
@@ -143,6 +145,20 @@ public class PaymentService {
                 totalComboPrice,
                 totalSeatsPrice.add(totalComboPrice),
                 expirationTime,
-                paymentMethod);
+                paymentMethod,
+                paymentDate,
+                status);
+    }
+
+    public List<PaymentInfoDTO> getAllPaymentInfoDTOsForUser(int userId) {
+        List<Ticket> ticketsForUser = ticketRepository.findAllByUserId(userId);
+        List<Payment> paymentsForUser = ticketsForUser.stream()
+                .map(ticket -> paymentRepository.findByTicket(ticket)
+                        .orElseThrow(() -> new NoSuchElementException("Payment not found for ticket ID: " + ticket.getId())))
+                .toList();
+
+        return paymentsForUser.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 }

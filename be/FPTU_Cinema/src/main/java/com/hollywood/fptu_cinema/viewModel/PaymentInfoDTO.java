@@ -1,5 +1,6 @@
 package com.hollywood.fptu_cinema.viewModel;
 
+import com.hollywood.fptu_cinema.enums.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,5 +25,7 @@ public class PaymentInfoDTO {
     private BigDecimal totalAmount;
     private LocalDateTime expirationTime;
     private String paymentMethod;
+    private LocalDateTime paymentDate;
+    private PaymentStatus status;
 
 }

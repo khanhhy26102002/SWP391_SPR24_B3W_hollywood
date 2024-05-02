@@ -2,9 +2,13 @@ package com.hollywood.fptu_cinema.viewModel;
 
 import com.hollywood.fptu_cinema.enums.ComboStatus;
 import com.hollywood.fptu_cinema.model.Combo;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ComboDTO {
     private int id;
     private String userName;

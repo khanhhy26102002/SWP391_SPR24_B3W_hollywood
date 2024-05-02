@@ -16,4 +16,6 @@ public interface TicketRepository extends JpaRepository<Ticket, Integer> {
 
     @Query("SELECT COUNT(t) FROM Ticket t WHERE t.status = 2 AND t.createdDate BETWEEN :start AND :end")
     long countByCreatedDateBetweenAndStatusIsSold(Instant start, Instant end);
+
+    List<Ticket> findAllByUserId(int userId);
 }

@@ -74,8 +74,8 @@ public class ComboController {
     }
 
     @Operation(summary = "Create Combo")
-    @GetMapping("/createCombo")
-    @Secured({"ADMIN", "STAFF", "MEMBER"})
+    @PostMapping("/createCombo")
+    @Secured({"ADMIN", "STAFF"})
     public ResponseEntity<?> createCombo(@Valid @RequestBody ComboDTO comboDTO) {
         try {
             String userIdString = Util.currentUser();

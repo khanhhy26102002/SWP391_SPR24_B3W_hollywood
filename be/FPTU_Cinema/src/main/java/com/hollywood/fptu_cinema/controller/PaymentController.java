@@ -1,6 +1,7 @@
 package com.hollywood.fptu_cinema.controller;
 
 import com.hollywood.fptu_cinema.service.PaymentService;
+import com.hollywood.fptu_cinema.util.Util;
 import com.hollywood.fptu_cinema.viewModel.PaymentInfoDTO;
 import com.hollywood.fptu_cinema.viewModel.Response;
 import io.swagger.v3.oas.annotations.Operation;
@@ -53,13 +54,31 @@ public class PaymentController {
 
     @Operation(summary = "List Payment")
     @Secured({"ADMIN", "STAFF", "MEMBER"})
-    @PostMapping("/listPayment")
+    @GetMapping("/listPayment")
     public ResponseEntity<?> listPayment() {
         try {
             List<PaymentInfoDTO> listPayment = paymentService.getAllPaymentInfoDTOs();
             return Response.success(listPayment);
         } catch (Exception e) {
             logger.error("An error occurred while listing payment: {}", e.getMessage());
+            return Response.error(e);
+        }
+    }
+
+    @Operation(summary = "List Payment for Authenticated User")
+    @Secured({"MEMBER"})
+    @GetMapping("/listMyPayments")
+    public ResponseEntity<?> listMyPayments() {
+        try {
+            String userIdString = Util.currentUser();
+            if (userIdString == null) {
+                throw new Exception("User not authenticated");
+            }
+            int userId = Integer.parseInt(userIdString);
+            List<PaymentInfoDTO> listPayment = paymentService.getAllPaymentInfoDTOsForUser(userId);
+            return Response.success(listPayment);
+        } catch (Exception e) {
+            logger.error("An error occurred while listing payment for current user. Error: {}", e.getMessage(), e);
             return Response.error(e);
         }
     }
