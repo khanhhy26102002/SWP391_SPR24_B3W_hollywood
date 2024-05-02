@@ -131,7 +131,6 @@ public class PaymentService {
         ZoneId defaultZoneId = ZoneId.systemDefault();
         LocalDateTime startTime = LocalDateTime.ofInstant(screening.getStartTime(), defaultZoneId);
         LocalDateTime expirationTime = LocalDateTime.ofInstant(ticket.getExpirationTime(), defaultZoneId);
-        PaymentInfoDTO paymentInfoDTO = new PaymentInfoDTO();
         return new PaymentInfoDTO(
                 ticket.getId(),
                 movie.getName(),
