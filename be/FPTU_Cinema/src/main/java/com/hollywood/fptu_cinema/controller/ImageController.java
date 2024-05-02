@@ -1,15 +1,12 @@
 package com.hollywood.fptu_cinema.controller;
 
 import com.hollywood.fptu_cinema.model.Image;
-import com.hollywood.fptu_cinema.model.Room;
 import com.hollywood.fptu_cinema.model.User;
 import com.hollywood.fptu_cinema.service.ImageService;
-import com.hollywood.fptu_cinema.service.RoomService;
 import com.hollywood.fptu_cinema.service.UserService;
 import com.hollywood.fptu_cinema.util.Util;
 import com.hollywood.fptu_cinema.viewModel.ImageDTO;
 import com.hollywood.fptu_cinema.viewModel.Response;
-import com.hollywood.fptu_cinema.viewModel.RoomDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;

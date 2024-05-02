@@ -2,7 +2,6 @@ package com.hollywood.fptu_cinema.viewModel;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.hollywood.fptu_cinema.enums.TicketStatus;
-import com.hollywood.fptu_cinema.model.User;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;

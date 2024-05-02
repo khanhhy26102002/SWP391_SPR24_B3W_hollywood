@@ -41,7 +41,7 @@ public class ComboController {
     @Operation(summary = "Get Combo List")
     @GetMapping("/getComboList")
     @Secured({"ADMIN", "STAFF", "MEMBER"})
-    public ResponseEntity<?> getListCombo(){
+    public ResponseEntity<?> getListCombo() {
         try {
             List<Combo> comboList = comboService.findAll();
             return Response.success(comboList);

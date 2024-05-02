@@ -5,7 +5,6 @@ import com.hollywood.fptu_cinema.enums.MovieStatus;
 import com.hollywood.fptu_cinema.model.Image;
 import com.hollywood.fptu_cinema.model.Movie;
 import lombok.Data;
-import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.time.LocalDate;

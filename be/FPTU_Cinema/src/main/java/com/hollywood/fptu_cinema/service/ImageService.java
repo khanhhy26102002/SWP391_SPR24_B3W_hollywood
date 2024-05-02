@@ -2,15 +2,13 @@ package com.hollywood.fptu_cinema.service;
 
 import com.hollywood.fptu_cinema.enums.ImageStatus;
 import com.hollywood.fptu_cinema.enums.RoleEnum;
-import com.hollywood.fptu_cinema.enums.RoomStatus;
-import com.hollywood.fptu_cinema.model.*;
+import com.hollywood.fptu_cinema.model.Image;
+import com.hollywood.fptu_cinema.model.Movie;
+import com.hollywood.fptu_cinema.model.User;
 import com.hollywood.fptu_cinema.repository.ImageRepository;
 import com.hollywood.fptu_cinema.repository.MovieRepository;
-import com.hollywood.fptu_cinema.repository.RoomRepository;
 import com.hollywood.fptu_cinema.util.Util;
 import com.hollywood.fptu_cinema.viewModel.ImageDTO;
-import com.hollywood.fptu_cinema.viewModel.MovieDTO;
-import com.hollywood.fptu_cinema.viewModel.RoomDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,7 +19,7 @@ public class ImageService {
     private final MovieRepository movieRepository;
 
     //Khai bao constructor cua movie service va truyen movie repository vao lam tham so
-    public ImageService(ImageRepository imageRepository , MovieRepository movieRepository) {
+    public ImageService(ImageRepository imageRepository, MovieRepository movieRepository) {
         //Constructor gan doi tuong movieRepository
         this.imageRepository = imageRepository;
         this.movieRepository = movieRepository;
@@ -78,9 +76,10 @@ public class ImageService {
         image.setMovie(movie);
 
     }
+
     public boolean existsByImageName(String imageName) {
         return imageRepository.findByImageName(imageName).isPresent();
     }
 
-    }
+}
 
