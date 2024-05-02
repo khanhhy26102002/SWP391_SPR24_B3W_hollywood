@@ -12,13 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RoomDTO {
     private Integer roomId;
-    @NotEmpty(message = "Room number cannot be empty")
     private String roomNumber;
-
-    @NotNull(message = "Number of seats cannot be null")
     @Min(value = 1, message = "Number of seats must be at least 1")
     private Integer numberOfSeat;
-
     private String userName;
     private RoomStatus status;
 
