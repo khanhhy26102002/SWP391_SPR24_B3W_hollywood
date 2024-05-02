@@ -49,49 +49,17 @@ public class PaymentService {
     public PaymentInfoDTO preparePaymentInfo(int ticketId) {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new NoSuchElementException("Ticket not found with ID: " + ticketId));
-
-        Screening screening = ticket.getScreening();
-        Movie movie = screening.getMovie();
-        Room room = screening.getRoom();
-
-        List<BookingSeat> bookingSeats = bookingSeatRepository.findByTicketId(ticketId);
-        List<String> seatNumbers = bookingSeats.stream()
-                .map(bookingSeat -> {
-                    Seat seat = seatRepository.findById(bookingSeat.getSeat().getId())
-                            .orElseThrow(() -> new NoSuchElementException("Seat not found with ID: " + bookingSeat.getSeat().getId()));
-                    return seat.getSeatNumber();
-                })
-                .collect(Collectors.toList());
-
-        BigDecimal totalSeatsPrice = calculateTotalPriceForSeats(bookingSeats);
-        List<BookingCombo> bookingCombos = bookingComboRepository.findByTicketId(ticketId);
-        BigDecimal totalComboPrice = calculateTotalPriceForCombos(bookingCombos);
-
-        String imagePath = imageRepository.findByMovieId(movie.getId()).stream()
-                .findFirst()
-                .map(Image::getPath)
-                .orElse(null);
-
-        ZoneId defaultZoneId = ZoneId.systemDefault();
-        LocalDateTime startTime = LocalDateTime.ofInstant(screening.getStartTime(), defaultZoneId);
-        LocalDateTime expirationTime = LocalDateTime.ofInstant(ticket.getExpirationTime(), defaultZoneId);
-        PaymentInfoDTO paymentInfoDTO = new PaymentInfoDTO();
-        return new PaymentInfoDTO(
-                ticket.getId(),
-                movie.getName(),
-                imagePath,
-                movie.getRated(),
-                startTime,
-                room.getRoomNumber(),
-                seatNumbers,
-                totalSeatsPrice,
-                totalComboPrice,
-                totalSeatsPrice.add(totalComboPrice),
-                expirationTime,
-                paymentInfoDTO.getPaymentMethod()
-        );
+        Payment payment = paymentRepository.findByTicket(ticket)
+                .orElseThrow(() -> new NoSuchElementException("Payment not found for ticket ID: " + ticketId));
+        return convertToDTO(payment);
     }
 
+    public List<PaymentInfoDTO> getAllPaymentInfoDTOs() {
+        List<Payment> payments = paymentRepository.findAll();
+        return payments.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
 
     private BigDecimal calculateTotalPriceForSeats(List<BookingSeat> bookingSeats) {
         return bookingSeats.stream()
@@ -133,5 +101,49 @@ public class PaymentService {
         payment.setStatus(PaymentStatus.PAID);
         payment.setAmount(ticket.getTotalPrice());
         paymentRepository.save(payment);
+    }
+
+    public PaymentInfoDTO convertToDTO(Payment payment) {
+        Ticket ticket = payment.getTicket();
+        Screening screening = ticket.getScreening();
+        Movie movie = screening.getMovie();
+        Room room = screening.getRoom();
+
+        List<BookingSeat> bookingSeats = bookingSeatRepository.findByTicketId(ticket.getId());
+        List<String> seatNumbers = bookingSeats.stream()
+                .map(bookingSeat -> {
+                    Seat seat = seatRepository.findById(bookingSeat.getSeat().getId())
+                            .orElseThrow(() -> new NoSuchElementException("Seat not found with ID: " + bookingSeat.getSeat().getId()));
+                    return seat.getSeatNumber();
+                })
+                .collect(Collectors.toList());
+
+        BigDecimal totalSeatsPrice = calculateTotalPriceForSeats(bookingSeats);
+        List<BookingCombo> bookingCombos = bookingComboRepository.findByTicketId(ticket.getId());
+        BigDecimal totalComboPrice = calculateTotalPriceForCombos(bookingCombos);
+
+        String imagePath = imageRepository.findByMovieId(movie.getId()).stream()
+                .findFirst()
+                .map(Image::getPath)
+                .orElse(null);
+
+        String paymentMethod = payment.getPaymentMethod();
+        ZoneId defaultZoneId = ZoneId.systemDefault();
+        LocalDateTime startTime = LocalDateTime.ofInstant(screening.getStartTime(), defaultZoneId);
+        LocalDateTime expirationTime = LocalDateTime.ofInstant(ticket.getExpirationTime(), defaultZoneId);
+        PaymentInfoDTO paymentInfoDTO = new PaymentInfoDTO();
+        return new PaymentInfoDTO(
+                ticket.getId(),
+                movie.getName(),
+                imagePath,
+                movie.getRated(),
+                startTime,
+                room.getRoomNumber(),
+                seatNumbers,
+                totalSeatsPrice,
+                totalComboPrice,
+                totalSeatsPrice.add(totalComboPrice),
+                expirationTime,
+                paymentMethod);
     }
 }

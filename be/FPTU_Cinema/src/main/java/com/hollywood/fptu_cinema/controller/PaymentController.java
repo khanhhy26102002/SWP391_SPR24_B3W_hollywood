@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/payment")
 public class PaymentController {
@@ -22,7 +24,7 @@ public class PaymentController {
     }
 
     @Operation(summary = "Payment Information")
-    @Secured({"MEMBER"})
+    @Secured({"ADMIN", "STAFF", "MEMBER"})
     @GetMapping("/getPaymentInfo/{ticketId}")
     public ResponseEntity<?> getPaymentInfo(@PathVariable int ticketId) {
         try {
@@ -45,6 +47,19 @@ public class PaymentController {
             return Response.success("Processed payment successfully for ticket ID: " + ticket);
         } catch (Exception e) {
             logger.error("Error processing payment for ticket ID: {}", ticket);
+            return Response.error(e);
+        }
+    }
+
+    @Operation(summary = "List Payment")
+    @Secured({"ADMIN", "STAFF", "MEMBER"})
+    @PostMapping("/listPayment")
+    public ResponseEntity<?> listPayment() {
+        try {
+            List<PaymentInfoDTO> listPayment = paymentService.getAllPaymentInfoDTOs();
+            return Response.success(listPayment);
+        } catch (Exception e) {
+            logger.error("An error occurred while listing payment: {}", e.getMessage());
             return Response.error(e);
         }
     }
