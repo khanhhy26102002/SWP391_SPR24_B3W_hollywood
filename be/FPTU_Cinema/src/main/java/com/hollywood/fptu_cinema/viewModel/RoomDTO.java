@@ -3,8 +3,6 @@ package com.hollywood.fptu_cinema.viewModel;
 import com.hollywood.fptu_cinema.enums.RoomStatus;
 import com.hollywood.fptu_cinema.model.Room;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
