@@ -44,6 +44,9 @@ public class ScreeningService {
 
     //Tao ra xuat chieu phim
     public Screening createScreening(ScreeningDTO screeningDTO, User currentUser) {
+        if (existsScreening(screeningDTO)) {
+            throw new IllegalStateException("A screening with the same movie, date, start time, and room already exists.");
+        }
         Screening screening = new Screening();
         setScreeningDetails(screening, screeningDTO, currentUser);
         return screeningRepository.save(screening);
@@ -122,5 +125,13 @@ public class ScreeningService {
             comboPrice.setPrice(comboPriceDTO.getPrice());
             return comboPrice;
         }).collect(Collectors.toList());
+    }
+
+    public boolean existsScreening(ScreeningDTO screeningDTO) {
+        return screeningRepository.findByMovieIdAndDateAndStartTimeAndRoomId(
+                screeningDTO.getMovieId(),
+                screeningDTO.getDate(),
+                Instant.from(screeningDTO.getStartTime()),
+                screeningDTO.getRoomId()).isPresent();
     }
 }

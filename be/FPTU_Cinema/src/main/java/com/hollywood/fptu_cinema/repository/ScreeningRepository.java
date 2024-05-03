@@ -15,6 +15,8 @@ public interface ScreeningRepository extends JpaRepository<Screening, Integer> {
     @Query("SELECT s FROM Screening s WHERE s.endTime < :instant")
     List<Screening> findFinishedScreenings(@Param("instant") Instant instant);
 
+    Optional<Screening> findByMovieIdAndDateAndStartTimeAndRoomId(Integer movieId, LocalDate date, Instant startTime, Integer roomId);
+
     //Tim cai screening voi status
     List<Screening> findByStatusNot(ScreeningStatus status);
 
