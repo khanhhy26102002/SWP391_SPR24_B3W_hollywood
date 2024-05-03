@@ -23,7 +23,7 @@ import {
   TextField
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from '@mui/icons-material/Edit';
+import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
 import { Button, Row, Col } from "react-bootstrap";
 import Sidebar from "./Sidebar";
@@ -52,13 +52,11 @@ const ManageUser = () => {
   const [phone, setPhone] = useState("");
   const [mess, setMess] = useState("");
   const [password,setPasword] = useState("");
-  const [status,setStatus] = useState(0);
   const [isEdit,setIsEdit] = useState(false);
 
   const fetchData = async () => {
     await getListUsers(sessionStorage.getItem("jwt"))
       .then((res) => {
-        console.log(res.data);
         setUsers(res.data.reverse())
         setUserSize(users.length);
       })
@@ -86,7 +84,6 @@ const ManageUser = () => {
     setAddress("");
     setAvt("");
     setPasword("");
-    setStatus(0);
     setBirthdate("");
     setEmail("");
     setGender("");
@@ -99,6 +96,8 @@ const ManageUser = () => {
     try {
       await deleteUser(selectedUser, sessionStorage.getItem("jwt"));
       handleOnCloseConfirmationDialog();
+      setOpenConfirmationDialog(true);
+      setMess("Delete user success !!!!");
       fetchData();
     } catch (error) {
       console.error("Error fetching posts:", error);
@@ -205,12 +204,12 @@ const ManageUser = () => {
                         {user.phone}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {user.status === 1 ? (<div className='badge badge-outline-success'>Active</div>): (<div className='badge badge-outline-danger'>Unactive</div>)}
+                        {user.status === "ACTIVE" ? (<div className='badge badge-outline-success'>Active</div>): (<div className='badge badge-outline-danger'>Unactive</div>)}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                      {/*<IconButton aria-label="edit" onClick={() => handleOpenDialog(user)}>
+                      <IconButton aria-label="edit" onClick={() => handleOpenDialog(user)}>
                             <EditIcon color="warning"/>
-                        </IconButton>*/}
+                        </IconButton>
                         <IconButton
                           aria-label="delete"
                           onClick={() => handleOpenConfirmationDialog(user)}
@@ -292,18 +291,6 @@ const ManageUser = () => {
           onChange={(e) => setAvt(e.target.value)}
         />
       </DialogContent>
-      <SelectOutlined variant="outlined" style={{ width: "100%" }}>
-          <InputLabel>Status</InputLabel>
-          <Select
-            label="Status"
-            name="status"
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-          >
-              <MenuItem value={0}>Unactive</MenuItem>
-              <MenuItem value={1}>Active</MenuItem>
-          </Select>
-        </SelectOutlined>
 
       <DialogActions>
         <Button onClick={handleOnCloseConfirmationDialog}>Cancel</Button>

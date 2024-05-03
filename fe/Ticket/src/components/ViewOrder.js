@@ -43,6 +43,7 @@ export default function ViewOrder() {
     try{
       console.log(sessionStorage.getItem("jwt"));
       await cancelTicket(id, sessionStorage.getItem("jwt"));
+      fetchData();
     } catch (error) {
       console.error("Error fetching ticket!!", error)
     }
@@ -78,9 +79,10 @@ export default function ViewOrder() {
               <StyledTable aria-label="User table">
                 <StyledTableHead>
                   <TableRow>
-                    <StyledTableCell align="center">Ngày chiếu</StyledTableCell>
-                    <StyledTableCell align="center">movies</StyledTableCell>
-                    <StyledTableCell align="center">status</StyledTableCell>
+                    <StyledTableCell align="center">Suất chiếu</StyledTableCell>
+                    <StyledTableCell align="center">Movies</StyledTableCell>
+                    <StyledTableCell align="center">Tổng tiền</StyledTableCell>
+                    <StyledTableCell align="center">Status</StyledTableCell>
                     <StyledTableCell align="center">Action</StyledTableCell>
                   </TableRow>
                 </StyledTableHead>
@@ -88,17 +90,26 @@ export default function ViewOrder() {
                     {ticket.slice((page - 1) * 5, page*5).map((a)=>(
                       <TableRow >
                       <StyledTableCell align="center">
-                         {a.screeningDate}
+                         {a.screeningTime}
                       </StyledTableCell>
                       <StyledTableCell align="center" onClick={() => {setOpenDialog(true);setSelectedOrder({...a})}}>
                       <Button>{a.movieName}</Button>
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        <div className='badge badge-outline-success'>{a.status}</div>
+                      ${a.totalPrice}
                       </StyledTableCell>
                       <StyledTableCell align="center">
+                        <div className={a.status === "PAID" ? 'badge badge-outline-success' : (a.status === "UNPAID" ? 'badge badge-outline-primary' : 'badge badge-outline-danger')}>{a.status}</div>
+                      </StyledTableCell>
+                      {a.status === "UNPAID" ? ( 
+                        <StyledTableCell align="center">
                         <Button onClick={() => handleCancelTicket(a.id)}>Cancel</Button>
                       </StyledTableCell>
+                      ) : (
+                        <StyledTableCell align="center">
+                        <Button onClick={() => handleCancelTicket(a.id)} disabled>Cancel</Button>
+                      </StyledTableCell>
+                      )}
                     </TableRow>
                     ))}
                 </TableBody>
@@ -143,12 +154,21 @@ export default function ViewOrder() {
                   </Row>
                   <Row>
                       <Col lg={4}>
-                        Ghế: 
+                        Khách hàng: 
                       </Col>
                       <Col lg={8}>
                       <strong>
-                      {selectedOrder.seatNumbers}
+                            {selectedOrder.userName}
                           </strong>
+                      </Col>
+                  </Row>
+                  <Row>
+                      <Col lg={4}>
+                        Ghế: 
+                      </Col>
+                      <Col lg={8}>
+                      {[...Array(selectedOrder.seatNumbers.length - 1).keys()].map((index) => (<strong>{selectedOrder.seatNumbers[index]}, </strong>))}
+                      <strong>{selectedOrder.seatNumbers[selectedOrder.seatNumbers.length - 1]}</strong>
                       </Col>
                   </Row>
                   <Row>
@@ -157,7 +177,7 @@ export default function ViewOrder() {
                       </Col>
                       <Col lg={8}>
                       <strong>
-                      {selectedOrder.totalSeatsPrice}
+                      ${selectedOrder.totalSeatsPrice}
                           </strong>
                       </Col>
                   </Row>
@@ -167,7 +187,7 @@ export default function ViewOrder() {
                       </Col>
                       <Col lg={8}>
                       <strong>
-                    {selectedOrder.totalComboPrice}
+                    ${selectedOrder.totalComboPrice}
                           </strong>
                       </Col>
                   </Row>

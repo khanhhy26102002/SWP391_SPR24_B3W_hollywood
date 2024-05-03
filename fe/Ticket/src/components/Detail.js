@@ -100,7 +100,7 @@ const Moviedetail = () => {
                       <Col lg={2}
                         className="buy-ticket"
                         onClick={() =>
-                          navigate(`/buyticket`, { state: movie.name })
+                          navigate(`/buyticket`, { state: movie.id })
                         }
                       >
                         <span>Booking</span>

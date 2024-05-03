@@ -11,7 +11,7 @@ import { fetchComboData } from "../api/comboApi";
 import { Pagination } from "@mui/material";
 import { createBooking } from "../api/ticketApi";
 import { DialogTitle, DialogContent, DialogActions, Button, styled, Dialog } from "@mui/material";
-import { fetchPaymentData } from "../api/paymentApi";
+import { fetchMovieData } from "../api/movieApi";
 
 const BuyTicket = () => {
   const [selectedScreen, setSelectedScreen] = useState("");
@@ -25,6 +25,9 @@ const BuyTicket = () => {
   const [allScreen, setAllScreen] = useState([{}]);
   const [seats, setSeats] = useState([{}]);
   const [combos, setCombos] = useState([{}]);
+  const [seatPrice, setSeatPrice] = useState([{}]);
+  const [comboPrices, setComboPrices] = useState([{}]);
+  const [movieName, setMovieName] = useState("");
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
@@ -38,16 +41,18 @@ const BuyTicket = () => {
 
   useEffect(() => {
     fetchData();
-  }, [selectedScreen, selectedDate, selectedSeats]);
+  }, [selectedScreen, selectedDate, selectedSeats,comboQuantity]);
 
   const fetchData = async () => {
     try {
-      const response = await getAllScreen();
-      setAllScreen([...response.data]);
-      const res = await getSeat();
-      setSeats([...res.data]);
-      const resp = await fetchComboData();
-      setCombos([...resp.data]);
+      const listScreeningMovie = await getAllScreen();
+      setAllScreen([...listScreeningMovie.data]);
+      const listSeat = await getSeat();
+      setSeats([...listSeat.data]);
+      const listMovie = await fetchMovieData();
+      setMovieName([...listMovie.data.filter((film) => film.id === location.state)[0].name]);
+      const listCombo = await fetchComboData(sessionStorage.getItem("jwt"));
+      setCombos([...listCombo.data]);
     } catch (error) {
       console.error("Error fetching posts:", error);
     }
@@ -60,7 +65,6 @@ const BuyTicket = () => {
   }, []);
 
   const handleSeatClick = (seat) => {
-    console.log(room);
     if (selectedSeats.includes(seat)) {
       setSelectedSeats(
         selectedSeats.filter((seatSelected) => seatSelected !== seat)
@@ -81,10 +85,22 @@ const BuyTicket = () => {
       allScreen.filter(
         (screen) =>
           screen.date === selectedDate &&
-          screen.movieName === movie &&
-          screen.start_time.slice(11,screen.start_time.length) === e.target.value
-      )[0].roomNumber
+          screen.movieId === movie &&
+          screen.startTime.slice(11,screen.startTime.length) === e.target.value
+      )[0].roomId
     );
+    setSeatPrice([...allScreen.filter(
+      (screen) =>
+        screen.date === selectedDate &&
+        screen.movieId === movie &&
+        screen.startTime.slice(11,screen.startTime.length) === e.target.value
+    )[0].seatPrices]);
+    setComboPrices([...allScreen.filter(
+      (screen) =>
+        screen.date === selectedDate &&
+        screen.movieId === movie &&
+        screen.startTime.slice(11,screen.startTime.length) === e.target.value
+    )[0].comboPrices]);
     if (sessionStorage.getItem("jwt") !== null) {
       setStep("choose-seats");
     } else {
@@ -104,7 +120,6 @@ const BuyTicket = () => {
         );
         setOpenDialog(true);
         setIsLoading(false);
-       
         navigate("/payment", {state: response.data.ticketId})
       } catch (error) {
         console.error("Error fetching posts:", error);
@@ -140,7 +155,7 @@ const BuyTicket = () => {
                       <Row>Ngày chiếu:</Row>
                       <Row>
                         {allScreen
-                          .filter((screen) => screen.movieName === movie)
+                          .filter((screen) => screen.movieId === movie)
                           .map((screen) => (
                             <Col
                               lg={2}
@@ -179,16 +194,16 @@ const BuyTicket = () => {
                                 .filter(
                                   (screen) =>
                                     screen.date === selectedDate &&
-                                    screen.movieName === movie
+                                    screen.movieId === movie
                                 )
                                 .map((screen) => (
-                                  <option value={screen.start_time.slice(
+                                  <option value={screen.startTime.slice(
                                       11,
-                                      screen.start_time.length
+                                      screen.startTime.length
                                     )}>
-                                    {screen.start_time.slice(
+                                    {screen.startTime.slice(
                                       11,
-                                      screen.start_time.length
+                                      screen.startTime.length
                                     )}
                                   </option>
                                 ))}
@@ -206,7 +221,7 @@ const BuyTicket = () => {
                       class="row ticket_field"
                       style={{ justifyContent: "center" }}
                     >
-                      <div class="seat-selection">
+                      <div class="seat-selection" style={{width: "100%"}}>
                         <div class="legend">
                           <div>
                             <span class="unavailable"></span>
@@ -227,10 +242,10 @@ const BuyTicket = () => {
                             <div class="seats seats-map">
                               <div class="row-wrapper">
                               <ul class="seat-row">
-                              {seats.filter((seat) => seat.room.roomNumber === room && seat.seatRow === "A").map((seat) => (
+                              {seats.filter((seat) => seat.room.id === room && seat.seatRow === "A").map((seat) => (
                                 
                                 <li
-                                      className={`${selectedSeats.includes(seat.seatNumber) ? "selected" : ""} ${seat.seatType === "VIP" ? "vip":""} ${seat.status === "AVAILABLE" ? "available" : "unavailable"} `}
+                                      className={`${selectedSeats.includes(seat.seatNumber) ? "selected" : ""} ${seat.seatType.id === 2 ? "vip":""} ${seat.status === "AVAILABLE" ? "available" : "unavailable"} `}
                                       onClick={() =>
                                         handleSeatClick(seat.seatNumber)
                                       }
@@ -241,9 +256,9 @@ const BuyTicket = () => {
                               ))}
                               </ul>
                               <ul class="seat-row">
-                              {seats.filter((seat) => seat.room.roomNumber === room && seat.seatRow === "B").map((seat) => (
+                              {seats.filter((seat) => seat.room.id === room && seat.seatRow === "B").map((seat) => (
                                 <li
-                                      className={`${selectedSeats.includes(seat.seatNumber) ? "selected" : ""} ${seat.seatType === "VIP" ? "vip":""} ${seat.status === "AVAILABLE" ? "available" : "unavailable"} `}
+                                      className={`${selectedSeats.includes(seat.seatNumber) ? "selected" : ""} ${seat.seatType.id === 2 ? "vip":""} ${seat.status === "AVAILABLE" ? "available" : "unavailable"} `}
                                       onClick={() =>
                                         handleSeatClick(seat.seatNumber)
                                       }
@@ -254,10 +269,10 @@ const BuyTicket = () => {
                               ))}
                               </ul>
                               <ul class="seat-row">
-                              {seats.filter((seat) => seat.room.roomNumber === room && seat.seatRow === "C").map((seat) => (
+                              {seats.filter((seat) => seat.room.id === room && seat.seatRow === "C").map((seat) => (
                                 
                                 <li
-                                      className={`${selectedSeats.includes(seat.seatNumber) ? "selected" : ""} ${seat.seatType === "VIP" ? "vip":""} ${seat.status === "AVAILABLE" ? "available" : "unavailable"} `}
+                                      className={`${selectedSeats.includes(seat.seatNumber) ? "selected" : ""} ${seat.seatType.id === 2 ? "vip":""} ${seat.status === "AVAILABLE" ? "available" : "unavailable"} `}
                                       onClick={() =>
                                         handleSeatClick(seat.seatNumber)
                                       }
@@ -268,10 +283,10 @@ const BuyTicket = () => {
                               ))}
                               </ul>
                               <ul class="seat-row">
-                              {seats.filter((seat) => seat.room.roomNumber === room && seat.seatRow === "D").map((seat) => (
+                              {seats.filter((seat) => seat.room.id === room && seat.seatRow === "D").map((seat) => (
                                 
                                 <li
-                                      className={`${selectedSeats.includes(seat.seatNumber) ? "selected" : ""} ${seat.seatType === "VIP" ? "vip":""} ${seat.status === "AVAILABLE" ? "available" : "unavailable"} `}
+                                      className={`${selectedSeats.includes(seat.seatNumber) ? "selected" : ""} ${seat.seatType.id === 2 ? "vip":""} ${seat.status === "AVAILABLE" ? "available" : "unavailable"} `}
                                       onClick={() =>
                                         handleSeatClick(seat.seatNumber)
                                       }
@@ -282,10 +297,10 @@ const BuyTicket = () => {
                               ))}
                               </ul>
                               <ul class="seat-row">
-                              {seats.filter((seat) => seat.room.roomNumber === room && seat.seatRow === "E").map((seat) => (
+                              {seats.filter((seat) => seat.room.id === room && seat.seatRow === "E").map((seat) => (
                                 
                                 <li
-                                      className={`${selectedSeats.includes(seat.seatNumber) ? "selected" : ""} ${seat.seatType === "VIP" ? "vip":""} ${seat.status === "AVAILABLE" ? "available" : "unavailable"} `}
+                                      className={`${selectedSeats.includes(seat.seatNumber) ? "selected" : ""} ${seat.seatType.id === 2 ? "vip":""} ${seat.status === "AVAILABLE" ? "available" : "unavailable"} `}
                                       onClick={() =>
                                         handleSeatClick(seat.seatNumber)
                                       }
@@ -296,10 +311,10 @@ const BuyTicket = () => {
                               ))}
                               </ul>
                               <ul class="seat-row">
-                              {seats.filter((seat) => seat.room.roomNumber === room && seat.seatRow === "F").map((seat) => (
+                              {seats.filter((seat) => seat.room.id === room && seat.seatRow === "F").map((seat) => (
                                 
                                 <li
-                                      className={`${selectedSeats.includes(seat.seatNumber) ? "selected" : ""} ${seat.seatType === "VIP" ? "vip":""} ${seat.status === "AVAILABLE" ? "available" : "unavailable"} `}
+                                      className={`${selectedSeats.includes(seat.seatNumber) ? "selected" : ""} ${seat.seatType.id === 2 ? "vip":""} ${seat.status === "AVAILABLE" ? "available" : "unavailable"} `}
                                       onClick={() =>
                                         handleSeatClick(seat.seatNumber)
                                       }
@@ -310,10 +325,10 @@ const BuyTicket = () => {
                               ))}
                               </ul>
                               <ul class="seat-row">
-                              {seats.filter((seat) => seat.room.roomNumber === room && seat.seatRow === "G").map((seat) => (
+                              {seats.filter((seat) => seat.room.id === room && seat.seatRow === "G").map((seat) => (
                                 
                                 <li
-                                      className={`${selectedSeats.includes(seat.seatNumber) ? "selected" : ""} ${seat.seatType === "VIP" ? "vip":""} ${seat.status === "AVAILABLE" ? "available" : "unavailable"} `}
+                                      className={`${selectedSeats.includes(seat.seatNumber) ? "selected" : ""} ${seat.seatType.id === 2 ? "vip":""} ${seat.status === "AVAILABLE" ? "available" : "unavailable"} `}
                                       onClick={() =>
                                         handleSeatClick(seat.seatNumber)
                                       }
@@ -324,10 +339,10 @@ const BuyTicket = () => {
                               ))}
                               </ul>
                               <ul class="seat-row">
-                              {seats.filter((seat) => seat.room.roomNumber === room && seat.seatRow === "H").map((seat) => (
+                              {seats.filter((seat) => seat.room.id === room && seat.seatRow === "H").map((seat) => (
                                 
                                 <li
-                                      className={`${selectedSeats.includes(seat.seatNumber) ? "selected" : ""} ${seat.seatType === "VIP" ? "vip":""} ${seat.status === "AVAILABLE" ? "available" : "unavailable"} `}
+                                      className={`${selectedSeats.includes(seat.seatNumber) ? "selected" : ""} ${seat.seatType.id === 2 ? "vip":""} ${seat.status === "AVAILABLE" ? "available" : "unavailable"} `}
                                       onClick={() =>
                                         handleSeatClick(seat.seatNumber)
                                       }
@@ -338,10 +353,10 @@ const BuyTicket = () => {
                               ))}
                               </ul>
                               <ul class="seat-row">
-                              {seats.filter((seat) => seat.room.roomNumber === room && seat.seatRow === "I").map((seat) => (
+                              {seats.filter((seat) => seat.room.id === room && seat.seatRow === "I").map((seat) => (
                                 
                                 <li
-                                      className={`${selectedSeats.includes(seat.seatNumber) ? "selected" : ""} ${seat.seatType === "VIP" ? "vip":""} ${seat.status === "AVAILABLE" ? "available" : "unavailable"} `}
+                                      className={`${selectedSeats.includes(seat.seatNumber) ? "selected" : ""} ${seat.seatType.id === 2 ? "vip":""} ${seat.status === "AVAILABLE" ? "available" : "unavailable"} `}
                                       onClick={() =>
                                         handleSeatClick(seat.seatNumber)
                                       }
@@ -425,16 +440,16 @@ const BuyTicket = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {combos.slice((page - 1) * 5, page * 5).map((combo) => (
+                          {combos.filter((combo) => comboPrices.filter((comboPrice) => comboPrice.comboId === combo.id).length > 0).slice((page - 1) * 5, page * 5).map((combo) => (
                             <tr class="ticketing-concession-type">
                             <td class="concession-name">
-                              {combo.comboName}
+                              <h5 ><strong>{combo.name}</strong></h5>
                               <span class="d-none d-md-block text-muted">
                                 {combo.description}
                               </span>
                             </td>
                             <td class="concession-price text-right">
-                              ${combo.comboPrice}
+                            ${comboPrices.filter((comboTypePrice) => comboTypePrice.comboId === combo.id)[0].price}
                             </td>
                             <td class="ticketing-select text-right">
                               <div class="quantity-toggle">
@@ -444,15 +459,15 @@ const BuyTicket = () => {
                                   max="10"
                                   step="1"
                                   value={
-                                    comboQuantity[`${combo.comboId}`] > 10
+                                    comboQuantity[`${combo.id}`] > 10
                                       ? 10
-                                      : comboQuantity[`${combo.comboId}`]
+                                      : (parseInt(comboQuantity[`${combo.id}`]) < 0 ? 0 : comboQuantity[`${combo.id}`])
                                   }
                                   defaultValue={0}
                                   onChange={(e) =>
                                     setComboQuantity((prevQuantity) => {
                                         const updatedObject = { ...prevQuantity };
-                                        updatedObject[`${combo.comboId}`] = e.target.value > 10 ? 10 : e.target.value;  
+                                        updatedObject[`${combo.id}`] = e.target.value > 10 ? 10 : (parseInt(e.target.value) < 0 ? 0 : e.target.value);  
                                         return updatedObject;
                                     })
                                   }
@@ -495,7 +510,7 @@ const BuyTicket = () => {
                     <div class="row">
                       <div class="col">
                         <p class="text-truncate mb-0">
-                          <strong>{movie}</strong>
+                          <strong>{movieName}</strong>
                         </p>
                         <p class="text-truncate mb-0">
                           Suất
@@ -507,7 +522,7 @@ const BuyTicket = () => {
                         <table class="table table-nowrap card-table">
                           <thead>
                             <tr>
-                              <th>Ghế</th>
+                              <th>Ghế bạn chọn</th>
                               <th class="text-right"></th>
                             </tr>
                           </thead>
@@ -519,7 +534,9 @@ const BuyTicket = () => {
                                     {selectedSeats[index + 1]}
                                   </td>
                                   <td class="ticketing-select text-right">
-                                    ${seats.filter((seat) => seat.room.roomNumber === room && seat.seatNumber === selectedSeats[index + 1])[0].seatPrice}
+                                    {/*${seats.filter((seat) => seat.room.id === room && seat.seatNumber === selectedSeats[index + 1])[0].seatType.id}*/}
+                                    ${seatPrice.filter((seatTypePrice) => seatTypePrice.seatTypeId === 
+                                    (seats.filter((seat) => seat.room.id === room && seat.seatNumber === selectedSeats[index + 1])[0].seatType.id))[0].price}
                                   </td>
                                 </tr>
                               )
@@ -544,14 +561,14 @@ const BuyTicket = () => {
                           <tbody>
                             {combos.map((combo) => (
                                 <>
-                                {comboQuantity[combo.comboId] > 0 && (
+                                {comboQuantity[combo.id] > 0 && (
                               <tr class="ticketing-concession-type">
                                 <td class="concession-name">
                                   {" "}
-                                  {combo.description} x<strong> {comboQuantity[combo.comboId]} </strong>
+                                  {combo.name} x<strong> {comboQuantity[combo.id]} </strong>
                                 </td>
                                 <td class="ticketing-select text-right">
-                                  ${combo.comboPrice * comboQuantity[combo.comboId]}
+                                ${comboPrices.filter((comboTypePrice) => comboTypePrice.comboId === combo.id)[0].price * comboQuantity[combo.id]}
                                 </td>
                               </tr>
                             )}

@@ -37,3 +37,32 @@ export const fetchReport = async (token) => {
       throw CustomError(error.response.status, error.response.data.errors);
     }
   }
+
+  export const fetchWeekly = async (token) => {
+    try {
+      const response = await axios.get(`${baseUrl}/api/dashboard/getWeeklyMovieStats`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (response.status === 200) {
+        return response.data;
+      }
+    } catch (error) {
+      throw new CustomError(error.response.status, error.response.data.errors);
+    }
+  }
+  export const fetchDay = async (token) => {
+    try {
+      const response = await axios.get(`${baseUrl}/api/dashboard/getMonthlyRevenue`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (response.status === 200) {
+        return response.data;
+      }
+    } catch (error) {
+      throw new CustomError(error.response.status, error.response.data.errors);
+    }
+  }

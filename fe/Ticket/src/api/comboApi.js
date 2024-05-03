@@ -9,10 +9,14 @@ class CustomError extends Error {
     }
   }
 
-  export const fetchComboData = async () => {
+  export const fetchComboData = async (token) => {
     try {
       const response = await axios.get(
-        `${baseUrl}/api/combo/listCombo`
+        `${baseUrl}/api/combo/getComboList`, {
+          headers: {
+              Authorization: `Bearer ${token}`,
+            },
+      }
       );
       if (response.status === 200) return response.data;
     } catch (error) {
@@ -20,13 +24,12 @@ class CustomError extends Error {
     }
   };
 
-  export const createCombo = async (comboName,description, comboPrice, token) => {
+  export const createCombo = async (comboName, description, token) => {
     try {
       const response = await axios.post(
         `${baseUrl}/api/combo/createCombo`,{
-            comboName:comboName,
-            description: description,
-            comboPrice: comboPrice
+            name:comboName,
+            description: description
         },{
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -41,8 +44,8 @@ class CustomError extends Error {
 
   export const deleteCombo = async (id, token) => {
     try {
-      const response = await axios.delete(
-        `${baseUrl}/api/combo/delete/${id}`,{
+      const response = await axios.post(
+        `${baseUrl}/api/combo/delete/${id}`,{}, {
           headers: {
             Authorization: `Bearer ${token}`,
           }
@@ -53,14 +56,12 @@ class CustomError extends Error {
     }
   };
 
-export const updateCombo = async (id, comboName,description, comboPrice, token) => {
+export const updateCombo = async (id, comboName,description, token) => {
     try {
-      const response = await axios.put(
+      const response = await axios.post(
         `${baseUrl}/api/combo/updateCombo/${id}`,{
-            comboId:id,
-            comboName:comboName,
-            description: description,
-            comboPrice: comboPrice
+            name:comboName,
+            description: description
         },{
             headers: {
                 Authorization: `Bearer ${token}`,

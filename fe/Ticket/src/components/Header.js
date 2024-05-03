@@ -56,8 +56,8 @@ export const Header = () => {
   };
 
   return (
-    <header className="header">
-      <div className="container">
+    <header className="header" style={{display: "flex", justifyContent: "center"}}>
+      <div className="container" style={{marginRight: "50px", marginLeft: "50px", height: "165px", width:"100%", maxWidth:"1500px"}}>
         <div className="row">
           <div className="col-lg-2">
             <div className="header__logo">

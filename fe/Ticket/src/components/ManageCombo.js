@@ -34,7 +34,6 @@ const ManageCombo = () => {
   const [selectedCombo, setSelectedCombo] = useState();
   const [name, setName] = useState("");
   const [description, setDesciption]= useState("");
-  const [price, setPrice] = useState(0);
   const [mess, setMess] = useState("");
   const [isEdit, setIsEdit] = useState(false);
 
@@ -44,7 +43,7 @@ const ManageCombo = () => {
 
   const fetchData = async () =>{
     try{
-      const response = await fetchComboData()
+      const response = await fetchComboData(sessionStorage.getItem("jwt"));
       setCombos([...response.data.reverse()]);
     }catch (error) {
       console.error("Error fetching posts:", error);
@@ -61,17 +60,15 @@ const ManageCombo = () => {
     setOpenDialog(false);
     setName("");
     setDesciption("");
-    setPrice(0);
     setIsEdit(false);
     setMess("");
   };
 
   const handleOpenDialog = (combo) => {
     setOpenDialog(true);
-    setSelectedCombo(combo.comboId);
-    setName(combo.comboName);
+    setSelectedCombo(combo.id);
+    setName(combo.name);
     setDesciption(combo.description);
-    setPrice(combo.comboPrice);
     setIsEdit(true);
   };
 
@@ -88,10 +85,11 @@ const ManageCombo = () => {
 
   const handleAddCombo = async () =>{
     try {
+      console.log(
+        sessionStorage.getItem("jwt"));
       await createCombo(
         name,
         description,
-        price,
         sessionStorage.getItem("jwt")
       );
       setMess("Add combo successfully !!!");
@@ -105,11 +103,14 @@ const ManageCombo = () => {
 
   const handleEditCombo = async() => {
     try {
+      console.log(selectedCombo,
+        name,
+        description,
+        sessionStorage.getItem("jwt"));
       await updateCombo(
         selectedCombo,
         name,
         description,
-        price,
         sessionStorage.getItem("jwt")
       );
       setMess("Update combo successfully !!!");
@@ -155,7 +156,6 @@ const ManageCombo = () => {
                   <TableRow>
                     <StyledTableCell align="center">Name</StyledTableCell>
                     <StyledTableCell align="center">Description</StyledTableCell>
-                    <StyledTableCell align="center">Price</StyledTableCell>
                     <StyledTableCell align="center">Status</StyledTableCell>
                     <StyledTableCell align="center">Action</StyledTableCell>
                   </TableRow>
@@ -164,16 +164,13 @@ const ManageCombo = () => {
                 {combos.slice((page - 1) * 5, page * 5).map((combo) => (
                   <TableRow>
                       <StyledTableCell align="center">
-                      {combo.comboName}
+                      {combo.name}
                       </StyledTableCell>
                       <StyledTableCell align="center">
                       {combo.description}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                      ${combo.comboPrice}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                      {combo.status === 1 ? (<div className='badge badge-outline-success'>On Selling</div>): <div className='badge badge-outline-danger'>Removed</div>}
+                      {combo.status === "AVAILABLE" ? (<div className='badge badge-outline-success'>AVAILABLE</div>): <div className='badge badge-outline-danger'>UNAVAILABE</div>}
 
                       </StyledTableCell>
                       <StyledTableCell align="center">
@@ -182,7 +179,7 @@ const ManageCombo = () => {
                         </IconButton>
                         <IconButton
                           aria-label="delete"
-                          onClick={() => handleOpenConfirmationDialog(combo.comboId)}
+                          onClick={() => handleOpenConfirmationDialog(combo.id)}
                         >
                           <DeleteIcon color="error" />
                         </IconButton>
@@ -214,14 +211,6 @@ const ManageCombo = () => {
           name="description"
           value={description}
           onChange={(e) => setDesciption(e.target.value)}
-        />
-        <DialogTextField
-          label="Price"
-          name="price"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-          defaultValue={0}
-          type="number"
         />
       </DialogContent>
 

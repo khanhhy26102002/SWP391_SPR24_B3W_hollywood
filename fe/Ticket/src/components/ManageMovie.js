@@ -229,7 +229,7 @@ const ManageMovie = () => {
                           {film.premiere}
                         </StyledTableCell>
                         <StyledTableCell align="center">
-                        {film.status === 1 ? (<div className='badge badge-outline-success'>On Screening</div>): <div className='badge badge-outline-danger'>Removed</div>}
+                        {film.status === "AVAILABLE" ? (<div className='badge badge-outline-success'>AVAILABLE</div>): <div className='badge badge-outline-danger'>UNAVAILABE</div>}
                         </StyledTableCell>
                         <StyledTableCell align="center">
                           <IconButton

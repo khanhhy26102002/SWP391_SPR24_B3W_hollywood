@@ -25,11 +25,11 @@ class CustomError extends Error {
 
   export const deleteUser = async (id, token) => {
     try {
-      const response = await axios.delete(
-        `${baseUrl}/api/user/delete/${id}`,{
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
+      const response = await axios.post(
+        `${baseUrl}/api/user/delete/${id}`, {},{
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         });
       if (response.status === 200) return response.data;
     } catch (error) {

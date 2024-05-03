@@ -27,7 +27,7 @@ const Category = () => {
       setMovie([...response.data]);
       
       const res = await getAllScreen ();
-      setMovieFilter([...response.data.filter((film) => res.data.filter((screen) => screen.movieName === film.name).length > 0)]);
+      setMovieFilter([...response.data.filter((film) => res.data.filter((screen) => screen.movieId === film.id).length > 0)]);
       setScreens([...res.data]);
     } catch (error) {
       console.error("Error fetching movies:", error);
@@ -37,9 +37,8 @@ const Category = () => {
   const navigate = useNavigate();
   const [type, setType] = useState(1);
   useEffect(() => {
-    type === 1 ? setMovieFilter([...movie.filter((film) => screens.filter((screen) => screen.movieName === film.name).length > 0)]) :
-    setMovieFilter([...movie.filter((film) => screens.filter((screen) => screen.movieName === film.name).length === 0)]);
-    console.log(movieFilter);
+    type === 1 ? setMovieFilter([...movie.filter((film) => screens.filter((screen) => screen.movieId === film.id).length > 0)]) :
+    setMovieFilter([...movie.filter((film) => screens.filter((screen) => screen.movieId === film.id).length === 0)]);
   },[type]);
   return (
     <>
@@ -99,7 +98,8 @@ const Category = () => {
                     </div>
                   </div>
                 </div>
-                <div className="row">
+                {movieFilter.length > 0 ? (
+                  <div className="row">
                   {movieFilter.map((film) => (
                     <div
                       className="col-lg-3 movie"
@@ -152,7 +152,7 @@ const Category = () => {
                         <div
                           className="buy-ticket"
                           onClick={() =>
-                            navigate(`/buyticket`, { state: film.name })
+                            navigate(`/buyticket`, { state: film.id })
                           }
                         >
                           <span>Booking</span>
@@ -161,6 +161,9 @@ const Category = () => {
                     </div>
                   ))}
                 </div>
+                ) : (
+                  <h1>Chưa có loại phim này</h1>
+                )}
               </div>
             </div>
           </div>

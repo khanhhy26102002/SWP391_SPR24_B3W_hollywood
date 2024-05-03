@@ -22,8 +22,8 @@ class CustomError extends Error {
 
   export const deleteScreen = async (id, token) => {
     try {
-      const response = await axios.delete(
-        `${baseUrl}/api/screening/delete/${id}`,{
+      const response = await axios.post(
+        `${baseUrl}/api/screening/delete/${id}`,{},{
           headers: {
             Authorization: `Bearer ${token}`,
           }
@@ -35,16 +35,17 @@ class CustomError extends Error {
     }
   }
 
-  export const createScreen = async (movieName,roomNumber,createdBy,start_time,end_time,date, token) => {
+  export const createScreen = async (movieId,roomId,startTime,endTime,date, seatPrices, comboPrices, token) => {
     try {
       const response = await axios.post(
         `${baseUrl}/api/screening/createScreening`,{
-          movieName:movieName,
-          roomNumber:roomNumber,
-          createdBy:createdBy,
-          start_time:start_time,
-          end_time:end_time,
+          movieId:movieId,
+          roomId:roomId,
+          startTime:startTime,
+          endTime:endTime,
           date:date,
+          seatPrices:seatPrices,
+          comboPrices:comboPrices
         },{
           headers: {
             Authorization: `Bearer ${token}`,
@@ -57,17 +58,18 @@ class CustomError extends Error {
     }
   }
 
-  export const updateScreen = async (screeningId,movieName,roomNumber,createdBy,start_time,end_time,date, token) => {
+  export const updateScreen = async (screeningId,movieId,roomId,startTime,endTime,date, seatPrices, comboPrices, token) => {
     try {
       const response = await axios.put(
         `${baseUrl}/api/screening/updateScreening/${screeningId}`,{
           screeningId:screeningId,
-          movieName:movieName,
-          roomNumber:roomNumber,
-          createdBy:createdBy,
-          start_time:start_time,
-          end_time:end_time,
-          date:date
+          movieId:movieId,
+          roomId:roomId,
+          startTime:startTime,
+          endTime:endTime,
+          date:date,
+          seatPrices:seatPrices,
+          comboPrices:comboPrices
         },{
           headers: {
             Authorization: `Bearer ${token}`,

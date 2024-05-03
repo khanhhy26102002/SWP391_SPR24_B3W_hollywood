@@ -11,8 +11,6 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Header } from "./Header";
-import { Footer } from "./Footer";
-import { getUserProfile } from "../api/manageUserApi";
 import { resetPassword } from "../api/authApi";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -24,7 +22,6 @@ const ResetPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [openConfirmationDialog, setOpenConfirmationDialog] = useState(false);
   const navigate = useNavigate();
-  const params = useParams();
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);

@@ -20,6 +20,7 @@ import ViewOrder from "./components/ViewOrder";
 import TestImage from "./components/Image";
 import Payment from "./components/Payment";
 import ManageRoom from "./components/ManageRoom";
+import ManageImage from "./components/ManageImage";
 
 function App() {
 
@@ -47,6 +48,7 @@ function App() {
               <Route path="/vieworder" element={<ViewOrder/>}/>
               <Route path="/test" element={<TestImage/>}/>
               <Route path="/payment" element={<Payment/>}/>
+              <Route path="/manageimage" element={<ManageImage/>}/>
             </Routes>
       </Router>
     </div>

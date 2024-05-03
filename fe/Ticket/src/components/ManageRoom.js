@@ -36,7 +36,6 @@ const ManageRoom = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [roomNumber,setRoomNumber] = useState("");
   const [numberOfSeat,setNumberOfSeat] = useState(0);
-  const [status,setStatus] = useState("INACTIVE");
   useEffect(() => {
     fetchData();
   },[])
@@ -45,6 +44,7 @@ const ManageRoom = () => {
     try{
       const response = await fetchRoom();
       setRooms([...response.data]);
+      console.log(response.data);
     }catch (error) {
       console.error("Error fetching posts:", error);
     }
@@ -61,7 +61,6 @@ const ManageRoom = () => {
     setSelectedRoom("");
     setRoomNumber("");
     setNumberOfSeat("");
-    setStatus("");
     setIsEdit(false);
     setMess("");
   };
@@ -71,7 +70,6 @@ const ManageRoom = () => {
     setSelectedRoom(room.roomId);
     setRoomNumber(room.roomNumber);
     setNumberOfSeat(room.numberOfSeat);
-    setStatus(room.status);
     setIsEdit(true);
   };
 
@@ -96,7 +94,7 @@ const ManageRoom = () => {
       numberOfSeat,
         sessionStorage.getItem("jwt")
       );
-      setMess("Add combo successfully !!!");
+      setMess("Add room successfully !!!");
       fetchData();
       setOpenConfirmationDialog(true);
       fetchData();
@@ -157,6 +155,7 @@ setMess("Update room successfully !!!");
                     <StyledTableCell align="center">Room Number</StyledTableCell>
                     <StyledTableCell align="center">Number Of Seat</StyledTableCell>
                     <StyledTableCell align="center">Status</StyledTableCell>
+                    <StyledTableCell align="center">Action</StyledTableCell>
                   </TableRow>
                 </StyledTableHead>
                 <TableBody>
@@ -169,7 +168,7 @@ setMess("Update room successfully !!!");
                       {room.numberOfSeat}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                      {room.status}
+                      {room.status === "ACTIVE" ? (<div className='badge badge-outline-success'>{room.status}</div>) : (<div className='badge badge-outline-danger'>{room.status}</div>)}
                       </StyledTableCell>
                       <StyledTableCell align="center">
                       <IconButton aria-label="edit" onClick={() => handleOpenDialog(room)}>

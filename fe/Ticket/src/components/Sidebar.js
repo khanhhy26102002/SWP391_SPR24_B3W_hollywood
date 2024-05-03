@@ -9,6 +9,8 @@ import PeopleIcon from '@mui/icons-material/People';
 import PieChartIcon from '@mui/icons-material/PieChart';
 import TvIcon from '@mui/icons-material/Tv';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
+import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import pic from "../img/logo-removebg-preview.png";
 
 const Sidebar = () => {
@@ -63,7 +65,7 @@ const Sidebar = () => {
               </span>
               <span class="menu-title">Manage Combo</span>
             </div>
-          </li>
+          </li> 
           <li class={`nav-item menu-items ${page === "managemovie" ? "active1" : ""}`} style={{cursor: "pointer"}}onClick={() => navigate("/managemovie", {state: "managemovie"})}>
             <div class="nav-link">
               <span class="menu-icon">
@@ -83,9 +85,17 @@ const Sidebar = () => {
           <li class={`nav-item menu-items ${page === "manageroom" ? "active1" : ""}`} style={{cursor: "pointer"}} onClick={() => navigate("/manageroom", {state: "manageroom"})}>
             <div class="nav-link">
               <span class="menu-icon">
-                <TvIcon/>
+                <MeetingRoomIcon/>
               </span>
               <span class="menu-title">Manage Room</span>
+            </div>
+          </li>
+          <li class={`nav-item menu-items ${page === "manageimage" ? "active1" : ""}`} style={{cursor: "pointer"}} onClick={() => navigate("/manageimage", {state: "manageimage"})}>
+            <div class="nav-link">
+              <span class="menu-icon">
+                <InsertPhotoIcon/>
+              </span>
+              <span class="menu-title">Manage Image</span>
             </div>
           </li>
         </ul>

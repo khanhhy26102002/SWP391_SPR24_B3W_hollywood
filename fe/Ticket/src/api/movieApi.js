@@ -33,7 +33,7 @@ export const fetchMovieData = async () => {
 
   export const deleteMovie = async (id, token) => {
     try {
-      const response = await axios.delete(
+      const response = await axios.post(
         `${baseUrl}/api/movie/delete/${id}`,{
           headers: {
             Authorization: `Bearer ${token}`,
