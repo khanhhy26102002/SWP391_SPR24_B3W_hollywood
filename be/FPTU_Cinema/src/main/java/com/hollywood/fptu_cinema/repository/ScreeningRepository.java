@@ -18,7 +18,7 @@ public interface ScreeningRepository extends JpaRepository<Screening, Integer> {
     //Tim cai screening voi status
     List<Screening> findByStatusNot(ScreeningStatus status);
 
-    Optional<Screening> findByDateAndStartTime(LocalDate date, Instant startTime);
+    List<Screening> findAllByDateAndStartTime(LocalDate date, Instant startTime);
 
     @Query(value = "SELECT s.movie_id, COUNT(*) as screeningCount, SUM(t.total_price) as totalRevenue " +
             "FROM Screening s " +

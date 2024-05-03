@@ -77,9 +77,16 @@ public class TicketService {
 
         Instant screeningStartInstant = LocalDateTime.of(date, time).atZone(zoneId).toInstant();
 
-        Screening screening = screeningRepository.findByDateAndStartTime(date, screeningStartInstant)
-                .orElseThrow(() -> new NoSuchElementException("No screening found for the selected date and time"));
+        List<Screening> screenings = screeningRepository.findAllByDateAndStartTime(date, screeningStartInstant);
 
+        if (screenings.isEmpty()) {
+            throw new NoSuchElementException("No screening found for the selected date and time");
+        } else if (screenings.size() > 1) {
+            throw new IllegalStateException("More than one screening found for the selected date and time. Please specify additional criteria.");
+        }
+        Screening screening = screenings.stream()
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("No screening found for the selected date and time"));
         Instant currentTime = Instant.now();
         Instant screeningStartTime = screening.getStartTime();
         if (currentTime.isAfter(screeningStartTime.minus(Duration.ofHours(1)))) {
