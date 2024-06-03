@@ -52,6 +52,9 @@ public class Ticket {
     @Column(name = "status", nullable = false)
     private TicketStatus status;
 
+    @Column(name = "transaction_ref")
+    private String transactionRef;
+
     @PrePersist
     public void onCreate() {
         createdDate = Instant.now();

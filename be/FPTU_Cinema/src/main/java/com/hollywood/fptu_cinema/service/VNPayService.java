@@ -1,21 +1,35 @@
 package com.hollywood.fptu_cinema.service;
 
 import com.hollywood.fptu_cinema.config.VNPayConfig;
+import com.hollywood.fptu_cinema.enums.PaymentStatus;
 import com.hollywood.fptu_cinema.enums.TicketStatus;
+import com.hollywood.fptu_cinema.model.Payment;
 import com.hollywood.fptu_cinema.model.Ticket;
+import com.hollywood.fptu_cinema.repository.PaymentRepository;
+import com.hollywood.fptu_cinema.repository.TicketRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.*;
 
 @Service
 public class VNPayService {
 
-    public String createOrder(int total, String orderInfo, String urlReturn) {
+    private final TicketRepository ticketRepository;
+    private final PaymentRepository paymentRepository;
+
+    public VNPayService(TicketRepository ticketRepository, PaymentRepository paymentRepository) {
+        this.ticketRepository = ticketRepository;
+        this.paymentRepository = paymentRepository;
+    }
+
+    public String createOrder(int total, String orderInfo, String urlReturn) throws UnsupportedEncodingException {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String vnp_TxnRef = VNPayConfig.getRandomNumber(8);
@@ -37,7 +51,7 @@ public class VNPayService {
         String locate = "vn";
         vnp_Params.put("vnp_Locale", locate);
 
-        urlReturn += VNPayConfig.vnp_Returnurl;
+        urlReturn += VNPayConfig.vnp_ReturnUrl;
         vnp_Params.put("vnp_ReturnUrl", urlReturn);
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
@@ -50,95 +64,78 @@ public class VNPayService {
         String vnp_ExpireDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 
-        List fieldNames = new ArrayList(vnp_Params.keySet());
+        List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
         Collections.sort(fieldNames);
         StringBuilder hashData = new StringBuilder();
         StringBuilder query = new StringBuilder();
-        Iterator itr = fieldNames.iterator();
+        Iterator<String> itr = fieldNames.iterator();
         while (itr.hasNext()) {
-            String fieldName = (String) itr.next();
-            String fieldValue = (String) vnp_Params.get(fieldName);
-            if ((fieldValue != null) && (fieldValue.length() > 0)) {
-                //Build hash data
+            String fieldName = itr.next();
+            String fieldValue = vnp_Params.get(fieldName);
+            if (fieldValue != null && !fieldValue.isEmpty()) {
+                // Build hash data
                 hashData.append(fieldName);
                 hashData.append('=');
-                try {
-                    hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
-                    //Build query
-                    query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII.toString()));
-                    query.append('=');
-                    query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
+                hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
+                // Build query
+                query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII));
+                query.append('=');
+                query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
                 if (itr.hasNext()) {
                     query.append('&');
                     hashData.append('&');
                 }
             }
         }
+
         String queryUrl = query.toString();
         String vnp_SecureHash = VNPayConfig.hmacSHA512(VNPayConfig.vnp_HashSecret, hashData.toString());
         queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
-        String paymentUrl = VNPayConfig.vnp_PayUrl + "?" + queryUrl;
-        return paymentUrl;
+        return VNPayConfig.vnp_PayUrl + "?" + queryUrl;
     }
 
+    @Transactional
     public int orderReturn(HttpServletRequest request) {
-        Ticket ticket = new Ticket();
+        String vnp_TxnRef = request.getParameter("vnp_TxnRef");
+        Ticket ticket = ticketRepository.findByTransactionRef(vnp_TxnRef)
+                .orElseThrow(() -> new NoSuchElementException("Ticket not found with transaction reference: " + vnp_TxnRef));
+
         Map<String, String> fields = new HashMap<>();
-        for (Enumeration<String> params = request.getParameterNames(); params.hasMoreElements(); ) {
-            String fieldName = null;
-            String fieldValue = null;
-            try {
-                fieldName = URLEncoder.encode(params.nextElement(), StandardCharsets.US_ASCII.toString());
-                fieldValue = URLEncoder.encode(request.getParameter(fieldName), StandardCharsets.US_ASCII.toString());
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-            if ((fieldValue != null) && (fieldValue.length() > 0)) {
+        for (Enumeration<String> params = request.getParameterNames(); params.hasMoreElements();) {
+            String fieldName = params.nextElement();
+            String fieldValue = request.getParameter(fieldName);
+            if ((fieldValue != null) && (!fieldValue.isEmpty())) {
                 fields.put(fieldName, fieldValue);
             }
         }
 
         String vnp_SecureHash = request.getParameter("vnp_SecureHash");
-        if (fields.containsKey("vnp_SecureHashType")) {
-            fields.remove("vnp_SecureHashType");
-        }
-        if (fields.containsKey("vnp_SecureHash")) {
-            fields.remove("vnp_SecureHash");
-        }
+        // Remove hash type and secure hash fields before checking signature
+        fields.remove("vnp_SecureHashType");
+        fields.remove("vnp_SecureHash");
         String signValue = VNPayConfig.hashAllFields(fields);
+
         if (signValue.equals(vnp_SecureHash)) {
             if ("00".equals(request.getParameter("vnp_TransactionStatus"))) {
-                // Cập nhật trạng thái của đơn hàng
-                int orderUpdateResult = updateOrderStatus();
-                if (orderUpdateResult == 1) {
-                    // Nếu cập nhật đơn hàng thành công, thay đổi trạng thái của vé
-                    ticket.setStatus(TicketStatus.PAID);
-                    // Kiểm tra trạng thái của vé sau khi cập nhật
-                    TicketStatus newTicketStatus = ticket.getStatus();
-                    if (newTicketStatus == TicketStatus.PAID) {
-                        return 1; // Trả về 1 nếu cả hai cập nhật thành công
-                    } else {
-                        return -1; // Trả về -1 nếu trạng thái vé không thay đổi thành công
-                    }
-                } else {
-                    return 0; // Trả về 0 nếu việc cập nhật đơn hàng không thành công
-                }
+                ticket.setStatus(TicketStatus.PAID);
+                Payment payment = paymentRepository.findByTicket(ticket)
+                        .orElseThrow(() -> new NoSuchElementException("Payment not found for ticket ID: " + ticket.getId()));
+                payment.setStatus(PaymentStatus.PAID);
+                payment.setPaymentDate(Instant.now());
+                paymentRepository.save(payment);
+                ticketRepository.save(ticket);
+                return 1;
             } else {
-                return 0; // Trả về 0 nếu trạng thái giao dịch không thành công
+                Payment payment = paymentRepository.findByTicket(ticket)
+                        .orElseThrow(() -> new NoSuchElementException("Payment not found for ticket ID: " + ticket.getId()));
+                payment.setStatus(PaymentStatus.CANCELLED);
+                paymentRepository.save(payment);
+
+                return 0;
             }
         } else {
-            return -1; // Trả về -1 nếu xác thực chữ ký không thành công
+            return -1;
         }
-    }
-
-    // Phương thức để cập nhật trạng thái của đơn hàng
-    private int updateOrderStatus() {
-        // Thực hiện cập nhật trạng thái đơn hàng
-        // Trả về 1 nếu cập nhật thành công, 0 nếu không thành công
-        return 1;
     }
 
 }

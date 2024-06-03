@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 public interface TicketRepository extends JpaRepository<Ticket, Integer> {
     List<Ticket> findTicketsByExpirationTimeBefore(Instant now);
@@ -14,4 +15,6 @@ public interface TicketRepository extends JpaRepository<Ticket, Integer> {
     long countByCreatedDateBetweenAndStatusIsSold(Instant start, Instant end);
 
     List<Ticket> findAllByUserId(int userId);
+
+    Optional<Ticket> findByTransactionRef(String transactionRef);
 }

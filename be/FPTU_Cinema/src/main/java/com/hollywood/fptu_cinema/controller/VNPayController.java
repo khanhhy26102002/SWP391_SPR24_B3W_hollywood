@@ -2,8 +2,12 @@ package com.hollywood.fptu_cinema.controller;
 
 import com.hollywood.fptu_cinema.service.VNPayService;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.ui.Model;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/VNPay")
@@ -14,34 +18,26 @@ public class VNPayController {
         this.vnPayService = vnPayService;
     }
 
-    @GetMapping("/home")
-    public String home() {
-        return "index";
-    }
-
     @PostMapping("/submitOrder")
-    public String submitOrder(@RequestParam("amount") int orderTotal,
-                              @RequestParam("orderInfo") String orderInfo,
-                              HttpServletRequest request) {
+    public ResponseEntity<?> submitOrder(@RequestParam("amount") int orderTotal,
+                                         @RequestParam("orderInfo") String orderInfo,
+                                         HttpServletRequest request) throws UnsupportedEncodingException {
         String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
         String VNPayUrl = vnPayService.createOrder(orderTotal, orderInfo, baseUrl);
-        return "redirect:" + VNPayUrl;
+        return ResponseEntity.ok(VNPayUrl);
     }
 
     @GetMapping("/VNPay-payment")
-    public String GetMapping(HttpServletRequest request, Model model) {
+    public ResponseEntity<?> getVNPayPaymentResult(HttpServletRequest request) {
         int paymentStatus = vnPayService.orderReturn(request);
 
-        String orderInfo = request.getParameter("vnp_OrderInfo");
-        String paymentTime = request.getParameter("vnp_PayDate");
-        String transactionId = request.getParameter("vnp_TransactionNo");
-        String totalPrice = request.getParameter("vnp_Amount");
+        Map<String, Object> response = new HashMap<>();
+        response.put("orderInfo", request.getParameter("vnp_OrderInfo"));
+        response.put("totalPrice", request.getParameter("vnp_Amount"));
+        response.put("paymentTime", request.getParameter("vnp_PayDate"));
+        response.put("transactionId", request.getParameter("vnp_TransactionNo"));
+        response.put("paymentStatus", paymentStatus);
 
-        model.addAttribute("orderId", orderInfo);
-        model.addAttribute("totalPrice", totalPrice);
-        model.addAttribute("paymentTime", paymentTime);
-        model.addAttribute("transactionId", transactionId);
-
-        return paymentStatus == 1 ? "orderSuccess" : "orderFail";
+        return ResponseEntity.ok(response);
     }
 }
